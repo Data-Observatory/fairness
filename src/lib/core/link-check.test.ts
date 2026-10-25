@@ -619,7 +619,7 @@ function problemInput() {
 		],
 		[URL_REDIRECT, [{ toolId: 'fair-catalogue', field: 'source_code' }]],
 		[URL_TIMEOUT, [{ field: 'repository' }]],
-		[URL_DOWN, [{ toolId: 'fairsfair-metrics', field: 'operator.url' }]]
+		[URL_DOWN, [{ toolId: 'fair-checker', field: 'operator.url' }]]
 	]);
 	const stale = [
 		{ id: 'fairsfair-metrics', lastVerified: '2025-01-15', days: 648 },
@@ -679,7 +679,7 @@ describe('formatLinkReport', () => {
 
 		const down = lineWith(markdown, URL_DOWN);
 		expect(down).toContain('network-error');
-		expect(down).toContain('fairsfair-metrics');
+		expect(down).toContain('fair-checker');
 		expect(down).toContain('operator.url');
 	});
 
