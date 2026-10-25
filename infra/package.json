@@ -1,0 +1,23 @@
+{
+	"name": "fair-site-infra",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"build": "tsc --noEmit",
+		"test": "vitest run",
+		"synth": "cdk synth",
+		"diff": "cdk diff",
+		"deploy": "cdk deploy"
+	},
+	"devDependencies": {
+		"@types/node": "^22",
+		"aws-cdk": "^2.1139.0",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.0",
+		"vitest": "^4.1.8"
+	},
+	"dependencies": {
+		"aws-cdk-lib": "^2.267.0",
+		"constructs": "^10.8.1"
+	}
+}
