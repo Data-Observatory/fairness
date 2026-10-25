@@ -12,7 +12,7 @@ summary:
     Maturity Indicator tests against a resource identified by a GUID (a DOI, a handle, an InChI
     key or a URL), and lets users register tests and collections.
   es: >-
-    FAIR Evaluator es el FAIR Maturity Evaluation Service. Su front-end web ejecuta colecciones de
+    FAIR Evaluator es el FAIR Maturity Evaluation Service. Su interfaz web ejecuta colecciones de
     pruebas de indicadores de madurez sobre un recurso identificado por un GUID (un DOI, un handle,
     una clave InChI o una URL) y permite registrar pruebas y colecciones.
 best_for:
@@ -39,7 +39,7 @@ status_note:
     FAIR Evaluator. None of the pages opened states that FAIR Champion replaces it.
   es: >-
     El 2026-10-25 el servidor fair-evaluator.semanticscience.org no se resolvió (error 6 de curl).
-    El front-end se cargó y su script (scripts/controllers/configCtrl.js) fija el backend en
+    La interfaz web se cargó y su script (scripts/controllers/configCtrl.js) fija el backend en
     https://fairdata.services:7171/FAIR_Evaluator, con la dirección de semanticscience.org
     comentada. Ese backend listó 36 colecciones y una evaluación ejecutada con la colección 1 se
     completó y devolvió un resultado. El README de FAIR Champion describe a FAIR Champion como una

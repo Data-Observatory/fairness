@@ -1,14 +1,12 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 
-	"site_name": "FAIR Resources Finder",
 	"nav_home": "Home",
 	"nav_about": "About",
 	"skip_to_content": "Skip to content",
 	"language_switcher_label": "Language",
 	"opens_in_new_tab": "(opens in a new tab)",
 
-	"home_title": "FAIR Resources Finder",
 	"home_redirecting": "Redirecting...",
 	"home_redirecting_choose": "If this takes too long, choose a language:",
 
@@ -24,7 +22,6 @@
 	"card_open": "Open",
 	"card_details": "Details",
 	"card_use_case": "Use case:",
-	"card_stale": "Not re-verified recently",
 
 	"finder_title": "Which tool fits?",
 	"finder_intro": "Find the row that matches what you have at hand. The tools listed accept that input.",
@@ -53,7 +50,7 @@
 	"about_suggest_title": "How to suggest a tool",
 	"about_suggest_body": "To propose a new entry or a correction, follow the contribution guide in the project repository.",
 	"about_suggest_link": "Contribution guide",
-	"about_licenses_title": "Licences",
+	"about_licenses_title": "Licenses",
 	"about_licenses_code": "The source code is licensed under {license}.",
 	"about_licenses_content": "The content (YAML files and texts) is licensed under {license}.",
 	"about_licenses_names": "Product and service names belong to their owners. Listing a resource here does not imply any affiliation.",

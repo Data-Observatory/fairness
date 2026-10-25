@@ -14,7 +14,7 @@ summary:
     them. It assesses the knowledge of the person, not a dataset.
   es: >-
     FAIR-Aware es un cuestionario en línea de 10 preguntas que indaga si la persona que responde
-    conoce los requisitos para que un conjunto de datos sea FAIR y qué tan dispuesta está a
+    conoce los requisitos para que un conjunto de datos sea FAIR y en qué medida está dispuesta a
     cumplirlos. Evalúa el conocimiento de la persona, no un conjunto de datos.
 best_for:
   en: Reviewing one's own knowledge of the FAIR data requirements before depositing a dataset in a repository.

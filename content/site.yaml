@@ -1,4 +1,5 @@
 name: { en: FAIR Resources Finder, es: Buscador de recursos FAIR }
+shortName: { en: FAIR, es: FAIR }
 tagline:
   en: Directory of external FAIR assessment resources
   es: Directorio de recursos externos de evaluación FAIR

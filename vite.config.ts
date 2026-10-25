@@ -5,12 +5,17 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { buildUrlPatterns } from './src/lib/url-patterns.ts';
 
 // One prerender entry per tool file (files starting with an underscore are templates).
 const toolIds = readdirSync('content/tools')
 	.filter((name) => name.endsWith('.yaml') && !name.startsWith('_'))
 	.map((name) => name.slice(0, -'.yaml'.length))
 	.sort();
+
+// Deploy target/base path is not fixed at dev/test time (a static host, possibly at a
+// sub-path): always driven by an env var, never hardcoded.
+const base = (process.env.BASE_PATH ?? '') as '' | `/${string}`;
 
 export default defineConfig({
 	// Baked in once at build time (not `new Date()` inside app code, which would re-run
@@ -26,10 +31,12 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter(),
+			// BUILD_DIR lets scripts/check-base-path.mjs build into a temporary directory.
+			adapter: adapter({ pages: process.env.BUILD_DIR ?? 'build' }),
 			prerender: {
 				// Explicit, not crawl-dependent: every locale's every page must exist in
 				// the static build, not just whatever a link-crawler happens to discover.
+				// SvelteKit prepends `paths.base` to each entry itself.
 				entries: [
 					'*',
 					'/en',
@@ -40,9 +47,7 @@ export default defineConfig({
 				]
 			},
 			paths: {
-				// Deploy target/base path is not fixed at dev/test time (a static host,
-				// possibly at a sub-path): always driven by an env var, never hardcoded.
-				base: (process.env.BASE_PATH ?? '') as '' | `/${string}`,
+				base,
 
 				// Absolute (base-rooted) links, not page-relative ones: relative output like
 				// `../section/B` breaks if the host ever serves both `/section/A` and
@@ -59,22 +64,7 @@ export default defineConfig({
 			// there's nothing to persist a locale preference in. Every locale is prefixed,
 			// including the base one (en): see the urlPatterns override below.
 			strategy: ['url', 'baseLocale'],
-			urlPatterns: [
-				{
-					pattern: '/',
-					localized: [
-						['en', '/en'],
-						['es', '/es']
-					]
-				},
-				{
-					pattern: '/:path(.*)?',
-					localized: [
-						['en', '/en/:path(.*)?'],
-						['es', '/es/:path(.*)?']
-					]
-				}
-			]
+			urlPatterns: buildUrlPatterns(base)
 		})
 	],
 	test: {

@@ -50,7 +50,7 @@ export const FACT_LABELS: Record<Locale, Record<string, string>> = {
 		output: 'Resultado',
 		api: 'API',
 		source_code: 'Código fuente',
-		self_hostable: 'Autoalojable',
+		self_hostable: 'Instalable en servidor propio',
 		license: 'Licencia',
 		status: 'Estado'
 	}
@@ -67,11 +67,14 @@ export type ToolCard = {
 	url: string;
 	host: string;
 	chips: Chip[];
+	/** Taxonomy ids of the tool per filter group, so a page can filter without the content. */
+	filterFields: Record<(typeof FILTER_GROUPS)[number], string[]>;
 	stale: boolean;
 };
 
 export type HomeView = {
 	siteName: string;
+	shortName: string;
 	tagline: string;
 	caveats: string[];
 	sections: {
@@ -159,6 +162,13 @@ function cardOf(
 		url: tool.url,
 		host: hostOf(tool.url),
 		chips: chipsOf(tool, label),
+		filterFields: {
+			target: [...(tool.targets ?? [])],
+			mode: tool.mode === undefined ? [] : [tool.mode],
+			input: [...(tool.inputs ?? [])],
+			framework: [...(tool.frameworks ?? [])],
+			status: [tool.status]
+		},
 		stale: isStale(tool, today, content.site.verification.staleAfterDays)
 	};
 }
@@ -187,6 +197,7 @@ export function buildHomeView(content: Content, locale: Locale, today: Date): Ho
 	const toolName = new Map(content.tools.map((tool) => [tool.id, tool.name]));
 	return {
 		siteName: text(content.site.name, locale),
+		shortName: text(content.site.shortName ?? content.site.name, locale),
 		tagline: text(content.site.tagline, locale),
 		caveats: content.caveats.map((item) => text(item.text, locale)),
 		sections: content.sections.map((section) => ({

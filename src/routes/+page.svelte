@@ -24,7 +24,8 @@
 	// two real, symmetric routes. This branch only renders for the literal bare path;
 	// `reroute` still maps /en and /es to this same file, where page.url.pathname
 	// reflects the actual (prefixed) URL the visitor is on.
-	const isBareRoot = $derived(page.url.pathname === '/');
+	const trimSlash = (path: string) => (path.length > 1 ? path.replace(/\/+$/, '') : path);
+	const isBareRoot = $derived(trimSlash(page.url.pathname) === trimSlash(resolve('/')));
 
 	$effect(() => {
 		if (!browser || !isBareRoot) return;

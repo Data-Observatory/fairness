@@ -18,7 +18,7 @@ summary:
     FAIR de un objeto digital alojado en un repositorio o portal de datos, con indicadores de la
     RDA, mediante una API y una interfaz web opcional. Esta ficha enlaza con el código fuente, que
     cada institución despliega por su cuenta; en https://fair.csic.es se publica una instancia
-    denominada para DIGITAL.CSIC.
+    para DIGITAL.CSIC.
 best_for:
   en: Deploying an evaluator for an institutional repository, with configurable metadata terms and plugins.
   es: Desplegar un evaluador para un repositorio institucional, con términos de metadatos y complementos configurables.

@@ -44,7 +44,7 @@ status_note:
     collection fair-enough-metadata) ended with 502 Bad Gateway from nginx after about 70 to 80
     seconds. The most recent push to the GitHub repository is dated 2023-07-17.
   es: >-
-    El 2026-10-25 el front-end web se cargó y la API en api.fair-enough.semanticscience.org devolvió
+    El 2026-10-25 la interfaz web se cargó y la API en api.fair-enough.semanticscience.org devolvió
     su definición OpenAPI, la lista de colecciones y la lista de evaluaciones almacenadas. Dos
     solicitudes para crear una evaluación nueva (POST /evaluations, con dos sujetos distintos y la
     colección fair-enough-metadata) terminaron con un error 502 Bad Gateway de nginx tras unos 70 a

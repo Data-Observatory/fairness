@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<title>{m.about_title()} - {m.site_name()}</title>
+	<title>{m.about_title()} - {data.site.name}</title>
 </svelte:head>
 
 <div class="mx-auto max-w-2xl px-6 pt-4 pb-8 text-zinc-700">

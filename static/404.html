@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Page not found - FAIR Resources Finder</title>
+		<title>Page not found / Página no encontrada - FAIR Resources Finder</title>
 		<style>
 			body {
 				margin: 0;
@@ -23,6 +23,11 @@
 			}
 			main {
 				max-width: 28rem;
+			}
+			section + section {
+				margin-top: 2.5rem;
+				padding-top: 2rem;
+				border-top: 1px solid #e4e4e7;
 			}
 			h1 {
 				font-size: 1.5rem;
@@ -50,10 +55,22 @@
 		</style>
 	</head>
 	<body>
+		<!--
+			Served as is for any missing URL, from any base path. The links are relative, so no
+			absolute "/" is baked in. scripts/remove-unlocalized-pages.mjs adds a <base> element
+			after the build, set to the deploy base path, so they resolve to the locale home pages.
+		-->
 		<main>
-			<h1>Page not found</h1>
-			<p>This page does not exist, or the link is out of date.</p>
-			<a href="/">Back to FAIR Resources Finder</a>
+			<section lang="en">
+				<h1>Page not found</h1>
+				<p>This page does not exist, or the link is out of date.</p>
+				<a href="en">Back to FAIR Resources Finder</a>
+			</section>
+			<section lang="es">
+				<h1>Página no encontrada</h1>
+				<p>Esta página no existe o el enlace está desactualizado.</p>
+				<a href="es">Volver al Buscador de recursos FAIR</a>
+			</section>
 		</main>
 	</body>
 </html>

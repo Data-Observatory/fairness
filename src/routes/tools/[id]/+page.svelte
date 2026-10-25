@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>{tool.name} - {m.site_name()}</title>
+	<title>{tool.name} - {data.site.name}</title>
 </svelte:head>
 
 <div class="mx-auto max-w-3xl px-6 pt-4 pb-8">

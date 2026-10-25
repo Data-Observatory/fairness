@@ -18,7 +18,7 @@ summary:
     investigación. Está dirigida a investigadores, bibliotecarios de datos y personal de TI.
 best_for:
   en: Reviewing a dataset by answering questions about it, without entering an identifier.
-  es: Revisar un conjunto de datos respondiendo preguntas sobre él, sin ingresar un identificador.
+  es: Revisar un conjunto de datos respondiendo preguntas sobre él, sin indicar un identificador.
 targets: [dataset]
 mode: manual
 inputs: [none]

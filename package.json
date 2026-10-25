@@ -18,6 +18,7 @@
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright install && playwright test",
 		"schema": "node --experimental-strip-types scripts/generate-schema.mjs",
+		"check:base-path": "node scripts/check-base-path.mjs",
 		"validate": "node --experimental-strip-types scripts/validate.mjs",
 		"prebuild": "npm run validate"
 	},

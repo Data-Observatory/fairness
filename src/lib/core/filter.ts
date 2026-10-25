@@ -61,14 +61,22 @@ export function selectionToQuery(selection: Selection): URLSearchParams {
 	return query;
 }
 
-/** Parses a query into a selection, keeping only `allowedGroups`. Empty groups are omitted. */
+/**
+ * Parses a query into a selection, keeping only `allowedGroups`. Empty groups are omitted.
+ * When `allowedValues` is given, ids that are not listed for their group are dropped (matching
+ * is case sensitive); without it every id is kept.
+ */
 export function selectionFromQuery(
 	params: URLSearchParams,
-	allowedGroups: readonly string[]
+	allowedGroups: readonly string[],
+	allowedValues?: Readonly<Record<string, readonly string[]>>
 ): Selection {
 	const selection: Selection = {};
 	for (const group of allowedGroups) {
-		const values = normalize(params.getAll(group).flatMap((raw) => raw.split(',')));
+		const known = allowedValues === undefined ? undefined : new Set(allowedValues[group] ?? []);
+		const values = normalize(params.getAll(group).flatMap((raw) => raw.split(','))).filter(
+			(value) => known === undefined || known.has(value)
+		);
 		if (values.length > 0) selection[group] = values;
 	}
 	return selection;

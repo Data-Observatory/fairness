@@ -55,6 +55,7 @@ export const FORBIDDEN_CHARACTER_NAMES = ['em_dash', 'en_dash'] as const;
 
 export const siteSchema = z.strictObject({
 	name: localized,
+	shortName: localized.optional(),
 	tagline: localized,
 	domain: text,
 	repository: httpsUrl,
