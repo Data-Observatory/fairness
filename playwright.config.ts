@@ -20,6 +20,10 @@ export default defineConfig({
 	projects: [
 		{ name: 'chromium', use: { ...devices['Desktop Chrome'] } },
 		{ name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-		{ name: 'webkit', use: { ...devices['Desktop Safari'] } }
+		// WebKit needs system libraries that some dev machines (for example WSL) lack,
+		// so it runs in CI or when PW_WEBKIT=1 is set.
+		...(process.env.CI || process.env.PW_WEBKIT
+			? [{ name: 'webkit', use: { ...devices['Desktop Safari'] } }]
+			: [])
 	]
 });
