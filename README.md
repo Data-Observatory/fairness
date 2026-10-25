@@ -63,6 +63,10 @@ See `CONTRIBUTING.md` for how to add or update a tool.
 The target domain is `fair.dataobservatory.net`. The CDK stack and the deployment
 notes are in `infra/README.md`.
 
+## Status
+
+Implemented and deployed to AWS (S3 + CloudFront) but not yet published at the domain: see `specs.md` sections 18 and 19 and `infra/README.md` ("Current deployment state") for open items, deviations and the pending DNS record.
+
 ## Licenses
 
 - Code: MIT, see `LICENSE`.

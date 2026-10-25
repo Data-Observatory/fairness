@@ -109,3 +109,21 @@ npx cdk deploy --profile <app-profile> -c domainName=<other-name>.dataobservator
 ```
 
 The DNS records change accordingly.
+
+## Current deployment state
+
+- The stack `FairSiteStack` is deployed (us-east-1, the app account). Outputs are available with `aws cloudformation describe-stacks --stack-name FairSiteStack`.
+- The ACM validation CNAME exists in the DNS account, and the certificate is issued.
+- The alias A record for the domain (step 2 above) is not created yet. Until it exists, the site is reachable only at the `DistributionDomainName` host, whose TLS certificate does not match that host name, so browsers show a warning. To test before publishing, map the domain to a CloudFront edge address (for example with Chromium's `--host-resolver-rules`) as the maintainers did.
+- Published pages come from `../build`. To publish a new version, run `npm run build` at the repository root and `npx cdk deploy` again; the deployment invalidates the HTML cache.
+
+## Credentials with SSO profiles
+
+The CDK CLI used here could not resolve credentials from an AWS SSO profile on its own (errors "Unable to resolve AWS account" or "no credentials have been configured"). Export temporary credentials into the shell instead, without writing them to any file:
+
+```sh
+eval "$(aws configure export-credentials --profile <app-profile> --format env)"
+export AWS_REGION=us-east-1 CDK_DEFAULT_ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
+npx cdk diff
+npx cdk deploy
+```

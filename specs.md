@@ -1,6 +1,6 @@
 # FAIR Resources Finder: Static Site Specification
 
-Status: draft v1, implemented. Decisions confirmed by the owner on 2026-10-25.
+Status: v1 implemented and deployed (see sections 18 and 19 for open items and deviations). Decisions confirmed by the owner on 2026-10-25.
 
 Deviations from this draft in the implementation: filter and grouping logic lives in `src/lib/core/view.ts` and `home-state.ts` (there is no `filter.ts`); every page head also emits canonical and hreflang links built by `src/lib/core/seo.ts` from the domain in `content/site.yaml`; `scripts/validate.mjs` and `scripts/check-base-path.mjs` were added; `status_note` may accompany any status (see 5 and 7); deployment is authorized as described in sections 2 and 15.
 
@@ -29,16 +29,16 @@ A small static website, published by Data Observatory, that lists external resou
 
 ## 3. Decisions (confirmed)
 
-| Topic          | Decision                                                                                                                                              |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Design         | "Option D": filterable directory on the reference stack, factual detail pages, static finder table, no compare page                                   |
-| Scope          | Datasets, plus other digital objects (ontologies, software, repositories), plus directories, plus frameworks, each in its own section                 |
-| Languages      | English and Spanish at launch, URL-prefixed `/en`, `/es`, as in the reference                                                                         |
-| Spanish style  | Neutral, formal register (usted), no voseo, no emoji or emoticons, no em dashes. Owner reviews all Spanish text later                                 |
-| Tone           | Factual, no judgment. A small optional "best for" line per tool                                                                                       |
+| Topic          | Decision                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Design         | "Option D": filterable directory on the reference stack, factual detail pages, static finder table, no compare page                                                       |
+| Scope          | Datasets, plus other digital objects (ontologies, software, repositories), plus directories, plus frameworks, each in its own section                                     |
+| Languages      | English and Spanish at launch, URL-prefixed `/en`, `/es`, as in the reference                                                                                             |
+| Spanish style  | Neutral, formal register (usted), no voseo, no emoji or emoticons, no em dashes. Owner reviews all Spanish text later                                                     |
+| Tone           | Factual, no judgment. A small optional "best for" line per tool                                                                                                           |
 | Hosting        | S3 + CloudFront via CDK like the reference, reusing its patterns. Default domain `fair.dataobservatory.net`, configurable. Deployed only by the lead session (section 15) |
-| Ownership      | Data Observatory maintains. Outsiders may submit tools by pull request                                                                                |
-| Build approach | Agents implement, tests are written first, an Opus agent reviews                                                                                      |
+| Ownership      | Data Observatory maintains. Outsiders may submit tools by pull request                                                                                                    |
+| Build approach | Agents implement, tests are written first, an Opus agent reviews                                                                                                          |
 
 ## 4. Tech Stack and Project Structure
 
@@ -155,29 +155,29 @@ Ordered list of home page sections. Each tool belongs to exactly one section thr
 
 File name equals `id`. Fields:
 
-| Field           | Required  | Notes                                                                                                               |
-| --------------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
-| `id`            | yes       | kebab-case, equals file name                                                                                        |
-| `kind`          | yes       | `tool`, `framework`, `directory`                                                                                    |
-| `section`       | yes       | id from `sections.yaml`                                                                                             |
-| `name`          | yes       | plain string (product names are not translated)                                                                     |
-| `url`           | yes       | `https://` link opened by the "Open" button                                                                         |
-| `operator`      | yes       | `{ name, url? }`                                                                                                    |
-| `summary`       | yes       | localized, 1 to 2 sentences, factual                                                                                |
-| `best_for`      | no        | localized, one sentence, neutral use case. Shown only if `features.bestFor`                                         |
-| `targets`       | tool: yes | list of `target` ids                                                                                                |
-| `mode`          | tool: yes | `mode` id                                                                                                           |
-| `inputs`        | tool: yes | list of `input` ids                                                                                                 |
-| `frameworks`    | no        | list of `framework` ids the resource implements                                                                     |
-| `output`        | tool: yes | localized: what the visitor gets back (score, report, JSON, ...)                                                    |
-| `api`           | no        | `{ available: bool, url? }`                                                                                         |
-| `source_code`   | no        | URL                                                                                                                 |
-| `self_hostable` | no        | bool                                                                                                                |
-| `license`       | no        | SPDX id or free text                                                                                                |
-| `status`        | yes       | `status` id                                                                                                         |
+| Field           | Required  | Notes                                                                                                                              |
+| --------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | yes       | kebab-case, equals file name                                                                                                       |
+| `kind`          | yes       | `tool`, `framework`, `directory`                                                                                                   |
+| `section`       | yes       | id from `sections.yaml`                                                                                                            |
+| `name`          | yes       | plain string (product names are not translated)                                                                                    |
+| `url`           | yes       | `https://` link opened by the "Open" button                                                                                        |
+| `operator`      | yes       | `{ name, url? }`                                                                                                                   |
+| `summary`       | yes       | localized, 1 to 2 sentences, factual                                                                                               |
+| `best_for`      | no        | localized, one sentence, neutral use case. Shown only if `features.bestFor`                                                        |
+| `targets`       | tool: yes | list of `target` ids                                                                                                               |
+| `mode`          | tool: yes | `mode` id                                                                                                                          |
+| `inputs`        | tool: yes | list of `input` ids                                                                                                                |
+| `frameworks`    | no        | list of `framework` ids the resource implements                                                                                    |
+| `output`        | tool: yes | localized: what the visitor gets back (score, report, JSON, ...)                                                                   |
+| `api`           | no        | `{ available: bool, url? }`                                                                                                        |
+| `source_code`   | no        | URL                                                                                                                                |
+| `self_hostable` | no        | bool                                                                                                                               |
+| `license`       | no        | SPDX id or free text                                                                                                               |
+| `status`        | yes       | `status` id                                                                                                                        |
 | `status_note`   | no        | localized, factual evidence for the status shown, allowed on any status (for example "Backend host did not respond on 2026-10-25") |
-| `last_verified` | yes       | ISO date the maintainer last opened the resource and confirmed the entries                                          |
-| `references`    | no        | list of `{ title, url }` (papers, docs)                                                                             |
+| `last_verified` | yes       | ISO date the maintainer last opened the resource and confirmed the entries                                                         |
+| `references`    | no        | list of `{ title, url }` (papers, docs)                                                                                            |
 
 `kind: framework` and `kind: directory` may omit `targets`, `mode`, `inputs`, `output`.
 
@@ -315,7 +315,30 @@ Static checks in CI: `svelte-check`, `eslint`, `prettier --check`, `vitest run`,
 
 ## 18. Open Items (owner)
 
-- Exact repository name and final subdomain (default `fair.dataobservatory.net`).
-- Spanish review of all text.
+- Repository: `repository` and `contributeUrl` in `content/site.yaml` point at a placeholder (`Data-Observatory/fairness-resources-finder`) that does not exist yet. Create the repository or change the URL, then redeploy.
+- Publication: the stack is deployed, but the public alias DNS record for the domain is not created yet (see `infra/README.md`, "Current deployment state").
+- Spanish review of all text. Wording chosen by the implementation that deserves a look: "Autoalojable" (self-hostable), "Caso de uso" (label of the `best_for` line), "Ficha técnica" (detail facts title), "Dato de partida" (finder input column).
 - Whether to add the finder as a guided wizard in a later phase.
-- Deploy workflow and AWS account/profile decisions (deferred).
+- Deploy workflow (GitHub Actions) and the AWS account decisions for it: deferred. Deploys are manual for now.
+
+## 19. Deviations from the original plan and deferred items
+
+Deviations (decided during implementation):
+
+- The on-page label of `best_for` is "Use case" (Spanish "Caso de uso"), not "Best for", because the style lint forbids the word "best" in UI text. To use the literal label, remove "best" from `style.forbiddenTerms` in `content/site.yaml` and change the message `card_use_case` in `messages/`.
+- Locales are hardcoded to `en` and `es` in the schemas for v1 (a third locale needs a schema change).
+- `zod-to-json-schema` was replaced by zod 4's built-in `z.toJSONSchema`; the validate and schema scripts use `node --experimental-strip-types` (Node 22.6 or later).
+- Unknown filter ids in the URL query are ignored. Sections with matching tools open automatically while a filter is active, and all sections open for printing.
+- Pages are prerendered with server loads (`+*.server.ts`), so the content loader (yaml, zod) is not in any client bundle.
+- `/en/` maps to `/en.html` in the CloudFront Function because the build has no per-directory index files.
+- A `portal_record` input type was added to the taxonomy for tools that work on records already registered in their own portal (O'FAIRe).
+- Content CSP allows inline scripts and styles because SvelteKit's bootstrap needs them. A hash-based CSP (`kit.csp`) would tighten it.
+- WebKit runs in CI or with `PW_WEBKIT=1`; it is off locally because some machines lack its system libraries.
+
+Deferred (not implemented, no known blocker):
+
+- Filter group and fact labels live in `src/lib/core/labels.ts`, not in Paraglide messages.
+- Filter options with zero matching tools can still be selected.
+- License names (MIT, CC-BY-4.0) and the link to the Repository Crisis Scorecards project are in messages, not in `site.yaml`.
+- CloudFront and S3 access logging are not configured.
+- The two verification runs of external tools described in the git history left public records on third-party services (FAIR Evaluator evaluation "Availability check 2026-10-25", plus one DOI assessment each on F-UJI and FAIR Champion).

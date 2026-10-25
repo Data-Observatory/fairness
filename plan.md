@@ -50,6 +50,12 @@ Exit: everything green, review report presented to the owner with open items.
 - Content facts drift from research notes: agents must verify against live pages, Opus re-checks sample entries.
 - A 200 response hides a dead backend: the report states this, and `last_verified` is bumped by hand.
 
+## Status (2026-10-25)
+
+M1 to M6 are done and reviewed (Opus reviews after M2, M4 and at the end; findings fixed). Verification at the last commit: 559 unit tests, 494 end-to-end tests (Chromium and Firefox), 50 infra tests, `check`, `lint`, `validate`, `check:base-path` and `cdk synth` all clean.
+
+Deployment: `FairSiteStack` is deployed to the reference RCS app account (us-east-1). The ACM validation CNAME exists in the DNS account. The CloudFront alias A record for the domain is NOT created yet, so the site is not public at the domain. It was held back because the repository links in `content/site.yaml` still point to a repository that does not exist. See `infra/README.md`, "Current deployment state".
+
 ## Owner decisions still open
 
-Repository name, deploy workflow and AWS account, later wizard, Spanish review.
+See `specs.md` section 18 (repository URL, publishing the alias record, Spanish review, wizard, deploy workflow) and section 19 (deviations and deferred items).
