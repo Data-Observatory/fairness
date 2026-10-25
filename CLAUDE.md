@@ -8,7 +8,7 @@ Static SvelteKit site listing external FAIR assessment resources and redirecting
 - Content lives in `content/**/*.yaml`, never hard-coded in components. UI chrome strings live in `messages/{en,es}.json` (Paraglide). "Best for", caveats, sections, filters and site name must stay editable in YAML only.
 - Logic lives in `src/lib/core/` with no Svelte imports. Components are thin.
 - Every localized field needs `en` and `es`.
-- Do not deploy. Never run `cdk deploy`, `aws` commands, or anything touching an AWS account. `cdk synth` with dummy values is allowed.
+- Deploy only at milestone M6 and only by the lead session, never by a sub-agent. Allowed: the AWS profile of the reference RCS site's app account (name kept in the lead's private notes, not here), region us-east-1, after `cdk diff` is reviewed. Writes to the separate DNS account (Route 53 for dataobservatory.net) are NOT authorized: ask the owner first. Before M6, `cdk synth` with dummy values only. Never put account IDs, ARNs or profile names in tracked files; use context or environment.
 - Git: local repo on `main`. Commit incrementally (one logical change per commit) with Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`), and NO Co-Authored-By or other attribution trailer. Tests and implementation may be separate commits. Do not push or create remote repositories unless the owner asks.
 - No runtime requests to third parties (no CDN, fonts, analytics). Self-host everything.
 - Verify any tool URL or DOI by fetching it before writing it into content. Unconfirmed facts get `status: unverified` and a `status_note`, or are left out.
