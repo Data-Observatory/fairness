@@ -38,3 +38,34 @@ jobs:
       - run: npx playwright install --with-deps
 
       - run: npx playwright test
+
+  infra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - run: npm ci
+
+      # The infra tests read the staged static build.
+      - run: npm run build
+
+      - run: npm ci
+        working-directory: infra
+
+      - run: npx tsc --noEmit
+        working-directory: infra
+
+      - run: npx vitest run
+        working-directory: infra
+
+      # Synth with dummy values only: no AWS credentials and no deployment in CI.
+      - run: npx cdk synth -c domainName=fair.example.test
+        working-directory: infra
+        env:
+          CDK_DEFAULT_ACCOUNT: '111111111111'
+          CDK_DEFAULT_REGION: us-east-1
