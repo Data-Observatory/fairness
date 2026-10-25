@@ -6,8 +6,9 @@
 	import { locales, getLocale } from '$lib/paraglide/runtime';
 	import { localized } from '$lib/i18n';
 	import * as m from '$lib/paraglide/messages';
+	import ExternalLink from '$lib/components/ExternalLink.svelte';
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	const navLinks = $derived([
 		{ href: localized(resolve('/')), label: m.nav_home(), routeId: '/' },
@@ -61,13 +62,16 @@
 				{#each locales as locale (locale)}
 					<a
 						href={localized(page.url.pathname as ResolvedPathname, { locale })}
+						data-testid={`locale-switch-${locale}`}
+						hreflang={locale}
+						lang={locale}
 						data-sveltekit-reload
 						aria-current={getLocale() === locale ? 'true' : undefined}
 						class={[
 							'rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors',
 							getLocale() === locale
 								? 'bg-zinc-900 text-white'
-								: 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800'
+								: 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-800'
 						]}
 					>
 						{localeLabels[locale] ?? locale}
@@ -83,7 +87,26 @@
 
 	<footer class="mt-16 bg-zinc-900 py-10 text-zinc-300 print:hidden">
 		<div class="mx-auto max-w-5xl px-6">
-			<p class="text-xs text-zinc-400">
+			<ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+				<li>
+					<ExternalLink
+						href={data.site.repository}
+						class="text-blue-300 underline decoration-blue-300/40 underline-offset-2 hover:text-blue-200"
+					>
+						{m.footer_repository()}
+					</ExternalLink>
+				</li>
+				<li>
+					<ExternalLink
+						href={data.site.contributeUrl}
+						class="text-blue-300 underline decoration-blue-300/40 underline-offset-2 hover:text-blue-200"
+					>
+						{m.footer_contribute()}
+					</ExternalLink>
+				</li>
+			</ul>
+			<p class="mt-4 text-sm">{m.privacy_statement()}</p>
+			<p class="mt-2 text-xs text-zinc-300">
 				{m.footer_license({ codeLicense: 'MIT', contentLicense: 'CC-BY-4.0' })}
 			</p>
 		</div>

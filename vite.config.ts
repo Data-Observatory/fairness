@@ -1,9 +1,16 @@
+import { readdirSync } from 'node:fs';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
+
+// One prerender entry per tool file (files starting with an underscore are templates).
+const toolIds = readdirSync('content/tools')
+	.filter((name) => name.endsWith('.yaml') && !name.startsWith('_'))
+	.map((name) => name.slice(0, -'.yaml'.length))
+	.sort();
 
 export default defineConfig({
 	// Baked in once at build time (not `new Date()` inside app code, which would re-run
@@ -23,7 +30,14 @@ export default defineConfig({
 			prerender: {
 				// Explicit, not crawl-dependent: every locale's every page must exist in
 				// the static build, not just whatever a link-crawler happens to discover.
-				entries: ['*', '/en', '/es', '/en/about', '/es/about']
+				entries: [
+					'*',
+					'/en',
+					'/es',
+					'/en/about',
+					'/es/about',
+					...toolIds.flatMap((id): `/${string}`[] => [`/en/tools/${id}`, `/es/tools/${id}`])
+				]
 			},
 			paths: {
 				// Deploy target/base path is not fixed at dev/test time (a static host,

@@ -6,13 +6,35 @@
 	"nav_about": "About",
 	"skip_to_content": "Skip to content",
 	"language_switcher_label": "Language",
+	"opens_in_new_tab": "(opens in a new tab)",
 
 	"home_title": "FAIR Resources Finder",
-	"home_placeholder": "Directory of external FAIR assessment resources. Content will be added here.",
 	"home_redirecting": "Redirecting...",
 	"home_redirecting_choose": "If this takes too long, choose a language:",
 
+	"caveats_title": "What automated FAIR checks can and cannot tell you",
+
+	"filters_title": "Filters",
+	"filters_clear": "Clear filters",
+	"results_shown_one": "{count} resource shown",
+	"results_shown_other": "{count} resources shown",
+	"results_none": "No resources match the selected filters.",
+	"section_empty": "No resources in this section match the selected filters.",
+
+	"card_open": "Open",
+	"card_details": "Details",
+	"card_use_case": "Use case:",
+	"card_stale": "Not re-verified recently",
+
+	"finder_title": "Which tool fits?",
+	"finder_intro": "Find the row that matches what you have at hand. The tools listed accept that input.",
+	"finder_col_input": "What you have",
+	"finder_col_tools": "Tools that accept it",
+
 	"about_title": "About",
 
-	"footer_license": "Code licensed under {codeLicense}. Content licensed under {contentLicense}."
+	"footer_license": "Code licensed under {codeLicense}. Content licensed under {contentLicense}.",
+	"footer_repository": "Source repository",
+	"footer_contribute": "Contribute",
+	"privacy_statement": "This site collects no data and sets no cookies. Links lead to third-party tools, which have their own privacy policies."
 }

@@ -6,13 +6,35 @@
 	"nav_about": "Acerca de",
 	"skip_to_content": "Saltar al contenido",
 	"language_switcher_label": "Idioma",
+	"opens_in_new_tab": "(se abre en una pestaña nueva)",
 
 	"home_title": "FAIR Resources Finder",
-	"home_placeholder": "Directorio de recursos externos de evaluación FAIR. El contenido se añadirá aquí.",
 	"home_redirecting": "Redirigiendo...",
 	"home_redirecting_choose": "Si tarda demasiado, elija un idioma:",
 
+	"caveats_title": "Qué pueden y qué no pueden indicar las comprobaciones FAIR automáticas",
+
+	"filters_title": "Filtros",
+	"filters_clear": "Quitar filtros",
+	"results_shown_one": "{count} recurso mostrado",
+	"results_shown_other": "{count} recursos mostrados",
+	"results_none": "Ningún recurso coincide con los filtros seleccionados.",
+	"section_empty": "Ningún recurso de esta sección coincide con los filtros seleccionados.",
+
+	"card_open": "Abrir",
+	"card_details": "Detalles",
+	"card_use_case": "Caso de uso:",
+	"card_stale": "No se ha vuelto a verificar recientemente",
+
+	"finder_title": "¿Qué herramienta corresponde?",
+	"finder_intro": "Busque la fila que corresponde a lo que usted tiene. Las herramientas indicadas aceptan esa entrada.",
+	"finder_col_input": "Lo que usted tiene",
+	"finder_col_tools": "Herramientas que la aceptan",
+
 	"about_title": "Acerca de",
 
-	"footer_license": "Código con licencia {codeLicense}. Contenido con licencia {contentLicense}."
+	"footer_license": "Código con licencia {codeLicense}. Contenido con licencia {contentLicense}.",
+	"footer_repository": "Repositorio de código fuente",
+	"footer_contribute": "Contribuir",
+	"privacy_statement": "Este sitio no recopila datos ni establece cookies. Los enlaces conducen a herramientas de terceros, que tienen sus propias políticas de privacidad."
 }
