@@ -11,7 +11,7 @@ const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
 export default defineConfig(
 	includeIgnoreFile(gitignorePath),
 	// CloudFront Function source: `handler` is called by the CloudFront runtime, not by this repo.
-	{ ignores: ['infra/cloudfront-fn/**'] },
+	{ ignores: ['infra/cloudfront-fn/**', 'infra/cdk.out/**'] },
 	js.configs.recommended,
 	ts.configs.recommended,
 	svelte.configs.recommended,

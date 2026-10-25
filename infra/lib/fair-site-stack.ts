@@ -28,12 +28,18 @@ const CONTENT_SECURITY_POLICY = [
 	"frame-ancestors 'none'"
 ].join('; ');
 
+const IMMUTABLE_PREFIX = '_app/immutable';
+
+// Browser features the site never uses are denied for the page and any embedded frame.
+const PERMISSIONS_POLICY = 'camera=(), microphone=(), geolocation=(), payment=(), usb=()';
+
 /**
  * Static hosting for the FAIR Resources Finder: a private S3 bucket (read only through
  * CloudFront Origin Access Control), a CloudFront distribution with a viewer-request
  * function that maps extensionless links onto the flat .html files of the static build,
- * security response headers, and a BucketDeployment that uploads ../build and
- * invalidates the distribution.
+ * security response headers, and two BucketDeployments that upload ../build (immutable
+ * assets with a one-year Cache-Control, everything else revalidated) and invalidate the
+ * distribution.
  *
  * DNS is deliberately not managed here: the DNS zone for dataobservatory.net lives in a
  * different account, so the stack manages no Route 53 records. The certificate
@@ -80,6 +86,9 @@ export class FairSiteStack extends Stack {
 					override: true
 				},
 				contentSecurityPolicy: { contentSecurityPolicy: CONTENT_SECURITY_POLICY, override: true }
+			},
+			customHeadersBehavior: {
+				customHeaders: [{ header: 'Permissions-Policy', value: PERMISSIONS_POLICY, override: true }]
 			}
 		});
 
@@ -117,13 +126,43 @@ export class FairSiteStack extends Stack {
 			]
 		});
 
-		new s3deploy.BucketDeployment(this, 'DeploySite', {
-			sources: [s3deploy.Source.asset(path.join(__dirname, '../../build'))],
+		// Two deployments of the same ../build source; each file is uploaded by exactly one.
+		const buildSource = s3deploy.Source.asset(path.join(__dirname, '../../build'));
+
+		// Fingerprinted assets: content-hashed file names, safe to cache for a year. Not pruned:
+		// a page cached by a browser or by CloudFront can still import a chunk from a previous
+		// build, so old chunks must stay in the bucket. No invalidation is needed for new names.
+		const immutableDeployment = new s3deploy.BucketDeployment(this, 'DeployImmutableAssets', {
+			sources: [buildSource],
 			destinationBucket: bucket,
+			exclude: ['*'],
+			include: [`${IMMUTABLE_PREFIX}/*`],
+			cacheControl: [
+				s3deploy.CacheControl.setPublic(),
+				s3deploy.CacheControl.maxAge(Duration.days(365)),
+				s3deploy.CacheControl.immutable()
+			],
+			prune: false
+		});
+
+		// Everything else (html, __data.json, favicon, robots.txt, 404.html) keeps stable names
+		// and changes between builds: always revalidate, prune removed files (never touching
+		// the immutable prefix, which this deployment excludes) and invalidate the CDN.
+		const pagesDeployment = new s3deploy.BucketDeployment(this, 'DeploySite', {
+			sources: [buildSource],
+			destinationBucket: bucket,
+			exclude: [`${IMMUTABLE_PREFIX}/*`],
+			cacheControl: [
+				s3deploy.CacheControl.setPublic(),
+				s3deploy.CacheControl.maxAge(Duration.seconds(0)),
+				s3deploy.CacheControl.mustRevalidate()
+			],
 			distribution,
 			distributionPaths: ['/*'],
 			prune: true
 		});
+		// New chunks land before pages that reference them.
+		pagesDeployment.node.addDependency(immutableDeployment);
 
 		new CfnOutput(this, 'DistributionDomainName', { value: distribution.distributionDomainName });
 		new CfnOutput(this, 'DistributionId', { value: distribution.distributionId });

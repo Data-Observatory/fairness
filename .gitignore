@@ -36,3 +36,7 @@ project.inlang/README.md
 
 # Link check report (npm run links)
 link-report.md
+
+# Playwright reports
+playwright-report/
+blob-report/

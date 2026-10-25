@@ -32,7 +32,8 @@ describe('infra contains no real account identifiers', () => {
 		for (const file of files) {
 			const text = fs.readFileSync(file, 'utf8');
 			for (const match of text.matchAll(/(?<![0-9])[0-9]{12}(?![0-9])/g)) {
-				if (match[0] !== DUMMY_ACCOUNT) offenders.push(`${path.relative(infraRoot, file)}: ${match[0]}`);
+				if (match[0] !== DUMMY_ACCOUNT)
+					offenders.push(`${path.relative(infraRoot, file)}: ${match[0]}`);
 			}
 		}
 		expect(offenders).toEqual([]);
@@ -42,7 +43,9 @@ describe('infra contains no real account identifiers', () => {
 		const offenders: string[] = [];
 		for (const file of files) {
 			const text = fs.readFileSync(file, 'utf8');
-			for (const match of text.matchAll(/arn:aws[a-z-]*:[a-z0-9-]*:[a-z0-9-]*:[0-9]{12}:[^\s'"`]*/g)) {
+			for (const match of text.matchAll(
+				/arn:aws[a-z-]*:[a-z0-9-]*:[a-z0-9-]*:[0-9]{12}:[^\s'"`]*/g
+			)) {
 				offenders.push(`${path.relative(infraRoot, file)}: ${match[0]}`);
 			}
 		}

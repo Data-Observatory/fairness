@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { App } from 'aws-cdk-lib';
+import { parse as parseYaml } from 'yaml';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { FairSiteStack } from '../lib/fair-site-stack';
@@ -225,6 +226,17 @@ describe('security response headers', () => {
 		});
 	});
 
+	it('denies camera, microphone, geolocation, payment and usb through Permissions-Policy', () => {
+		const policies = template.findResources('AWS::CloudFront::ResponseHeadersPolicy');
+		const config = Object.values(policies)[0].Properties.ResponseHeadersPolicyConfig;
+		const custom: { Header: string; Value: string; Override: boolean }[] =
+			config.CustomHeadersConfig?.Items ?? [];
+		const header = custom.filter((h) => h.Header.toLowerCase() === 'permissions-policy');
+		expect(header).toHaveLength(1);
+		expect(header[0].Value).toBe('camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+		expect(header[0].Override).toBe(true);
+	});
+
 	it('pins the Content-Security-Policy', () => {
 		const { security } = policyConfig();
 		expect(security.ContentSecurityPolicy).toMatchObject({
@@ -243,17 +255,82 @@ describe('security response headers', () => {
 });
 
 describe('site deployment', () => {
-	it('uploads the build and invalidates the distribution', () => {
-		template.resourceCountIs('Custom::CDKBucketDeployment', 1);
-		template.hasResourceProperties('Custom::CDKBucketDeployment', {
-			DestinationBucketName: Match.anyValue(),
-			DistributionId: { Ref: Match.stringLikeRegexp('^Distribution') },
-			DistributionPaths: ['/*'],
-			Prune: true
-		});
+	const IMMUTABLE_CACHE = 'public, max-age=31536000, immutable';
+	const REVALIDATE_CACHE = 'public, max-age=0, must-revalidate';
+
+	function deployments(): Record<string, any>[] {
+		return Object.values(template.findResources('Custom::CDKBucketDeployment')).map(
+			(r) => r.Properties
+		);
+	}
+
+	function cacheControl(props: Record<string, any>): string | undefined {
+		return props.SystemMetadata?.['cache-control'];
+	}
+
+	function immutableDeployment() {
+		const found = deployments().filter((d) => cacheControl(d) === IMMUTABLE_CACHE);
+		expect(found, 'expected exactly one immutable-cache deployment').toHaveLength(1);
+		return found[0];
+	}
+
+	function revalidateDeployment() {
+		const found = deployments().filter((d) => cacheControl(d) === REVALIDATE_CACHE);
+		expect(found, 'expected exactly one revalidate-cache deployment').toHaveLength(1);
+		return found[0];
+	}
+
+	it('has exactly two deployments, split by Cache-Control', () => {
+		template.resourceCountIs('Custom::CDKBucketDeployment', 2);
+		immutableDeployment();
+		revalidateDeployment();
 	});
 
-	it('takes its source from ../build (the SvelteKit static output)', () => {
+	it('serves fingerprinted assets under _app/immutable with a one-year immutable Cache-Control', () => {
+		const d = immutableDeployment();
+		expect(d.Exclude).toEqual(['*']);
+		expect(d.Include).toEqual(['_app/immutable/*']);
+	});
+
+	it('never prunes the immutable deployment (a cached page may still import an older chunk)', () => {
+		expect(immutableDeployment().Prune).toBe(false);
+	});
+
+	it('does not invalidate from the immutable deployment', () => {
+		const d = immutableDeployment();
+		expect(d.DistributionId).toBeUndefined();
+		expect(d.DistributionPaths).toBeUndefined();
+	});
+
+	it('serves everything else with max-age=0, must-revalidate', () => {
+		const d = revalidateDeployment();
+		expect(d.Exclude).toEqual(['_app/immutable/*']);
+		expect(d.Include ?? []).toEqual([]);
+	});
+
+	it('prunes only outside _app/immutable and invalidates /* on the distribution', () => {
+		const d = revalidateDeployment();
+		expect(d.Prune).toBe(true);
+		expect(d.DistributionId).toEqual({ Ref: expect.stringMatching(/^Distribution/) });
+		expect(d.DistributionPaths).toEqual(['/*']);
+	});
+
+	it('writes both deployments to the same bucket', () => {
+		const a = immutableDeployment().DestinationBucketName;
+		const b = revalidateDeployment().DestinationBucketName;
+		expect(a).toBeDefined();
+		expect(a).toEqual(b);
+	});
+
+	it('runs the invalidating deployment after the immutable one', () => {
+		const all = template.findResources('Custom::CDKBucketDeployment');
+		const idOf = (cc: string) =>
+			Object.keys(all).find((k) => all[k].Properties.SystemMetadata?.['cache-control'] === cc)!;
+		const dependsOn: string[] = all[idOf(REVALIDATE_CACHE)].DependsOn ?? [];
+		expect(dependsOn).toContain(idOf(IMMUTABLE_CACHE));
+	});
+
+	it('takes its source from ../build (the SvelteKit static output), for both deployments', () => {
 		const manifest = JSON.parse(
 			fs.readFileSync(path.join(outdir, 'FairSiteStack.assets.json'), 'utf8')
 		) as { files: Record<string, { source: { path: string } }> };
@@ -261,10 +338,20 @@ describe('site deployment', () => {
 			.map((f) => path.join(outdir, f.source.path))
 			.filter((p) => fs.existsSync(p) && fs.statSync(p).isDirectory());
 		const siteAsset = dirs.find((d) => fs.existsSync(path.join(d, 'en.html')));
-		expect(siteAsset, 'no asset directory containing en.html (run npm run build first)').toBeDefined();
+		expect(
+			siteAsset,
+			'no asset directory containing en.html (run npm run build first)'
+		).toBeDefined();
 		for (const file of ['index.html', 'es.html', '404.html', 'en/about.html']) {
 			expect(fs.existsSync(path.join(siteAsset!, file)), file).toBe(true);
 		}
+		// Both deployments reference the same source asset (same content hash).
+		const sources = Object.values(template.findResources('Custom::CDKBucketDeployment')).map(
+			(r) =>
+				JSON.stringify(r.Properties.SourceBucketNames) +
+				JSON.stringify(r.Properties.SourceObjectKeys)
+		);
+		expect(new Set(sources).size).toBe(1);
 	});
 });
 
@@ -290,5 +377,18 @@ describe('bin/infra.ts', () => {
 	it('deploys to us-east-1 and takes the account from the environment, never a literal', () => {
 		expect(bin).toContain("region: 'us-east-1'");
 		expect(bin).toContain('CDK_DEFAULT_ACCOUNT');
+	});
+
+	it('keeps the default domain in sync with `domain` in content/site.yaml', () => {
+		const match = bin.match(/tryGetContext\(\s*['"]domainName['"]\s*\)\s*\?\?\s*['"]([^'"]+)['"]/);
+		expect(
+			match,
+			'no default domain constant found after tryGetContext("domainName") ??'
+		).not.toBeNull();
+		const site = parseYaml(
+			fs.readFileSync(path.join(__dirname, '../../content/site.yaml'), 'utf8')
+		) as { domain?: string };
+		expect(site.domain).toBeTruthy();
+		expect(match![1]).toBe(site.domain);
 	});
 });

@@ -51,10 +51,23 @@ The DNS zone for dataobservatory.net lives in a different account, so the stack 
 - A CloudFront distribution: the domain as its only alias, HTTP to HTTPS redirect, TLS 1.2 (2021 policy) or newer, HTTP/2 and HTTP/3, `index.html` as root object.
 - A CloudFront Function (`cloudfront-fn/rewrite-uri.js`, viewer-request) that maps extensionless paths such as `/en/about` onto the flat files of the static build (`/en/about.html`).
 - Custom error responses: 403 and 404 serve `/404.html` with status 404.
-- A response headers policy: HSTS (one year, includeSubdomains, no preload), nosniff, frame deny, referrer policy `strict-origin-when-cross-origin`, and a Content-Security-Policy limited to same-origin sources (no third-party hosts).
-- A `BucketDeployment` that uploads `../build`, prunes removed files and invalidates `/*`.
+- A response headers policy: HSTS (one year, includeSubdomains, no preload), nosniff, frame deny, referrer policy `strict-origin-when-cross-origin`, a Content-Security-Policy limited to same-origin sources (no third-party hosts), and `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()`.
+- Two `BucketDeployment`s of `../build` (see Caching).
 
 Outputs: `DistributionDomainName`, `DistributionId`, `BucketName`, `CertificateArn`, `SiteUrl`.
+
+## Caching
+
+The build is uploaded by two `BucketDeployment`s with the same `../build` source. Include and exclude filters make each file belong to exactly one of them.
+
+| Deployment              | Files                                                                    | Cache-Control                         | Prune | Invalidation |
+| ----------------------- | ------------------------------------------------------------------------ | ------------------------------------- | ----- | ------------ |
+| `DeployImmutableAssets` | `_app/immutable/**` (content-hashed names)                               | `public, max-age=31536000, immutable` | no    | none         |
+| `DeploySite`            | everything else (html, `__data.json`, favicon, `robots.txt`, `404.html`) | `public, max-age=0, must-revalidate`  | yes   | `/*`         |
+
+Prune is off for the immutable deployment on purpose: a page cached by a browser or by CloudFront can still import a chunk from a previous build, so old chunks must stay in the bucket after a new deploy. The second deployment excludes `_app/immutable/*`, so its prune never deletes them. It also depends on the first, so new chunks are uploaded before the pages that reference them. Invalidation is only needed for the files whose names do not change, so only the second deployment invalidates.
+
+Old chunks accumulate. Remove them manually (or with an S3 lifecycle rule) if storage grows.
 
 ## Build, test and synth (no AWS calls)
 
