@@ -40,7 +40,7 @@ Exit: unit tests green, workflows lint (actionlint if available, otherwise manua
 
 ### M6 Infra (authored, not deployed) and final review
 
-Adapt `infra/` from the reference with placeholders, stack `FairSiteStack`, default domain from `site.yaml`/context. `cdk synth` with dummy env must pass. Deploy authorized by the owner on 2026-10-25 to the reference RCS app account, run by the lead session after `cdk diff` review; DNS in the separate DNS account needs separate owner approval. Sub-agents make no AWS call. Then full Opus review of the whole repository against `specs.md` (scope: conformance, a11y, style rules including Spanish and dashes, content accuracy against live pages, test quality, leftover RCS references). Fix agent addresses confirmed findings.
+Adapt `infra/` from the reference with placeholders, stack `FairSiteStack`, default domain from `site.yaml`/context. `cdk synth` with dummy env must pass. Deploy authorized by the owner on 2026-10-25 to the reference RCS app account, run by the lead session after `cdk diff` review; DNS: the owner authorized exactly two Route 53 records for `fair.dataobservatory.net` in the DNS account (ACM validation CNAME, CloudFront alias A); nothing else. Sub-agents make no AWS call. Then full Opus review of the whole repository against `specs.md` (scope: conformance, a11y, style rules including Spanish and dashes, content accuracy against live pages, test quality, leftover RCS references). Fix agent addresses confirmed findings.
 Exit: everything green, review report presented to the owner with open items.
 
 ## Risks and mitigations
@@ -53,4 +53,4 @@ Exit: everything green, review report presented to the owner with open items.
 
 ## Owner decisions still open
 
-Repository name, final subdomain, deploy workflow and AWS account, later wizard, Spanish review.
+Repository name, deploy workflow and AWS account, later wizard, Spanish review.
