@@ -664,3 +664,25 @@ describe('loadContent: stricter checks (decision 9)', () => {
 		}
 	);
 });
+
+describe('loadContent: shortName', () => {
+	it('loads a site.yaml variant with a localized shortName', () => {
+		const files = mutate(valid, SITE, (site) => (site.shortName = { en: 'FAIR', es: 'FAIR ES' }));
+		const content = loadContent(files);
+		expect(content.site.shortName).toEqual({ en: 'FAIR', es: 'FAIR ES' });
+	});
+
+	it('the valid fixture loads without shortName', () => {
+		expect(loadContent(valid).site.shortName).toBeUndefined();
+	});
+
+	it('a half-filled shortName is reported against its path', () => {
+		const files = mutate(valid, SITE, (site) => (site.shortName = { en: 'FAIR' }));
+		expect(issuesOf(files)).toContainEqual(issue(SITE, 'shortName.es'));
+	});
+
+	it('a TODO placeholder in shortName.es is reported like any localized field', () => {
+		const files = mutate(valid, SITE, (site) => (site.shortName = { en: 'FAIR', es: 'TODO' }));
+		expect(issuesOf(files)).toContainEqual(issue(SITE, 'shortName.es'));
+	});
+});

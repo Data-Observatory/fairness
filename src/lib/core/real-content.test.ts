@@ -279,3 +279,16 @@ describe('real content: site.yaml', () => {
 		expect(new URL(`https://${domain}`).hostname).toBe(domain.toLowerCase());
 	});
 });
+
+describe('real content: site.shortName', () => {
+	it('exists in en and es, 2 to 12 characters each', () => {
+		const { shortName } = content().site;
+		expect(shortName, 'content/site.yaml needs a shortName for the nav brand').toBeDefined();
+		for (const locale of ['en', 'es'] as const) {
+			const value = shortName![locale];
+			expect(value.trim(), locale).toBe(value);
+			expect(value.length, locale).toBeGreaterThanOrEqual(2);
+			expect(value.length, locale).toBeLessThanOrEqual(12);
+		}
+	});
+});

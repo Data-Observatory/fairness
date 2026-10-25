@@ -315,3 +315,46 @@ describe('query round trip', () => {
 		expect(ids(filterTools(all, back))).toEqual(ids(filterTools(all, selection)));
 	});
 });
+
+describe('selectionFromQuery: allowedValues (third argument)', () => {
+	const groups = ['target', 'mode', 'input', 'framework', 'status'] as const;
+	const allowed = {
+		target: ['dataset', 'ontology'],
+		mode: ['automated', 'manual', 'hybrid'],
+		input: ['doi'],
+		framework: ['custom'],
+		status: ['available']
+	};
+
+	it('drops ids that are not in allowedValues and keeps the known ones', () => {
+		const params = new URLSearchParams('target=ontology,bogus&mode=bogus');
+		expect(selectionFromQuery(params, groups, allowed)).toEqual({ target: ['ontology'] });
+	});
+
+	it('omits a group when every id in it is unknown', () => {
+		const params = new URLSearchParams('mode=bogus&status=gone');
+		expect(selectionFromQuery(params, groups, allowed)).toEqual({});
+	});
+
+	it('applies to repeated parameters too', () => {
+		const params = new URLSearchParams('mode=manual&mode=nope&mode=hybrid');
+		expect(selectionFromQuery(params, groups, allowed)).toEqual({ mode: ['hybrid', 'manual'] });
+	});
+
+	it('still sorts, de-duplicates and respects allowedGroups', () => {
+		const params = new URLSearchParams('target=ontology,dataset,dataset&mode=manual');
+		expect(selectionFromQuery(params, ['target'], allowed)).toEqual({
+			target: ['dataset', 'ontology']
+		});
+	});
+
+	it('is case sensitive: ids come from the taxonomy as written', () => {
+		const params = new URLSearchParams('mode=Manual');
+		expect(selectionFromQuery(params, groups, allowed)).toEqual({});
+	});
+
+	it('the two-argument form keeps every id (old behaviour)', () => {
+		const params = new URLSearchParams('mode=bogus');
+		expect(selectionFromQuery(params, groups)).toEqual({ mode: ['bogus'] });
+	});
+});

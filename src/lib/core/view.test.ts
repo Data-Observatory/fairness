@@ -506,3 +506,90 @@ describe('real content', () => {
 		expect(allCards(buildHomeView(content, 'en', later)).every((c) => c.stale)).toBe(true);
 	});
 });
+
+type WithShortName = ReturnType<typeof buildHomeView> & { shortName: string };
+type WithFilterFields = ReturnType<typeof buildHomeView>['sections'][number]['tools'][number] & {
+	filterFields: Record<string, string[]>;
+};
+
+describe('buildHomeView: shortName', () => {
+	const withShortName = withSite((site) => {
+		site.shortName = { en: 'FAIR Finder', es: 'Buscador FAIR' };
+	});
+
+	it('returns the localized shortName from site.yaml', () => {
+		const content = withShortName();
+		expect((buildHomeView(content, 'en', FIXTURE_TODAY) as WithShortName).shortName).toBe(
+			'FAIR Finder'
+		);
+		expect((buildHomeView(content, 'es', FIXTURE_TODAY) as WithShortName).shortName).toBe(
+			'Buscador FAIR'
+		);
+	});
+
+	it('falls back to siteName when site.yaml has no shortName', () => {
+		const content = fixture();
+		for (const locale of ['en', 'es'] as const) {
+			const view = buildHomeView(content, locale, FIXTURE_TODAY) as WithShortName;
+			expect(view.shortName).toBe(view.siteName);
+		}
+	});
+});
+
+describe('ToolCard.filterFields', () => {
+	const fields = (id: string) =>
+		(card(buildHomeView(fixture(), 'en', FIXTURE_TODAY), id) as WithFilterFields).filterFields;
+
+	it('exposes the tool target, mode, input, framework and status ids', () => {
+		expect(fields('f-uji')).toEqual({
+			target: ['dataset'],
+			mode: ['automated'],
+			input: ['doi', 'landing_page_url'],
+			framework: ['fairsfair_metrics'],
+			status: ['available']
+		});
+	});
+
+	it('has all five groups, empty where an entry lacks the field', () => {
+		expect(fields('fairsfair-metrics')).toEqual({
+			target: [],
+			mode: [],
+			input: [],
+			framework: [],
+			status: ['available']
+		});
+	});
+
+	it('is the same in every locale (ids, not labels)', () => {
+		const content = fixture();
+		const en = card(buildHomeView(content, 'en', FIXTURE_TODAY), 'fair-enough');
+		const es = card(buildHomeView(content, 'es', FIXTURE_TODAY), 'fair-enough');
+		expect((en as WithFilterFields).filterFields).toEqual((es as WithFilterFields).filterFields);
+	});
+
+	it('is enough to reproduce filterTools without the content', () => {
+		const content = fixture();
+		const cards = allCards(buildHomeView(content, 'en', FIXTURE_TODAY)) as WithFilterFields[];
+		const selections = [
+			{ mode: ['automated'] },
+			{ target: ['dataset', 'software'], mode: ['automated'] },
+			{ status: ['unverified'] },
+			{ framework: ['fairsfair_metrics'], input: ['doi'] },
+			{ target: ['ontology'] }
+		];
+		for (const selection of selections) {
+			const viaFields = cards
+				.filter((entry) =>
+					Object.entries(selection).every(([group, wanted]) =>
+						entry.filterFields[group].some((value) => wanted.includes(value))
+					)
+				)
+				.map((entry) => entry.id)
+				.sort();
+			const viaContent = filterTools(content.tools, selection)
+				.map((tool) => tool.id)
+				.sort();
+			expect(viaFields, JSON.stringify(selection)).toEqual(viaContent);
+		}
+	});
+});

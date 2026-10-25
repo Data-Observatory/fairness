@@ -394,3 +394,41 @@ describe('schema hardening (decisions 2, 3, 9)', () => {
 		expect(toolSchema.safeParse(tool).success).toBe(true);
 	});
 });
+
+describe('siteSchema: shortName', () => {
+	it('is optional', () => {
+		const site = clone(doc('content/site.yaml'));
+		delete site.shortName;
+		expect(siteSchema.safeParse(site).success).toBe(true);
+	});
+
+	it('is accepted when it has en and es', () => {
+		const site = clone(doc('content/site.yaml'));
+		site.shortName = { en: 'FAIR', es: 'FAIR' };
+		const result = siteSchema.safeParse(site);
+		expect(result.success).toBe(true);
+		expect(result.data?.shortName).toEqual({ en: 'FAIR', es: 'FAIR' });
+	});
+
+	it('fails without es, with that path', () => {
+		const site = clone(doc('content/site.yaml'));
+		site.shortName = { en: 'FAIR' };
+		const result = siteSchema.safeParse(site);
+		expect(result.success).toBe(false);
+		expect(paths(result)).toContain('shortName.es');
+	});
+
+	it('fails without en, with that path', () => {
+		const site = clone(doc('content/site.yaml'));
+		site.shortName = { es: 'FAIR' };
+		const result = siteSchema.safeParse(site);
+		expect(result.success).toBe(false);
+		expect(paths(result)).toContain('shortName.en');
+	});
+
+	it('rejects whitespace-only text', () => {
+		const site = clone(doc('content/site.yaml'));
+		site.shortName = { en: '  ', es: 'FAIR' };
+		expect(siteSchema.safeParse(site).success).toBe(false);
+	});
+});

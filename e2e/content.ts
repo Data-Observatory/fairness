@@ -15,10 +15,17 @@ export type Tool = {
 	name: string;
 	url: string;
 	best_for?: { en: string; es: string };
+	operator: { name: string; url?: string };
+	summary: { en: string; es: string };
 	targets?: string[];
 	mode?: string;
 	inputs?: string[];
 	frameworks?: string[];
+	output?: { en: string; es: string };
+	api?: { available: boolean; url?: string };
+	source_code?: string;
+	self_hostable?: boolean;
+	license?: string;
 	status: string;
 	last_verified: string | Date;
 };
@@ -44,6 +51,9 @@ export function loadTools(): Tool[] {
 
 export const loadSite = () =>
 	read('site.yaml') as {
+		name: { en: string; es: string };
+		shortName?: { en: string; es: string };
+		repository: string;
 		contributeUrl: string;
 		features: { bestFor: boolean; finderTable: boolean; statusFilter: boolean };
 	};
