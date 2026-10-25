@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: ardc-fair-data-self-assessment
+kind: tool
+section: datasets
+name: ARDC FAIR Data Self-Assessment Tool
+url: https://ardc.edu.au/resource/fair-data-self-assessment-tool/
+operator:
+  name: Australian Research Data Commons (ARDC)
+  url: https://ardc.edu.au/about-us/
+summary:
+  en: >-
+    The ARDC FAIR Data Self-Assessment Tool is an online questionnaire of 12 questions in four
+    sections (findable, accessible, interoperable and reusable) about a research dataset. It is
+    designed for researchers, data librarians and IT staff.
+  es: >-
+    La ARDC FAIR Data Self-Assessment Tool es un cuestionario en línea de 12 preguntas, en cuatro
+    secciones (localizable, accesible, interoperable y reutilizable), sobre un conjunto de datos de
+    investigación. Está dirigida a investigadores, bibliotecarios de datos y personal de TI.
+best_for:
+  en: Reviewing a dataset by answering questions about it, without entering an identifier.
+  es: Revisar un conjunto de datos respondiendo preguntas sobre él, sin ingresar un identificador.
+targets: [dataset]
+mode: manual
+inputs: [none]
+output:
+  en: A percentage of alignment with each of the four principles and an overall percentage for the dataset, with explanatory pop-ups.
+  es: Un porcentaje de alineación con cada uno de los cuatro principios y un porcentaje global para el conjunto de datos, con ventanas explicativas.
+status: available
+last_verified: 2026-10-25
+references:
+  - title: ARDC FAIR Data Self-Assessment Tool
+    url: https://ardc.edu.au/resource/fair-data-self-assessment-tool/

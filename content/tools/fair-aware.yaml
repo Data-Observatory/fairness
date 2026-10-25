@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-aware
+kind: tool
+section: datasets
+name: FAIR-Aware
+url: https://fairaware.dans.knaw.nl
+operator:
+  name: DANS (Data Archiving and Networked Services)
+  url: https://dans.knaw.nl/
+summary:
+  en: >-
+    FAIR-Aware is an online questionnaire of 10 questions that asks whether the person answering
+    knows the requirements for making a dataset FAIR and how willing the person is to comply with
+    them. It assesses the knowledge of the person, not a dataset.
+  es: >-
+    FAIR-Aware es un cuestionario en línea de 10 preguntas que indaga si la persona que responde
+    conoce los requisitos para que un conjunto de datos sea FAIR y qué tan dispuesta está a
+    cumplirlos. Evalúa el conocimiento de la persona, no un conjunto de datos.
+best_for:
+  en: Reviewing one's own knowledge of the FAIR data requirements before depositing a dataset in a repository.
+  es: Revisar el propio conocimiento de los requisitos de datos FAIR antes de depositar un conjunto de datos en un repositorio.
+targets: [person_knowledge]
+mode: manual
+inputs: [none]
+output:
+  en: An awareness result, a willingness-to-comply result, guidance texts for the questions answered and a summary of the responses.
+  es: Un resultado de conocimiento, un resultado de disposición a cumplir, textos de orientación para las preguntas respondidas y un resumen de las respuestas.
+source_code: https://github.com/FAIRsFAIR/fair-aware
+license: MIT
+status: available
+last_verified: 2026-10-25
+references:
+  - title: 'FAIR-Aware: Assess Your Knowledge of FAIR (FAIRsFAIR)'
+    url: https://www.fairsfair.eu/fair-aware
+  - title: FAIR-Aware source code (GitHub)
+    url: https://github.com/FAIRsFAIR/fair-aware

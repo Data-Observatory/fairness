@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: f-uji
+kind: tool
+section: datasets
+name: F-UJI
+url: https://www.f-uji.net/
+operator:
+  name: PANGAEA (developers Anusuriya Devaraju and Robert Huber)
+  url: https://www.pangaea.de/
+summary:
+  en: >-
+    F-UJI is a web service that assesses the FAIRness of research data objects at the dataset
+    level, based on the FAIRsFAIR Data Object Assessment Metrics. The web form takes a DOI or URL
+    and can also take a metadata service endpoint (OAI-PMH, OGC CSW or SPARQL).
+  es: >-
+    F-UJI es un servicio web que evalúa el cumplimiento de los principios FAIR de objetos de datos
+    de investigación a nivel de conjunto de datos, con base en las FAIRsFAIR Data Object Assessment
+    Metrics. El formulario web recibe un DOI o una URL y también admite un punto de acceso a un
+    servicio de metadatos (OAI-PMH, OGC CSW o SPARQL).
+best_for:
+  en: Assessing a published dataset that has a DOI or a landing page URL.
+  es: Evaluar un conjunto de datos publicado que tiene un DOI o una URL de página de destino.
+targets: [dataset]
+mode: automated
+inputs: [doi, landing_page_url]
+frameworks: [fairsfair_metrics]
+output:
+  en: >-
+    A web report with the FAIR level, the scores aggregated for the principles and the outcome of
+    each metric test, downloadable as JSON.
+  es: >-
+    Un informe web con el nivel FAIR, las puntuaciones agregadas por principio y el resultado de
+    cada prueba de métrica, descargable en JSON.
+api:
+  available: true
+source_code: https://github.com/pangaea-data-publisher/fuji
+self_hostable: true
+license: MIT
+status: available
+last_verified: 2026-10-25
+references:
+  - title: F-UJI documents and publications
+    url: https://www.f-uji.net/index.php?action=docs
+  - title: F-UJI source code and documentation (GitHub)
+    url: https://github.com/pangaea-data-publisher/fuji
+  - title: An automated solution for measuring the progress toward FAIR research data (Patterns, 2021)
+    url: https://doi.org/10.1016/j.patter.2021.100370

@@ -1,0 +1,23 @@
+# Which tool fits? One row per input the visitor may have. Every tool listed here must
+# list the row's input in its own `inputs` field (the validator enforces this).
+rows:
+  - input: doi
+    note:
+      en: The tool resolves the DOI and reads the metadata published for it.
+      es: La herramienta resuelve el DOI y lee los metadatos publicados para él.
+    tools: [f-uji, fair-enough, fair-champion, fair-checker, fair-evaluator]
+  - input: landing_page_url
+    note:
+      en: The tool reads the metadata embedded in the page or linked from it.
+      es: La herramienta lee los metadatos incluidos en la página o enlazados desde ella.
+    tools: [f-uji, fair-enough, fair-champion, fair-checker, fair-evaluator]
+  - input: metadata_file
+    note:
+      en: The tool accepts a metadata file or an ontology file supplied by the user.
+      es: La herramienta acepta un archivo de metadatos o de ontología proporcionado por el usuario.
+    tools: [foops]
+  - input: none
+    note:
+      en: The tool starts from a questionnaire and needs no identifier.
+      es: La herramienta parte de un cuestionario y no necesita un identificador.
+    tools: [ardc-fair-data-self-assessment, fair-aware, fairshake]

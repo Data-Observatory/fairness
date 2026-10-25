@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fairassist
+kind: directory
+section: directories
+name: FAIRassist
+url: https://fairassist.org/
+operator:
+  name: FAIRsharing team and Data Readiness Group, University of Oxford
+  url: https://fairsharing.org/
+summary:
+  en: >-
+    A web application, part of the educational component of FAIRsharing, whose Tools page lists
+    resources for assessing digital objects against the FAIR principles (33 entries on 2026-10-25).
+    Its Registry page offers tabular and faceted views of principles, metrics and benchmarks.
+  es: >-
+    Una aplicación web, parte del componente educativo de FAIRsharing, cuya página Tools enumera
+    recursos para evaluar objetos digitales según los principios FAIR (33 entradas el 2026-10-25).
+    Su página Registry ofrece vistas en tabla y con facetas de principios, métricas y puntos de
+    referencia.
+status: available
+status_note:
+  en: The site states that it is under construction. The page needs JavaScript to show its content.
+  es: El sitio indica que está en construcción. La página necesita JavaScript para mostrar su contenido.
+last_verified: 2026-10-25
+references:
+  - title: FAIRassist Tools page
+    url: https://fairassist.org/tools
+  - title: FAIRassist Registry page
+    url: https://fairassist.org/registry

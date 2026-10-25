@@ -1,0 +1,21 @@
+# The schema has no field for references, so the paper is cited in plain text in the last item.
+- id: different-metrics
+  text:
+    en: Tools implement different metric sets, and results can differ for the same resource.
+    es: Las herramientas implementan conjuntos de métricas distintos, y los resultados pueden diferir para un mismo recurso.
+- id: public-metadata
+  text:
+    en: A result reflects what the tool could detect from public metadata. It does not describe the quality of the data.
+    es: Un resultado refleja lo que la herramienta pudo detectar en los metadatos públicos. No describe la calidad de los datos.
+- id: no-endorsement
+  text:
+    en: This site does not endorse or rank any tool. Entries appear in the order of the sections, not by merit.
+    es: Este sitio no respalda ni clasifica ninguna herramienta. Las entradas aparecen en el orden de las secciones, no por mérito.
+- id: manual-review
+  text:
+    en: An automated result can be reviewed manually. Consult the documentation of each tool to learn which checks it runs.
+    es: Un resultado automático puede revisarse de forma manual. Consulte la documentación de cada herramienta para conocer las comprobaciones que ejecuta.
+- id: reference
+  text:
+    en: 'Reference: Candela, L., Mangione, D. and Pavone, G. (2024), "The FAIR Assessment Conundrum: Reflections on Tools and Metrics", Data Science Journal, 23, article 33. DOI: https://doi.org/10.5334/dsj-2024-033'
+    es: 'Referencia: Candela, L., Mangione, D. y Pavone, G. (2024), "The FAIR Assessment Conundrum: Reflections on Tools and Metrics", Data Science Journal, 23, artículo 33. DOI: https://doi.org/10.5334/dsj-2024-033'

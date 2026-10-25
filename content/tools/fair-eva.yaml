@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-eva
+kind: tool
+section: other-objects
+name: FAIR EVA
+url: https://github.com/EOSC-synergy/FAIR_eva
+operator:
+  name: EOSC-Synergy (IFCA-Advanced-Computing)
+  url: https://github.com/EOSC-synergy
+summary:
+  en: >-
+    FAIR EVA (Evaluator, Validator & Advisor) is open source software that checks the FAIRness of a
+    digital object held in a repository or data portal, using RDA indicators, through an API and an
+    optional web interface. This entry points to the source code, which each institution deploys
+    itself; an instance named for DIGITAL.CSIC is published at https://fair.csic.es.
+  es: >-
+    FAIR EVA (Evaluator, Validator & Advisor) es software de código abierto que comprueba el grado
+    FAIR de un objeto digital alojado en un repositorio o portal de datos, con indicadores de la
+    RDA, mediante una API y una interfaz web opcional. Esta ficha enlaza con el código fuente, que
+    cada institución despliega por su cuenta; en https://fair.csic.es se publica una instancia
+    denominada para DIGITAL.CSIC.
+best_for:
+  en: Deploying an evaluator for an institutional repository, with configurable metadata terms and plugins.
+  es: Desplegar un evaluador para un repositorio institucional, con términos de metadatos y complementos configurables.
+targets: [any_digital_object]
+mode: automated
+inputs: [doi]
+frameworks: [rda_fdmm]
+output:
+  en: >-
+    A JSON result from the API, or a result in the web interface, with a test outcome and feedback
+    for each RDA indicator.
+  es: >-
+    Un resultado en JSON desde la API, o un resultado en la interfaz web, con el resultado de la
+    prueba y comentarios para cada indicador de la RDA.
+api:
+  available: true
+source_code: https://github.com/EOSC-synergy/FAIR_eva
+self_hostable: true
+license: Apache-2.0
+status: available
+status_note:
+  en: >-
+    On 2026-10-25 the GitHub repository loaded. The instance at https://fair.csic.es showed a
+    maintenance notice (in Spanish) instead of the evaluator.
+  es: >-
+    El 2026-10-25 el repositorio de GitHub se cargó. La instancia de https://fair.csic.es mostró un
+    aviso de mantenimiento (en español) en lugar del evaluador.
+last_verified: 2026-10-25
+references:
+  - title: 'FAIR EVA: Bringing institutional multidisciplinary repositories into the FAIR picture (Scientific Data, 2023)'
+    url: https://doi.org/10.1038/s41597-023-02652-8
+  - title: FAIR EVA documentation in the source repository
+    url: https://github.com/EOSC-synergy/FAIR_eva/blob/main/docs/index.md

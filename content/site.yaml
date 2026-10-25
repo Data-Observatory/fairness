@@ -1,0 +1,25 @@
+name: { en: FAIR Resources Finder, es: Buscador de recursos FAIR }
+tagline:
+  en: Directory of external FAIR assessment resources
+  es: Directorio de recursos externos de evaluación FAIR
+domain: fair.dataobservatory.net
+# Placeholder: the GitHub repository does not exist yet. Update repository and contributeUrl
+# when it is created.
+repository: https://github.com/Data-Observatory/fairness-resources-finder
+contributeUrl: https://github.com/Data-Observatory/fairness-resources-finder/blob/main/CONTRIBUTING.md
+locales: [en, es]
+defaultLocale: en
+features:
+  bestFor: true
+  finderTable: true
+  statusFilter: true
+verification:
+  staleAfterDays: 180
+style:
+  forbiddenTerms:
+    en: [best, better, worst, superior, inferior, excellent, poor, recommended, leading, ideal]
+    es: [mejor, peor, superior, inferior, excelente, deficiente, recomendado, líder, ideal]
+  voseoWords:
+    [vos, tenés, podés, querés, sabés, sos, hacé, mirá, abrí, elegí, seleccioná, usá, fijate]
+  informalWords: [tú, tienes, puedes, puedas, quieres, necesitas]
+  forbiddenCharacters: [em_dash, en_dash]

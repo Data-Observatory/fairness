@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-evaluator
+kind: tool
+section: datasets
+name: FAIR Evaluator
+url: https://fairsharing.github.io/FAIR-Evaluator-FrontEnd/
+operator:
+  name: Mark D Wilkinson (author of the FAIR Maturity Evaluation Service)
+summary:
+  en: >-
+    FAIR Evaluator is the FAIR Maturity Evaluation Service. Its web front-end runs collections of
+    Maturity Indicator tests against a resource identified by a GUID (a DOI, a handle, an InChI
+    key or a URL), and lets users register tests and collections.
+  es: >-
+    FAIR Evaluator es el FAIR Maturity Evaluation Service. Su front-end web ejecuta colecciones de
+    pruebas de indicadores de madurez sobre un recurso identificado por un GUID (un DOI, un handle,
+    una clave InChI o una URL) y permite registrar pruebas y colecciones.
+best_for:
+  en: Assessing the metadata record of a resource that has a DOI or URL against a chosen collection of maturity indicator tests.
+  es: Evaluar el registro de metadatos de un recurso que tiene un DOI o una URL frente a una colección elegida de pruebas de indicadores de madurez.
+targets: [dataset, any_digital_object]
+mode: automated
+inputs: [doi, landing_page_url]
+frameworks: [fair_maturity_indicators]
+output:
+  en: An evaluation record with the result of each Maturity Indicator test in the chosen collection.
+  es: Un registro de evaluación con el resultado de cada prueba de indicador de madurez de la colección elegida.
+api:
+  available: true
+  url: https://w3id.org/FAIR_Evaluator/interface
+status: available
+status_note:
+  en: >-
+    On 2026-10-25 the host fair-evaluator.semanticscience.org did not resolve (curl error 6). The
+    front-end loaded, and its script (scripts/controllers/configCtrl.js) sets the backend to
+    https://fairdata.services:7171/FAIR_Evaluator, with the semanticscience.org address commented
+    out. That backend listed 36 collections and one evaluation run against collection 1 completed
+    and returned a result. The FAIR Champion README describes FAIR Champion as an evolution of the
+    FAIR Evaluator. None of the pages opened states that FAIR Champion replaces it.
+  es: >-
+    El 2026-10-25 el servidor fair-evaluator.semanticscience.org no se resolvió (error 6 de curl).
+    El front-end se cargó y su script (scripts/controllers/configCtrl.js) fija el backend en
+    https://fairdata.services:7171/FAIR_Evaluator, con la dirección de semanticscience.org
+    comentada. Ese backend listó 36 colecciones y una evaluación ejecutada con la colección 1 se
+    completó y devolvió un resultado. El README de FAIR Champion describe a FAIR Champion como una
+    evolución de FAIR Evaluator. Ninguna de las páginas abiertas indica que FAIR Champion lo
+    reemplace.
+last_verified: 2026-10-25
+references:
+  - title: FAIR Evaluator front-end source code (GitHub, MIT license)
+    url: https://github.com/FAIRsharing/FAIR-Evaluator-FrontEnd
+  - title: FAIR Maturity Evaluation Service backend entry page
+    url: https://w3id.org/FAIR_Evaluator
+  - title: FAIR Champion README (GitHub)
+    url: https://github.com/markwilkinson/FAIR-Champion

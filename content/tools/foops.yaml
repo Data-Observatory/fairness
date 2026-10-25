@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: foops
+kind: tool
+section: other-objects
+name: FOOPS!
+url: https://w3id.org/foops
+operator:
+  name: Ontology Engineering Group (OEG-UPM)
+summary:
+  en: >-
+    FOOPS! (Ontology Pitfall Scanner for the FAIR Principles) assesses whether a vocabulary written
+    in OWL or SKOS conforms to the FAIR principles. Its source code can run as a server or from the
+    command line.
+  es: >-
+    FOOPS! (Ontology Pitfall Scanner for the FAIR Principles) evalúa si un vocabulario escrito en OWL
+    o SKOS cumple los principios FAIR. Su código fuente puede ejecutarse como servidor o desde la
+    línea de comandos.
+best_for:
+  en: Assessing a vocabulary that is published with a URI, or running the assessment locally from the source code.
+  es: Evaluar un vocabulario publicado con un URI, o ejecutar la evaluación de forma local desde el código fuente.
+targets: [ontology]
+mode: automated
+inputs: [ontology_uri, metadata_file]
+frameworks: [custom]
+output:
+  en: A JSON report with the outcome of each test, in the classic FOOPS! format or in the FAIR test resource format.
+  es: Un informe en JSON con el resultado de cada prueba, en el formato clásico de FOOPS! o en el formato de recursos de pruebas FAIR.
+api:
+  available: true
+source_code: https://github.com/oeg-upm/fair_ontologies
+self_hostable: true
+license: Apache-2.0
+status: unverified
+status_note:
+  en: >-
+    On 2026-10-25 https://w3id.org/foops answered with a 301 redirect to
+    https://foops.linkeddata.es/FAIR_validator.html. That host (138.100.11.160) did not complete a
+    connection on port 443: curl timed out after 15 to 25 seconds and a second client received
+    ECONNREFUSED. The GitHub repository loaded.
+  es: >-
+    El 2026-10-25 https://w3id.org/foops respondió con una redirección 301 a
+    https://foops.linkeddata.es/FAIR_validator.html. Ese servidor (138.100.11.160) no completó la
+    conexión en el puerto 443: curl agotó el tiempo de espera tras 15 a 25 segundos y un segundo
+    cliente recibió ECONNREFUSED. El repositorio de GitHub se cargó.
+last_verified: 2026-10-25
+references:
+  - title: FOOPS! source code and documentation (GitHub)
+    url: https://github.com/oeg-upm/fair_ontologies
+  - title: 'FOOPS!: An Ontology Pitfall Scanner for the FAIR Principles (ISWC 2021 demo paper)'
+    url: https://ceur-ws.org/Vol-2980/paper321.pdf
+  - title: FAIR-IMPACT FAIR assessment tools page
+    url: https://fair-impact.eu/fair-assessment-tools

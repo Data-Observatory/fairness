@@ -1,0 +1,136 @@
+filters: [target, mode, input, framework, status]
+target:
+  - id: dataset
+    label: { en: Dataset, es: Conjunto de datos }
+    description:
+      en: A collection of data, usually published in a repository with a persistent identifier.
+      es: Una colección de datos, normalmente publicada en un repositorio con un identificador persistente.
+  - id: ontology
+    label: { en: Ontology, es: Ontología }
+    description:
+      en: A formal vocabulary or semantic model published with a URI.
+      es: Un vocabulario formal o modelo semántico publicado con un URI.
+  - id: software
+    label: { en: Software, es: Software }
+    description:
+      en: Source code or a software package.
+      es: Código fuente o un paquete de software.
+  - id: repository
+    label: { en: Repository, es: Repositorio }
+    description:
+      en: A service that stores and publishes digital objects.
+      es: Un servicio que almacena y publica objetos digitales.
+  - id: any_digital_object
+    label: { en: Any digital object, es: Cualquier objeto digital }
+    description:
+      en: Any resource with a web identifier, regardless of its type.
+      es: Cualquier recurso con un identificador web, sin importar su tipo.
+  - id: person_knowledge
+    label: { en: Person knowledge, es: Conocimiento de la persona }
+    description:
+      en: Assesses the knowledge of the person answering, not a digital object.
+      es: Evalúa el conocimiento de la persona que responde, no un objeto digital.
+mode:
+  - id: automated
+    label: { en: Automated, es: Automático }
+    description:
+      en: The tool runs its checks without manual answers.
+      es: La herramienta ejecuta sus comprobaciones sin respuestas manuales.
+  - id: manual
+    label: { en: Manual, es: Manual }
+    description:
+      en: The person answers a questionnaire or checklist.
+      es: La persona responde un cuestionario o una lista de verificación.
+  - id: hybrid
+    label: { en: Hybrid, es: Híbrido }
+    description:
+      en: Automated checks combined with manual answers.
+      es: Comprobaciones automáticas combinadas con respuestas manuales.
+input:
+  - id: doi
+    label: { en: DOI, es: DOI }
+    description:
+      en: A Digital Object Identifier of the resource to assess.
+      es: Un identificador de objeto digital (DOI) del recurso que se evalúa.
+  - id: landing_page_url
+    label: { en: Landing page URL, es: URL de la página de destino }
+    description:
+      en: The web address of the page that describes the resource.
+      es: La dirección web de la página que describe el recurso.
+  - id: metadata_url
+    label: { en: Metadata URL, es: URL de metadatos }
+    description:
+      en: The web address of a metadata document.
+      es: La dirección web de un documento de metadatos.
+  - id: metadata_file
+    label: { en: Metadata file, es: Archivo de metadatos }
+    description:
+      en: A metadata file supplied by the user.
+      es: Un archivo de metadatos proporcionado por el usuario.
+  - id: ontology_uri
+    label: { en: Ontology URI, es: URI de la ontología }
+    description:
+      en: The URI of the ontology to assess.
+      es: El URI de la ontología que se evalúa.
+  - id: none
+    label: { en: None, es: Ninguna }
+    description:
+      en: No identifier or file is needed to start.
+      es: No se necesita un identificador ni un archivo para comenzar.
+  - id: portal_record
+    label: { en: Record in the tool's portal, es: Registro en el portal de la herramienta }
+    description:
+      en: The resource is already registered in the portal that hosts the tool, and is selected there.
+      es: El recurso ya está registrado en el portal que aloja la herramienta y se selecciona allí.
+framework:
+  - id: fairsfair_metrics
+    label: { en: FAIRsFAIR metrics, es: Métricas FAIRsFAIR }
+    description:
+      en: Metrics defined by the FAIRsFAIR project for data objects.
+      es: Métricas definidas por el proyecto FAIRsFAIR para objetos de datos.
+  - id: fair_maturity_indicators
+    label: { en: FAIR maturity indicators, es: Indicadores de madurez FAIR }
+    description:
+      en: Maturity indicators defined for FAIR assessment.
+      es: Indicadores de madurez definidos para la evaluación FAIR.
+  - id: wilkinson_maturity_indicators
+    label: { en: Wilkinson maturity indicators, es: Indicadores de madurez de Wilkinson }
+    description:
+      en: Maturity indicators proposed by Wilkinson and colleagues.
+      es: Indicadores de madurez propuestos por Wilkinson y colaboradores.
+  - id: rda_fdmm
+    label: { en: RDA FDMM, es: RDA FDMM }
+    description:
+      en: The FAIR Data Maturity Model of the Research Data Alliance.
+      es: El modelo de madurez de datos FAIR (FDMM) de la Research Data Alliance.
+  - id: custom
+    label: { en: Custom, es: Personalizado }
+    description:
+      en: A metric set defined by the tool itself.
+      es: Un conjunto de métricas definido por la propia herramienta.
+  - id: other
+    label: { en: Other, es: Otro }
+    description:
+      en: A metric set not listed here.
+      es: Un conjunto de métricas que no figura en esta lista.
+status:
+  - id: available
+    label: { en: Available, es: Disponible }
+    description:
+      en: The resource worked when last verified.
+      es: El recurso funcionaba en la última verificación.
+  - id: limited
+    label: { en: Limited, es: Limitado }
+    description:
+      en: The resource works only in part. The note gives the evidence.
+      es: El recurso funciona solo en parte. La nota indica la evidencia.
+  - id: discontinued
+    label: { en: Discontinued, es: Discontinuado }
+    description:
+      en: The operator has announced that the resource is discontinued.
+      es: El operador ha anunciado que el recurso está discontinuado.
+  - id: unverified
+    label: { en: Unverified, es: Sin verificar }
+    description:
+      en: The maintainers could not confirm that the resource works.
+      es: Los responsables no pudieron confirmar que el recurso funcione.

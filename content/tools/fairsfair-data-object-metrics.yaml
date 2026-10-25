@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fairsfair-data-object-metrics
+kind: framework
+section: frameworks
+name: FAIRsFAIR Data Object Assessment Metrics
+url: https://doi.org/10.5281/zenodo.15045911
+operator:
+  name: FAIRsFAIR project
+  url: https://fairsfair.eu/
+summary:
+  en: >-
+    A specification of 17 minimum viable metrics for measuring how FAIR research data objects are.
+    Version 0.8 (March 2025) is a major revision of the 2020 FAIRsFAIR metrics.
+  es: >-
+    Una especificación de 17 métricas mínimas viables para medir el grado FAIR de los objetos de
+    datos de investigación. La versión 0.8 (marzo de 2025) es una revisión importante de las
+    métricas de FAIRsFAIR de 2020.
+frameworks: [fairsfair_metrics]
+status: available
+last_verified: 2026-10-25
+references:
+  - title: FAIRsFAIR Data Object Assessment Metrics, version 0.8 (Zenodo)
+    url: https://doi.org/10.5281/zenodo.15045911
+  - title: FAIRsFAIR Data Object Assessment Metrics, version 0.3, 15 metrics (Zenodo)
+    url: https://doi.org/10.5281/zenodo.3934401
+  - title: FAIRsFAIR Data Object Assessment Metrics, version 0.4, 17 metrics (Zenodo)
+    url: https://doi.org/10.5281/zenodo.4081213

@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=../tool.schema.json
+#
+# Template for a new entry. Copy this file to content/tools/<id>.yaml (the file name must
+# equal `id`), fill every field and run `npm run validate`. Files whose name starts with an
+# underscore are not loaded as tools.
+#
+# Rules: factual and neutral wording, no ranking, no judgment words. Every localized field
+# needs `en` and `es`. Spanish uses the formal register (usted), never voseo. No emoji and
+# no em or en dashes. Verify every URL by opening it before writing it here.
+
+# kebab-case, equal to the file name without .yaml
+id: example-tool
+# tool | framework | directory (framework and directory may omit targets, mode, inputs, output)
+kind: tool
+# id from content/sections.yaml: datasets | other-objects | frameworks | directories
+section: datasets
+# Product name, not translated
+name: Example Tool
+# https:// link opened by the "Open" button
+url: https://example.org/
+operator:
+  name: Example Organization
+  url: https://example.org/about # optional
+summary:
+  en: One or two factual sentences that say what the tool does.
+  es: Una o dos oraciones factuales que indican qué hace la herramienta.
+# Optional. One neutral sentence about a situation. Do not compare with other tools.
+best_for:
+  en: Assessing a published dataset that has a DOI.
+  es: Evaluar un conjunto de datos publicado que tiene un DOI.
+# Required when kind is tool. Ids from content/taxonomy.yaml.
+targets: [dataset] # dataset | ontology | software | repository | any_digital_object | person_knowledge
+mode: automated # automated | manual | hybrid
+inputs: [doi, landing_page_url] # doi | landing_page_url | metadata_url | metadata_file | ontology_uri | portal_record | none
+# Optional. Metric sets the tool implements.
+frameworks: [fairsfair_metrics] # fairsfair_metrics | fair_maturity_indicators | wilkinson_maturity_indicators | rda_fdmm | custom | other
+# Required when kind is tool. What the visitor gets back.
+output:
+  en: A score and a report per principle.
+  es: Una puntuación y un informe por principio.
+# Optional
+api:
+  available: true
+  url: https://example.org/api
+source_code: https://github.com/example-org/example-tool # optional
+self_hostable: true # optional
+license: MIT # optional, SPDX id or free text
+# available | limited | discontinued | unverified
+status: available
+# Required when status is limited or unverified (evidence) or discontinued (reference below too).
+# status_note:
+#   en: Factual evidence, for example "The backend host did not respond on 2026-10-25."
+#   es: Evidencia factual, por ejemplo "El servidor no respondió el 2026-10-25."
+# ISO date on which the maintainer opened the resource and confirmed the entries
+last_verified: 2026-10-25
+# Optional, but at least one is required when status is discontinued.
+references:
+  - title: Title of a paper or documentation page
+    url: https://example.org/paper

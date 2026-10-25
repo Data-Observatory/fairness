@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-impact-catalogue
+kind: directory
+section: directories
+name: FAIR-IMPACT FAIR Implementation Catalogue
+url: https://catalogue.fair-impact.eu/
+operator:
+  name: FAIR-IMPACT project
+  url: https://fair-impact.eu/
+summary:
+  en: >-
+    A browsable online catalogue of resources (tools, solutions, methods and approaches) for FAIR
+    implementation, part of the FAIR Implementation Framework. Its resources page showed 54 entries
+    on 2026-10-25.
+  es: >-
+    Un catálogo en línea y explorable de recursos (herramientas, soluciones, métodos y enfoques) para
+    la implementación de FAIR, parte del FAIR Implementation Framework. Su página de recursos mostró
+    54 entradas el 2026-10-25.
+status: available
+last_verified: 2026-10-25
+references:
+  - title: FAIR-IMPACT FAIR assessment tools page
+    url: https://fair-impact.eu/fair-assessment-tools

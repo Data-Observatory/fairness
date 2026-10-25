@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fairshake
+kind: tool
+section: datasets
+name: FAIRshake
+url: https://fairshake.cloud/
+operator:
+  name: Ma'ayan Laboratory of Computational Systems Biology, Icahn School of Medicine at Mount Sinai
+summary:
+  en: >-
+    FAIRshake is a toolkit for community-defined FAIR metrics and rubrics, paired with manual and
+    automated assessments of digital objects such as datasets, software tools, databases, APIs and
+    workflows. Starting a project requires an account.
+  es: >-
+    FAIRshake es un conjunto de herramientas para métricas y rúbricas FAIR definidas por la
+    comunidad, combinadas con evaluaciones manuales y automáticas de objetos digitales como
+    conjuntos de datos, herramientas de software, bases de datos, API y flujos de trabajo. Iniciar
+    un proyecto requiere una cuenta.
+best_for:
+  en: Assessing a registered digital object with a rubric chosen or defined by a community.
+  es: Evaluar un objeto digital registrado con una rúbrica elegida o definida por una comunidad.
+targets: [dataset, any_digital_object]
+mode: hybrid
+inputs: [none]
+frameworks: [custom]
+output:
+  en: An assessment of the digital object against the metrics of a rubric, shown as an insignia and in analytics views.
+  es: Una evaluación del objeto digital frente a las métricas de una rúbrica, mostrada como insignia y en vistas analíticas.
+api:
+  available: true
+  url: https://fairshake.cloud/swagger/
+source_code: https://github.com/MaayanLab/FAIRshake
+license: CC-BY-NC-SA-4.0
+status: available
+last_verified: 2026-10-25
+references:
+  - title: 'FAIRshake: Toolkit to Evaluate the FAIRness of Research Digital Resources (Cell Systems, 2019)'
+    url: https://doi.org/10.1016/j.cels.2019.09.011
+  - title: FAIRshake User Guide
+    url: https://fairshake.cloud/static/file/FAIRshakeUserGuide/index.html
+  - title: FAIRshake documentation
+    url: https://fairshake.cloud/documentation/

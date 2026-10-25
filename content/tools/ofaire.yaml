@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: ofaire
+kind: tool
+section: other-objects
+name: O'FAIRe
+url: https://github.com/agroportal/fairness
+operator:
+  name: LIRMM (University of Montpellier) and MISTEA (INRAE Montpellier)
+summary:
+  en: >-
+    O'FAIRe is a methodology and Java web service that scores an ontology or other semantic resource
+    with 61 questions on the 15 FAIR principles, using the metadata held in an OntoPortal ontology
+    repository. Its authors describe an implementation in the AgroPortal repository.
+  es: >-
+    O'FAIRe es una metodología y un servicio web en Java que puntúa una ontología u otro recurso
+    semántico con 61 preguntas sobre los 15 principios FAIR, a partir de los metadatos de un
+    repositorio de ontologías basado en OntoPortal. Sus autores describen una implementación en el
+    repositorio AgroPortal.
+best_for:
+  en: Assessing an ontology that is stored in an OntoPortal repository with metadata descriptions.
+  es: Evaluar una ontología almacenada en un repositorio OntoPortal con descripciones de metadatos.
+targets: [ontology]
+mode: automated
+inputs: [portal_record]
+frameworks: [custom]
+output:
+  en: >-
+    A JSON result with a score and an explanation for each question, a score for each FAIR
+    principle and a normalized score from 0 to 100.
+  es: >-
+    Un resultado en JSON con una puntuación y una explicación para cada pregunta, una puntuación
+    para cada principio FAIR y una puntuación normalizada de 0 a 100.
+api:
+  available: true
+source_code: https://github.com/agroportal/fairness
+self_hostable: true
+license: MIT
+status: limited
+status_note:
+  en: >-
+    On 2026-10-25 the GitHub repository loaded. The hosted service addresses named in the README
+    (services.agroportal.lirmm.fr, bioportal.lirmm.fr, industryportal.enit.fr) did not respond within
+    30 seconds, and agroportal.lirmm.fr redirected to agroportal.eu, which reset the connection.
+  es: >-
+    El 2026-10-25 el repositorio de GitHub se cargó. Las direcciones del servicio alojado que
+    menciona el README (services.agroportal.lirmm.fr, bioportal.lirmm.fr, industryportal.enit.fr) no
+    respondieron en 30 segundos, y agroportal.lirmm.fr redirigió a agroportal.eu, que restableció la
+    conexión.
+last_verified: 2026-10-25
+references:
+  - title: "O'FAIRe: Ontology FAIRness Evaluator in the AgroPortal semantic resource repository (ESWC 2022 poster, HAL record)"
+    url: https://hal-lirmm.ccsd.cnrs.fr/lirmm-03630543v1
+  - title: FAIR-IMPACT FAIR assessment tools page
+    url: https://fair-impact.eu/fair-assessment-tools

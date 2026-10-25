@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-checker
+kind: tool
+section: datasets
+name: FAIR-Checker
+url: https://fair-checker.france-bioinformatique.fr/
+operator:
+  name: French Institute for Bioinformatics (IFB), interoperability working group
+summary:
+  en: >-
+    FAIR-Checker tests the metadata of a web resource, identified by a URL or a DOI, against 12
+    metrics for the FAIR principles and gives a recommendation for each metric. A separate Inspect
+    page shows the metadata retrieved from the resource and runs metadata quality checks.
+  es: >-
+    FAIR-Checker comprueba los metadatos de un recurso web, identificado por una URL o un DOI,
+    frente a 12 métricas de los principios FAIR y ofrece una recomendación para cada métrica. Una
+    página aparte, Inspect, muestra los metadatos recuperados del recurso y ejecuta comprobaciones
+    de calidad de metadatos.
+best_for:
+  en: Assessing the metadata that a web resource exposes, one metric at a time or all together.
+  es: Evaluar los metadatos que expone un recurso web, una métrica a la vez o todas juntas.
+targets: [dataset, any_digital_object]
+mode: automated
+inputs: [doi, landing_page_url]
+frameworks: [custom]
+output:
+  en: >-
+    A score and a recommendation for each metric, a summary chart of FAIR compliance and an
+    export of the detailed results.
+  es: >-
+    Una puntuación y una recomendación para cada métrica, un gráfico resumen del cumplimiento FAIR
+    y una exportación de los resultados detallados.
+api:
+  available: true
+  url: https://fair-checker.france-bioinformatique.fr/swagger
+source_code: https://github.com/IFB-ElixirFr/FAIR-checker
+self_hostable: true
+license: MIT
+status: available
+last_verified: 2026-10-25
+references:
+  - title: 'FAIR-Checker: supporting digital resource findability and reuse with Knowledge Graphs and Semantic Web standards (Journal of Biomedical Semantics, 2023)'
+    url: https://doi.org/10.1186/s13326-023-00289-5
+  - title: FAIR-Checker source code and documentation (GitHub)
+    url: https://github.com/IFB-ElixirFr/FAIR-checker

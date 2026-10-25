@@ -1,0 +1,26 @@
+- id: datasets
+  title: { en: Dataset assessment tools, es: Herramientas de evaluación de conjuntos de datos }
+  intro:
+    en: Tools that assess datasets or other digital objects identified by a DOI or a web address, and questionnaires that assess a dataset or the knowledge of the person answering.
+    es: Herramientas que evalúan conjuntos de datos u otros objetos digitales identificados por un DOI o una dirección web, y cuestionarios que evalúan un conjunto de datos o el conocimiento de la persona que responde.
+  collapsed: false
+- id: other-objects
+  title:
+    en: Ontologies, software and repositories
+    es: Ontologías, software y repositorios
+  intro:
+    en: Resources that assess ontologies, software or repositories instead of datasets.
+    es: Recursos que evalúan ontologías, software o repositorios en lugar de conjuntos de datos.
+  collapsed: true
+- id: frameworks
+  title: { en: Frameworks, es: Marcos de referencia }
+  intro:
+    en: Metric sets and maturity models that tools implement. They are documents, not runnable tools.
+    es: Conjuntos de métricas y modelos de madurez que implementan las herramientas. Son documentos, no herramientas ejecutables.
+  collapsed: false
+- id: directories
+  title: { en: Directories, es: Directorios }
+  intro:
+    en: Other catalogues of FAIR tools and services.
+    es: Otros catálogos de herramientas y servicios FAIR.
+  collapsed: false

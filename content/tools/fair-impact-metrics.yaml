@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-impact-metrics
+kind: framework
+section: frameworks
+name: FAIR-IMPACT metrics for data
+url: https://fair-impact.eu/metrics-data
+operator:
+  name: FAIR-IMPACT project
+  url: https://fair-impact.eu/
+summary:
+  en: >-
+    The FAIR-IMPACT page on metrics for data. It describes the 17 domain-agnostic metrics refined
+    from the FAIRsFAIR work (version 0.8) and 5 social sciences metrics that can replace their
+    domain-agnostic counterparts.
+  es: >-
+    La página de FAIR-IMPACT sobre métricas para datos. Describe las 17 métricas independientes del
+    dominio refinadas a partir del trabajo de FAIRsFAIR (versión 0.8) y 5 métricas de ciencias
+    sociales que pueden sustituir a sus equivalentes independientes del dominio.
+frameworks: [fairsfair_metrics]
+status: available
+last_verified: 2026-10-25
+references:
+  - title: D5.1 Implementing metrics for automated FAIR digital objects assessment in a disciplinary context (Zenodo)
+    url: https://doi.org/10.5281/zenodo.7784120
+  - title: Object Type and Discipline-Specific Harmonisation of FAIR Assessment Metrics, a FAIR-IMPACT reflections paper (Zenodo)
+    url: https://doi.org/10.5281/zenodo.15303089

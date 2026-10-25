@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-enough
+kind: tool
+section: datasets
+name: FAIR enough
+url: https://fair-enough.semanticscience.org/
+operator:
+  name: Institute of Data Science, Maastricht University
+  url: https://www.maastrichtuniversity.nl/research/institute-data-science
+summary:
+  en: >-
+    FAIR enough runs a collection of FAIR Maturity Indicator tests, written in Python, against a
+    resource identified by its URL. DOIs and handles are accepted by most collections.
+  es: >-
+    FAIR enough ejecuta una colección de pruebas de indicadores de madurez FAIR, escritas en
+    Python, sobre un recurso identificado por su URL. La mayoría de las colecciones también acepta
+    DOI y handles.
+best_for:
+  en: Assessing a resource that has a URL against a chosen collection of maturity indicator tests.
+  es: Evaluar un recurso que tiene una URL frente a una colección elegida de pruebas de indicadores de madurez.
+targets: [dataset, any_digital_object]
+mode: automated
+inputs: [doi, landing_page_url]
+frameworks: [fair_maturity_indicators]
+output:
+  en: >-
+    An evaluation with a score, a maximum score and a percentage for the chosen collection, and
+    the result and log of each test.
+  es: >-
+    Una evaluación con una puntuación, una puntuación máxima y un porcentaje para la colección
+    elegida, y el resultado y el registro de cada prueba.
+api:
+  available: true
+  url: https://api.fair-enough.semanticscience.org/docs
+source_code: https://github.com/MaastrichtU-IDS/fair-enough
+self_hostable: true
+license: MIT
+status: limited
+status_note:
+  en: >-
+    On 2026-10-25 the web front-end loaded and the API at api.fair-enough.semanticscience.org
+    returned its OpenAPI definition, the list of collections and the list of stored evaluations.
+    Two requests to create a new evaluation (POST /evaluations, with two different subjects and the
+    collection fair-enough-metadata) ended with 502 Bad Gateway from nginx after about 70 to 80
+    seconds. The most recent push to the GitHub repository is dated 2023-07-17.
+  es: >-
+    El 2026-10-25 el front-end web se cargó y la API en api.fair-enough.semanticscience.org devolvió
+    su definición OpenAPI, la lista de colecciones y la lista de evaluaciones almacenadas. Dos
+    solicitudes para crear una evaluación nueva (POST /evaluations, con dos sujetos distintos y la
+    colección fair-enough-metadata) terminaron con un error 502 Bad Gateway de nginx tras unos 70 a
+    80 segundos. El envío más reciente al repositorio de GitHub tiene fecha del 2023-07-17.
+last_verified: 2026-10-25
+references:
+  - title: FAIR enough source code and documentation (GitHub)
+    url: https://github.com/MaastrichtU-IDS/fair-enough
+  - title: FAIR enough API documentation (Swagger UI)
+    url: https://api.fair-enough.semanticscience.org/docs
