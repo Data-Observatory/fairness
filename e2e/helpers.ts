@@ -13,12 +13,18 @@ export const section = (page: Page, id: string): Locator =>
 /**
  * Opens every collapsed section by clicking its native summary. This needs no JavaScript, so it
  * also works in the JavaScript-disabled project.
+ *
+ * The summaries are clicked in one atomic in-page step. A count() followed by a Playwright click()
+ * is a check-then-act race: when the page hydrates in between with a filter in the URL, it opens
+ * every section itself, the summary the click was waiting for stops matching, and the click waits
+ * until the test timeout.
  */
 export async function expandAllSections(page: Page): Promise<void> {
 	const closed = page.locator('section[data-section-id] details:not([open]) > summary');
-	while ((await closed.count()) > 0) {
-		await closed.first().click();
-	}
+	await closed.evaluateAll((summaries) => {
+		for (const summary of summaries) (summary as HTMLElement).click();
+	});
+	await expect(closed).toHaveCount(0);
 }
 
 /** Matches `n` as a whole number inside a text such as "12 resources shown". */
