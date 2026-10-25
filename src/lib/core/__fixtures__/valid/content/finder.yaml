@@ -1,0 +1,9 @@
+rows:
+  - input: doi
+    tools: [f-uji, fair-enough]
+  - input: landing_page_url
+    tools: [f-uji]
+  - input: metadata_url
+    note:
+      { en: Requires a public metadata document., es: Requiere un documento de metadatos público. }
+    tools: [fair-enough]

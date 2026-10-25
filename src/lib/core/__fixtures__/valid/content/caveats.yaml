@@ -1,0 +1,12 @@
+- id: different-metrics
+  text:
+    en: Tools implement different metric sets and can return different results for the same resource.
+    es: Las herramientas implementan conjuntos de métricas distintos y pueden devolver resultados diferentes para el mismo recurso.
+- id: public-metadata
+  text:
+    en: A result describes what the tool could detect from public metadata, not the quality of the data.
+    es: Un resultado describe lo que la herramienta pudo detectar en metadatos públicos, no la calidad de los datos.
+- id: no-endorsement
+  text:
+    en: This site does not endorse any tool.
+    es: Este sitio no respalda ninguna herramienta.

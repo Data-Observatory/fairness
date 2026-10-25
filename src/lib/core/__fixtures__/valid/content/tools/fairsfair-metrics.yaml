@@ -1,0 +1,11 @@
+id: fairsfair-metrics
+kind: framework
+section: frameworks
+name: FAIRsFAIR Data Object Assessment Metrics
+url: https://example.org/metrics
+operator: { name: Example Operator C }
+summary:
+  en: A published set of metrics for assessing data objects.
+  es: Un conjunto publicado de métricas para evaluar objetos de datos.
+status: available
+last_verified: 2025-01-15

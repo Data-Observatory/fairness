@@ -1,0 +1,17 @@
+id: fair-enough
+kind: tool
+section: datasets
+name: FAIR Enough
+url: https://example.org/fair-enough
+operator: { name: Example Operator B }
+summary:
+  en: Assessment of datasets and software using community maturity indicators.
+  es: Evaluación de conjuntos de datos y software mediante indicadores de madurez de la comunidad.
+targets: [dataset, software]
+mode: automated
+inputs: [doi, metadata_url]
+output:
+  en: Report with one result per indicator.
+  es: Informe con un resultado por indicador.
+status: available
+last_verified: 2025-01-15

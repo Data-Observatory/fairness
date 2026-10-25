@@ -1,0 +1,30 @@
+id: f-uji
+kind: tool
+section: datasets
+name: F-UJI
+url: https://example.org/f-uji
+operator: { name: Example Operator A, url: https://example.org/operator-a }
+summary:
+  en: Automated assessment of a dataset identified by a persistent identifier.
+  es: Evaluación automática de un conjunto de datos identificado con un identificador persistente.
+best_for:
+  en: Assessing a published dataset that has a DOI.
+  es: Evaluar un conjunto de datos publicado que tiene un DOI.
+targets: [dataset]
+mode: automated
+inputs: [doi, landing_page_url]
+frameworks: [fairsfair_metrics]
+output:
+  en: Score per metric and a JSON report.
+  es: Puntuación por métrica e informe en JSON.
+api: { available: true, url: https://example.org/f-uji/api }
+source_code: https://example.org/f-uji/source
+self_hostable: true
+license: MIT
+status: available
+status_note:
+  en: Responded on the verification date.
+  es: Respondió en la fecha de verificación.
+last_verified: 2025-01-15
+references:
+  - { title: Example paper, url: https://example.org/paper }

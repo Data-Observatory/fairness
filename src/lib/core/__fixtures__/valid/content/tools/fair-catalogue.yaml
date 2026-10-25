@@ -1,0 +1,14 @@
+id: fair-catalogue
+kind: directory
+section: directories
+name: FAIR Catalogue
+url: https://example.org/catalogue
+operator: { name: Example Operator D }
+summary:
+  en: A catalogue of FAIR-related tools.
+  es: Un catálogo de herramientas relacionadas con FAIR.
+status: unverified
+status_note:
+  en: Not opened on the verification date.
+  es: No se abrió en la fecha de verificación.
+last_verified: 2025-01-15

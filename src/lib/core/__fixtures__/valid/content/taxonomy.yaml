@@ -1,0 +1,43 @@
+filters: [target, mode, input, framework, status]
+target:
+  - { id: dataset, label: { en: Dataset, es: Conjunto de datos } }
+  - { id: ontology, label: { en: Ontology, es: Ontología } }
+  - { id: software, label: { en: Software, es: Software } }
+  - { id: repository, label: { en: Repository, es: Repositorio } }
+  - { id: any_digital_object, label: { en: Any digital object, es: Cualquier objeto digital } }
+  - { id: person_knowledge, label: { en: Person knowledge, es: Conocimiento de la persona } }
+mode:
+  - { id: automated, label: { en: Automated, es: Automático } }
+  - { id: manual, label: { en: Manual, es: Manual } }
+  - id: hybrid
+    label: { en: Hybrid, es: Híbrido }
+    description:
+      {
+        en: Automated checks plus manual answers,
+        es: Comprobaciones automáticas y respuestas manuales
+      }
+input:
+  - { id: doi, label: { en: DOI, es: DOI } }
+  - { id: landing_page_url, label: { en: Landing page URL, es: URL de la página de destino } }
+  - { id: metadata_url, label: { en: Metadata URL, es: URL de metadatos } }
+  - { id: metadata_file, label: { en: Metadata file, es: Archivo de metadatos } }
+  - { id: ontology_uri, label: { en: Ontology URI, es: URI de la ontología } }
+  - { id: none, label: { en: None, es: Ninguna } }
+framework:
+  - { id: fairsfair_metrics, label: { en: FAIRsFAIR metrics, es: Métricas FAIRsFAIR } }
+  - {
+      id: fair_maturity_indicators,
+      label: { en: FAIR maturity indicators, es: Indicadores de madurez FAIR }
+    }
+  - {
+      id: wilkinson_maturity_indicators,
+      label: { en: Wilkinson maturity indicators, es: Indicadores de madurez de Wilkinson }
+    }
+  - { id: rda_fdmm, label: { en: RDA FDMM, es: RDA FDMM } }
+  - { id: custom, label: { en: Custom, es: Personalizado } }
+  - { id: other, label: { en: Other, es: Otro } }
+status:
+  - { id: available, label: { en: Available, es: Disponible } }
+  - { id: limited, label: { en: Limited, es: Limitado } }
+  - { id: discontinued, label: { en: Discontinued, es: Discontinuado } }
+  - { id: unverified, label: { en: Unverified, es: Sin verificar } }

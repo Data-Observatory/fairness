@@ -1,0 +1,10 @@
+- id: datasets
+  title: { en: Dataset assessment tools, es: Herramientas de evaluación de conjuntos de datos }
+  intro: { en: Tools that assess datasets., es: Herramientas que evalúan conjuntos de datos. }
+  collapsed: false
+- id: frameworks
+  title: { en: Frameworks, es: Marcos de referencia }
+  collapsed: false
+- id: directories
+  title: { en: Directories, es: Directorios }
+  collapsed: true
