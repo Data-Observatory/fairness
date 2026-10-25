@@ -9,7 +9,7 @@ Static SvelteKit site listing external FAIR assessment resources and redirecting
 - Logic lives in `src/lib/core/` with no Svelte imports. Components are thin.
 - Every localized field needs `en` and `es`.
 - Do not deploy. Never run `cdk deploy`, `aws` commands, or anything touching an AWS account. `cdk synth` with dummy values is allowed.
-- Do not commit, push or create repositories unless the owner asks.
+- Git: local repo on `main`. Commit incrementally (one logical change per commit) with Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`), and NO Co-Authored-By or other attribution trailer. Tests and implementation may be separate commits. Do not push or create remote repositories unless the owner asks.
 - No runtime requests to third parties (no CDN, fonts, analytics). Self-host everything.
 - Verify any tool URL or DOI by fetching it before writing it into content. Unconfirmed facts get `status: unverified` and a `status_note`, or are left out.
 - Svelte 5 runes mode only. Match reference code style (tabs, Prettier config copied from the reference).
