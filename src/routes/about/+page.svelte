@@ -62,7 +62,7 @@
 
 	<section aria-labelledby="about-cite">
 		<h2 id="about-cite" class={h2}>{m.about_cite_title()}</h2>
-		<p class="mt-3 break-words">{m.about_cite_body({ url: data.siteUrl })}</p>
+		<p class="mt-3 break-words">{m.about_cite_body({ name: data.site.name, url: data.siteUrl })}</p>
 	</section>
 
 	<section aria-labelledby="about-privacy">

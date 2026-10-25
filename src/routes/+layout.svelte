@@ -2,9 +2,10 @@
 	import './layout.css';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
+	import { base, resolve } from '$app/paths';
 	import type { ResolvedPathname } from '$app/types';
-	import { locales, getLocale } from '$lib/paraglide/runtime';
+	import { locales, baseLocale, getLocale, deLocalizeUrl } from '$lib/paraglide/runtime';
+	import { buildHeadLinks } from '$lib/core/seo';
 	import { withSearch } from '$lib/core/home-state';
 	import { localized } from '$lib/i18n';
 	import { currentQuery } from '$lib/query-state.svelte';
@@ -37,6 +38,21 @@
 			currentQuery.search
 		) as ResolvedPathname;
 
+	// Canonical and alternate links for every real page (not the error page). The pathname is
+	// de-localized first so the same function serves both locales.
+	const headLinks = $derived(
+		page.status < 400
+			? buildHeadLinks({
+					domain: data.site.domain,
+					locales,
+					defaultLocale: baseLocale,
+					locale: getLocale(),
+					pathname: deLocalizeUrl(page.url).pathname,
+					basePath: base
+				})
+			: undefined
+	);
+
 	function skipToContent(event: MouseEvent) {
 		const main = document.getElementById('main-content');
 		if (!main) return;
@@ -47,6 +63,15 @@
 
 	const localeLabels: Record<string, string> = { en: 'EN', es: 'ES' };
 </script>
+
+<svelte:head>
+	{#if headLinks}
+		<link rel="canonical" href={headLinks.canonical} />
+		{#each headLinks.alternates as alternate (alternate.hreflang)}
+			<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+		{/each}
+	{/if}
+</svelte:head>
 
 <a
 	href="#main-content"

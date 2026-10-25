@@ -15,6 +15,7 @@ export const load = () => {
 		site: {
 			name: site.name[getLocale()],
 			shortName,
+			domain: site.domain,
 			repository: site.repository,
 			contributeUrl: site.contributeUrl
 		}
