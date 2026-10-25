@@ -5,8 +5,8 @@ section: datasets
 name: FAIR Champion
 url: https://tools.ostrails.eu/champion
 operator:
-  name: OSTrails project
-  url: https://ostrails.eu/
+  name: Mark Wilkinson (owner of the source repository); public instance hosted at tools.ostrails.eu
+  url: https://github.com/markwilkinson
 summary:
   en: >-
     FAIR Champion runs FAIR Metric Tests registered in the OSTrails Test Registry, and Benchmark
@@ -15,12 +15,12 @@ summary:
     Evaluator.
   es: >-
     FAIR Champion ejecuta FAIR Metric Tests registradas en el OSTrails Test Registry, y
-    evaluaciones de calidad basadas en algoritmos de referencia (benchmark) construidas con ellas, sobre un objeto digital
-    identificado por su GUID (una URL, un DOI u otro identificador resoluble). Su README la
+    Benchmark Quality Assessments construidas con ellas, sobre un objeto digital
+    identificado por su GUID (una URL, un DOI u otro identificador resoluble). Su README lo
     describe como una evolución de FAIR Evaluator.
 best_for:
   en: Assessing a digital object that has a DOI or URL with a community-defined benchmark algorithm.
-  es: Evaluar un objeto digital que tiene un DOI o una URL con un algoritmo de referencia (benchmark) definido por una comunidad.
+  es: Evaluar un objeto digital que tiene un DOI o una URL con un algoritmo de benchmark definido por una comunidad.
 targets: [dataset, any_digital_object]
 mode: automated
 inputs: [doi, landing_page_url]
@@ -31,8 +31,8 @@ output:
     a score with narrative and guidance, as a web page or as JSON-LD.
   es: >-
     Un resultado de aprobado, fallido o indeterminado con un registro para cada prueba y, en el
-    caso de un algoritmo de referencia (benchmark), una puntuación con narrativa y orientación, como página web
-    o como JSON-LD.
+    caso de un algoritmo de benchmark, una puntuación con narrativa y orientación, como página web o
+    como JSON-LD.
 api:
   available: true
   url: https://tools.ostrails.eu/champion/api

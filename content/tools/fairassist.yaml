@@ -15,8 +15,7 @@ summary:
   es: >-
     Una aplicación web, parte del componente educativo de FAIRsharing, cuya página Tools enumera
     recursos para evaluar objetos digitales según los principios FAIR (33 entradas el 2026-10-25).
-    Su página Registry ofrece vistas en tabla y con facetas de principios, métricas y puntos de
-    referencia.
+    Su página Registry ofrece vistas en tabla y con facetas de principios, métricas y benchmarks.
 status: available
 status_note:
   en: The site states that it is under construction. The page needs JavaScript to show its content.

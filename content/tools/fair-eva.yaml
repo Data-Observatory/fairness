@@ -14,7 +14,7 @@ summary:
     optional web interface. This entry points to the source code, which each institution deploys
     itself; an instance named for DIGITAL.CSIC is published at https://fair.csic.es.
   es: >-
-    FAIR EVA (Evaluator, Validator & Advisor) es software de código abierto que comprueba el grado
+    FAIR EVA (Evaluator, Validator & Advisor) es un software de código abierto que comprueba el grado
     FAIR de un objeto digital alojado en un repositorio o portal de datos, con indicadores de la
     RDA, mediante una API y una interfaz web opcional. Esta ficha enlaza con el código fuente, que
     cada institución despliega por su cuenta; en https://fair.csic.es se publica una instancia

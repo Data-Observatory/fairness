@@ -10,12 +10,12 @@ summary:
   en: >-
     O'FAIRe is a methodology and Java web service that scores an ontology or other semantic resource
     with 61 questions on the 15 FAIR principles, using the metadata held in an OntoPortal ontology
-    repository. Its authors describe an implementation in the AgroPortal repository.
+    repository. Its README names deployments in AgroPortal, SIFR BioPortal and IndustryPortal.
   es: >-
     O'FAIRe es una metodología y un servicio web en Java que puntúa una ontología u otro recurso
     semántico con 61 preguntas sobre los 15 principios FAIR, a partir de los metadatos de un
-    repositorio de ontologías basado en OntoPortal. Sus autores describen una implementación en el
-    repositorio AgroPortal.
+    repositorio de ontologías basado en OntoPortal. Su README menciona despliegues en AgroPortal,
+    SIFR BioPortal e IndustryPortal.
 best_for:
   en: Assessing an ontology that is stored in an OntoPortal repository with metadata descriptions.
   es: Evaluar una ontología almacenada en un repositorio OntoPortal con descripciones de metadatos.
@@ -44,8 +44,8 @@ status_note:
   es: >-
     El 2026-10-25 el repositorio de GitHub se cargó. Las direcciones del servicio alojado que
     menciona el README (services.agroportal.lirmm.fr, bioportal.lirmm.fr, industryportal.enit.fr) no
-    respondieron en 30 segundos, y agroportal.lirmm.fr redirigió a agroportal.eu, que restableció la
-    conexión.
+    respondieron en 30 segundos, y agroportal.lirmm.fr redirigió a agroportal.eu, que cerró la
+    conexión (connection reset).
 last_verified: 2026-10-25
 references:
   - title: "O'FAIRe: Ontology FAIRness Evaluator in the AgroPortal semantic resource repository (ESWC 2022 poster, HAL record)"

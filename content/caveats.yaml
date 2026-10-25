@@ -2,7 +2,7 @@
 - id: different-metrics
   text:
     en: Tools implement different metric sets, and results can differ for the same resource.
-    es: Las herramientas implementan conjuntos de métricas distintos, y los resultados pueden diferir para un mismo recurso.
+    es: Las herramientas implementan conjuntos de métricas distintos y los resultados pueden diferir para un mismo recurso.
 - id: public-metadata
   text:
     en: A result reflects what the tool could detect from public metadata. It does not describe the quality of the data.

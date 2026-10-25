@@ -5,8 +5,8 @@ section: frameworks
 name: FAIRsFAIR Data Object Assessment Metrics
 url: https://doi.org/10.5281/zenodo.15045911
 operator:
-  name: FAIRsFAIR project
-  url: https://fairsfair.eu/
+  name: FAIRsFAIR and FAIR-IMPACT projects (Zenodo record by Robert Huber, University of Bremen)
+  url: https://doi.org/10.5281/zenodo.15045911
 summary:
   en: >-
     A specification of 17 minimum viable metrics for measuring how FAIR research data objects are.
