@@ -1,0 +1,48 @@
+name: Link check
+
+on:
+  schedule:
+    # Mondays at 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # The scripts need Node 22.6 or later for --experimental-strip-types.
+          node-version: 22.x
+          cache: npm
+
+      - run: npm ci
+
+      # The script exits 0 whether or not the report has findings.
+      - name: Run link check
+        run: npm run links
+
+      - name: Create or update the link-check issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh label create link-check --description "Weekly link and freshness report" --color 0e8a16 2>/dev/null || true
+          existing=$(gh issue list --label link-check --state open --limit 1 --json number --jq '.[0].number // empty')
+          if grep -qx 'No findings\.' link-report.md; then
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body "The link check of $(date -u +%Y-%m-%d) has no findings. This issue is left open for a maintainer to close."
+            fi
+          elif [ -n "$existing" ]; then
+            gh issue edit "$existing" --body-file link-report.md
+            gh issue comment "$existing" --body "Report updated by the link check of $(date -u +%Y-%m-%d)."
+          else
+            gh issue create --title "Link check report" --label link-check --body-file link-report.md
+          fi

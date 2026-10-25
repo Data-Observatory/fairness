@@ -1,0 +1,49 @@
+name: Suggest a tool
+description: Suggest a FAIR assessment resource to list in the directory.
+title: 'Suggest: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the suggestion. Please do not submit real or sensitive data to the tool while gathering this information. Opening its pages is enough.
+  - type: input
+    id: name
+    attributes:
+      label: Tool name
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      description: The https:// link where the tool is available.
+    validations:
+      required: true
+  - type: textarea
+    id: assesses
+    attributes:
+      label: What it assesses
+      description: For example a dataset, an ontology, software or a repository.
+    validations:
+      required: true
+  - type: textarea
+    id: input
+    attributes:
+      label: Input
+      description: What the visitor provides, for example a DOI, a landing page URL or a metadata file.
+    validations:
+      required: true
+  - type: input
+    id: operator
+    attributes:
+      label: Who operates it
+      description: Organization or project name, with a link if available.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence that it works
+      description: Date on which you opened it, what you observed, and links to documentation or publications.
+    validations:
+      required: true

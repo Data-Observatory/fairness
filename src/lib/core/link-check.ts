@@ -228,11 +228,11 @@ export type LinkReportInput = {
 };
 
 // Dashes and symbol characters that error messages from the network stack may carry.
-const FORBIDDEN_IN_REPORT = /[–—☀-➿\u{1F000}-\u{1FAFF}️]/gu;
+const FORBIDDEN_IN_REPORT = /[\u2013\u2014]|[\u2600-\u27BF]|[\u{1F000}-\u{1FAFF}]|\uFE0F/gu;
 
 const clean = (text: string) =>
 	text
-		.replace(FORBIDDEN_IN_REPORT, (char) => (char === '–' || char === '—' ? '-' : ''))
+		.replace(FORBIDDEN_IN_REPORT, (char) => (char === '\u2013' || char === '\u2014' ? '-' : ''))
 		.replace(/\s+/g, ' ')
 		.trim();
 
@@ -269,7 +269,7 @@ export function formatLinkReport(input: LinkReportInput): {
 	if (problems.length > 0) {
 		lines.push('## Links with problems', '');
 		for (const result of problems) {
-			const parts = [result.status];
+			const parts: string[] = [result.status];
 			if (result.httpStatus !== undefined) parts.push(`HTTP ${result.httpStatus}`);
 			if (result.finalUrl) parts.push(`final URL ${clean(result.finalUrl)}`);
 			if (result.error) parts.push(clean(result.error));

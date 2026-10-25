@@ -20,6 +20,7 @@
 		"schema": "node --experimental-strip-types scripts/generate-schema.mjs",
 		"check:base-path": "node scripts/check-base-path.mjs",
 		"validate": "node --experimental-strip-types scripts/validate.mjs",
+		"links": "node --experimental-strip-types scripts/check-links.mjs",
 		"prebuild": "npm run validate"
 	},
 	"devDependencies": {

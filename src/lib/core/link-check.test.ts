@@ -368,7 +368,9 @@ describe('checkUrl: errors and retries', () => {
 			(call) =>
 				new Promise<Response>((_resolve, reject) => {
 					call.signal?.addEventListener('abort', () =>
-						reject(call.signal?.reason ?? new DOMException('This operation was aborted', 'AbortError'))
+						reject(
+							call.signal?.reason ?? new DOMException('This operation was aborted', 'AbortError')
+						)
 					);
 				})
 		);
@@ -384,7 +386,9 @@ describe('checkUrl: errors and retries', () => {
 			(call) =>
 				new Promise<Response>((_resolve, reject) => {
 					call.signal?.addEventListener('abort', () =>
-						reject(call.signal?.reason ?? new DOMException('This operation was aborted', 'AbortError'))
+						reject(
+							call.signal?.reason ?? new DOMException('This operation was aborted', 'AbortError')
+						)
 					);
 				})
 		);
@@ -455,7 +459,11 @@ describe('checkLinks', () => {
 	});
 
 	it('keeps going after a failing url and reports each result in place', async () => {
-		const mixed = ['https://example.org/ok', 'https://example.org/gone', 'https://example.org/down'];
+		const mixed = [
+			'https://example.org/ok',
+			'https://example.org/gone',
+			'https://example.org/down'
+		];
 		const { fetch } = fakeFetch((call) => {
 			if (call.url.endsWith('/gone')) return respond(404, { url: call.url });
 			if (call.url.endsWith('/down')) throw new TypeError('fetch failed');
@@ -571,13 +579,16 @@ const DISCLAIMER =
 // Built from escapes so this file holds no such character: en dash, em dash, symbols, dingbats,
 // supplemental pictographs, variation selector.
 const FORBIDDEN = new RegExp(
-	'[\\u2013\\u2014\\u2600-\\u27BF\\u{1F000}-\\u{1FAFF}\\uFE0F]',
+	'(?:[\\u2013\\u2014\\u2600-\\u27BF\\u{1F000}-\\u{1FAFF}]|\\uFE0F)',
 	'u'
 );
 
 type Usage = { toolId?: string; field: string };
 
-const result = (url: string, extra: Partial<LinkResult> & Pick<LinkResult, 'status'>): LinkResult => ({
+const result = (
+	url: string,
+	extra: Partial<LinkResult> & Pick<LinkResult, 'status'>
+): LinkResult => ({
 	url,
 	...extra
 });
@@ -637,7 +648,10 @@ describe('formatLinkReport', () => {
 	});
 
 	it('uses the local calendar date of today for the title', () => {
-		const { markdown } = formatLinkReport({ ...problemInput(), today: new Date(2026, 0, 5, 23, 59) });
+		const { markdown } = formatLinkReport({
+			...problemInput(),
+			today: new Date(2026, 0, 5, 23, 59)
+		});
 		expect(markdown.split('\n')[0]).toContain('2026-01-05');
 	});
 
@@ -710,7 +724,9 @@ describe('formatLinkReport', () => {
 		const staleOrder = lines.findIndex(
 			(line) => line.includes('fairsfair-metrics') && line.includes('648')
 		);
-		const staleNext = lines.findIndex((line) => line.includes('fair-enough') && line.includes('297'));
+		const staleNext = lines.findIndex(
+			(line) => line.includes('fair-enough') && line.includes('297')
+		);
 		expect(staleOrder).toBeGreaterThanOrEqual(0);
 		expect(staleNext).toBeGreaterThan(staleOrder);
 	});
@@ -775,7 +791,9 @@ describe('formatLinkReport', () => {
 			staleAfterDays: 180
 		});
 		expect(hasFindings).toBe(false);
-		const statements = markdown.split('\n').filter((line) => /\bno (findings|problems)\b/i.test(line));
+		const statements = markdown
+			.split('\n')
+			.filter((line) => /\bno (findings|problems)\b/i.test(line));
 		expect(statements).toHaveLength(1);
 		expect(markdown.split('\n')[0]).toContain('2026-10-25');
 		expect(markdown).toContain(DISCLAIMER);

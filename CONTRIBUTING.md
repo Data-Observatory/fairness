@@ -1,0 +1,68 @@
+# Contributing
+
+This directory lists external FAIR assessment resources. Contributions that add a
+tool, correct an entry or update its status are welcome. All content lives in YAML
+files under `content/`; no code changes are needed to add a tool.
+
+## Add or update a tool
+
+1. Copy `content/tools/_template.yaml` to `content/tools/<id>.yaml`. The id is
+   kebab-case and equals the file name without `.yaml`.
+2. Fill the fields. The field guide is `specs.md`, section 5.4, and the machine-readable
+   description is `content/tool.schema.json` (editors that support the YAML language
+   server use it through the `$schema` comment on the first line of the template).
+3. Run `npm run validate`. It checks the schema, the cross-references and the style rules.
+4. Run `npm run links -- --only <id>`. It requests the URLs of that file only (HEAD, with
+   GET as fallback) and prints a Markdown report.
+5. Open a pull request. The pull request template lists the checklist.
+
+To update an existing tool, edit its file and follow steps 3 to 5.
+
+## Content rules
+
+See `specs.md`, section 7.
+
+- Wording is factual and neutral. No ranking, no judgment words (for example best,
+  better, recommended, leading, ideal), no comparison with other tools.
+- No emoji, no emoticons, no em dashes and no en dashes. Use commas, colons,
+  parentheses or hyphens.
+- `status` is based on evidence. `status_note` records what was observed and when
+  whenever the status is not `available`. `discontinued` is used only when the
+  operator says so, with the source in `references`.
+- `best_for` is optional and is one neutral sentence describing a situation, for
+  example "Assessing a published dataset that has a DOI."
+- Product names, acronyms and proper nouns are not translated.
+- Spanish text uses the formal register (usted) and never voseo.
+
+## Languages
+
+Every localized field needs `en` and `es`. Contributors may submit English only and
+write `TODO` in the `es` field. The validator rejects `TODO` in `es`, so a maintainer
+translates the Spanish in the pull request before it is merged.
+
+## Verifying a tool
+
+Open the resource and its linked pages by hand. Do not submit data to third-party
+tools while verifying, including test datasets, DOIs of unpublished work or personal
+information. Reading pages and viewing the public form is sufficient. Record
+only what you can observe without submitting anything.
+
+Checklist:
+
+- Every URL in the entry was opened and responded.
+- The description in `summary` and `output` matches what the resource states.
+- `targets`, `mode` and `inputs` match what the resource accepts.
+- `status` and `status_note` reflect what was observed.
+- `last_verified` is the date of the check.
+- `npm run validate` passes and `npm run links -- --only <id>` shows no unexpected problem.
+
+A 200 response does not confirm that a tool works. The link report says so, and
+`last_verified` is only updated after a person has confirmed the entry.
+
+## Maintenance
+
+A weekly workflow runs `npm run links` and opens or updates one issue labelled
+`link-check` when the report has findings. Maintainers re-verify every entry each
+quarter: open each resource, confirm or correct the entry, and bump `last_verified` by
+hand. Tools not verified within `verification.staleAfterDays` in `content/site.yaml`
+appear in the report and are shown as not re-verified on the site.
