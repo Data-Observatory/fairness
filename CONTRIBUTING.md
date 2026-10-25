@@ -37,15 +37,17 @@ See `specs.md`, section 7.
 ## Languages
 
 Every localized field needs `en` and `es`. Contributors may submit English only and
-write `TODO` in the `es` field. The validator rejects `TODO` in `es`, so a maintainer
-translates the Spanish in the pull request before it is merged.
+write `TODO` in the `es` field. A `TODO` in `es` makes `npm run validate` fail (and so the
+build and CI), so a maintainer translates the Spanish in the pull request before it is
+merged.
 
 ## Verifying a tool
 
-Open the resource and its linked pages by hand. Do not submit data to third-party
-tools while verifying, including test datasets, DOIs of unpublished work or personal
-information. Reading pages and viewing the public form is sufficient. Record
-only what you can observe without submitting anything.
+Open the resource and its linked pages by hand. Never submit non-public or personal
+data to a third-party tool, including unpublished datasets, DOIs of unpublished work or
+personal information. Reading pages and viewing the public form is usually sufficient. When
+checking that a tool works requires running one assessment, use a clearly public example
+DOI or URL and record it in the pull request. Record only what you observed.
 
 Checklist:
 

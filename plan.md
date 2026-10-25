@@ -8,7 +8,6 @@ Spec: `specs.md`. Rules: `CLAUDE.md`. Decisions confirmed 2026-10-25: Option D, 
 - Per milestone: (1) test agent writes tests and fixtures only, proves they fail; (2) implementation agent makes them pass without editing tests; (3) lead runs the checks itself; (4) Opus review agent reads the result and reports findings; (5) fix agent addresses confirmed findings; lead re-runs checks.
 - Opus review is mandatory after M2 (content engine), after M4 (UI), and at the end (M6). Other milestones get a lead-run check only.
 - Agents get a short brief: goal, files to read (`specs.md` sections, `CLAUDE.md`), explicit scope, what not to touch. No agent waits on another.
-- The project directory is not a git repository yet. Do not run `git init` or commit until the owner asks.
 
 ## Milestones
 

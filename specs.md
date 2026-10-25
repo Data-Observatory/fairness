@@ -1,6 +1,8 @@
 # FAIR Resources Finder: Static Site Specification
 
-Status: draft v1, decisions confirmed by the owner on 2026-10-25. Not yet implemented.
+Status: draft v1, implemented. Decisions confirmed by the owner on 2026-10-25.
+
+Deviations from this draft in the implementation: filter and grouping logic lives in `src/lib/core/view.ts` and `home-state.ts` (there is no `filter.ts`); every page head also emits canonical and hreflang links built by `src/lib/core/seo.ts` from the domain in `content/site.yaml`; `scripts/validate.mjs` and `scripts/check-base-path.mjs` were added; `status_note` may accompany any status (see 5 and 7); deployment is authorized as described in sections 2 and 15.
 
 A small static website, published by Data Observatory, that lists external resources used to evaluate how FAIR (Findable, Accessible, Interoperable, Reusable) a dataset is, usually from its metadata alone, and redirects visitors to them. Style, stack and quality bar follow the reference repository `Data-Observatory/repository-crisis-scorecards-assesment` (live at https://rcs.dataobservatory.net/), referred to below as "the reference".
 
@@ -22,7 +24,7 @@ A small static website, published by Data Observatory, that lists external resou
 - No ranking of tools and no "recommended" label. "Best for" is a short, neutral description of a use case, not a ranking (see 7.3).
 - No prefilled deep links into third-party tools, no wizard. A static "Which tool fits?" table replaces both.
 - No compare page (the filtered grid does the comparing).
-- No deployment in this phase. Infrastructure code is authored and must pass `cdk synth`, but nothing is deployed and no AWS call is made.
+- No deployment by sub-agents and none before the final milestone. Infrastructure code must pass `cdk synth` with dummy values. Deployment is authorized only to the app account designated by the owner, and is run by the lead session after the `cdk diff` is reviewed (no account ids, ARNs or profile names in tracked files).
 - No CMS UI. Content changes are pull requests.
 
 ## 3. Decisions (confirmed)
@@ -34,7 +36,7 @@ A small static website, published by Data Observatory, that lists external resou
 | Languages      | English and Spanish at launch, URL-prefixed `/en`, `/es`, as in the reference                                                                         |
 | Spanish style  | Neutral, formal register (usted), no voseo, no emoji or emoticons, no em dashes. Owner reviews all Spanish text later                                 |
 | Tone           | Factual, no judgment. A small optional "best for" line per tool                                                                                       |
-| Hosting        | S3 + CloudFront via CDK like the reference, reusing its patterns. Default domain `fair.dataobservatory.net`, configurable. Not deployed in this phase |
+| Hosting        | S3 + CloudFront via CDK like the reference, reusing its patterns. Default domain `fair.dataobservatory.net`, configurable. Deployed only by the lead session (section 15) |
 | Ownership      | Data Observatory maintains. Outsiders may submit tools by pull request                                                                                |
 | Build approach | Agents implement, tests are written first, an Opus agent reviews                                                                                      |
 
@@ -104,7 +106,7 @@ style:
   voseoWords:
     [vos, tenés, podés, querés, sabés, sos, hacé, mirá, abrí, elegí, seleccioná, usá, fijate]
   informalWords: [tú, tienes, puedes, puedas, quieres, necesitas] # es only
-  forbiddenCharacters: [em_dash, en_dash] # written as the real characters U+2014 and U+2013 in the file
+  forbiddenCharacters: [em_dash, en_dash] # the names `em_dash` and `en_dash` (not the characters themselves), mapped to U+2014 and U+2013 by the style lint
 ```
 
 The rules apply to every text field, including `best_for`. See 9.
@@ -173,7 +175,7 @@ File name equals `id`. Fields:
 | `self_hostable` | no        | bool                                                                                                                |
 | `license`       | no        | SPDX id or free text                                                                                                |
 | `status`        | yes       | `status` id                                                                                                         |
-| `status_note`   | no        | localized, factual evidence for a non-`available` status (for example "Backend host did not respond on 2026-10-25") |
+| `status_note`   | no        | localized, factual evidence for the status shown, allowed on any status (for example "Backend host did not respond on 2026-10-25") |
 | `last_verified` | yes       | ISO date the maintainer last opened the resource and confirmed the entries                                          |
 | `references`    | no        | list of `{ title, url }` (papers, docs)                                                                             |
 
@@ -213,7 +215,7 @@ External links: `rel="noopener noreferrer"`, `target="_blank"`, with a visually 
 ## 7. Content Rules
 
 1. All site content is factual and neutral. No ranking, no "recommended", no superlatives. Enforced partially by the style lint (section 9) and by review.
-2. Status values are evidence-based. `unverified` means the maintainer could not confirm it works on `last_verified`. `limited` means partly working, with `status_note` giving the evidence. `discontinued` only when the operator says so, with the source in `references`.
+2. Status values are evidence-based. `unverified` means the maintainer could not confirm it works on `last_verified`. `limited` means partly working, with `status_note` giving the evidence. `status_note` may be added to any status, as evidence for the status shown. `discontinued` only when the operator says so, with the source in `references`.
 3. "Best for" is one neutral sentence describing a situation, for example "Assessing a published dataset that has a DOI." It must not compare with other tools. It can be disabled globally with `features.bestFor: false`, or per tool by omitting the field.
 4. No emoji, no emoticons, no em dash or en dash anywhere in content or in UI strings. Use commas, colons, parentheses or hyphens.
 5. Spanish: neutral Latin American-compatible register, formal (usted) when addressing the reader, imperative in usted form ("Abra", "Seleccione"), never voseo (no "vos", "tenés", "podés", "abrí"), no regionalisms. The owner reviews the Spanish before release.
@@ -277,9 +279,9 @@ Wording (en): "This site collects no data and sets no cookies. Links lead to thi
 
 Code: MIT. Content (YAML, texts): CC-BY-4.0, as in the reference (`LICENSE`, `LICENSE-CONTENT.md`). Third-party product names belong to their owners. About page states this.
 
-## 15. Deployment (authored, not executed)
+## 15. Deployment
 
-`infra/` adapted from the reference: S3 + CloudFront (OAC), ACM certificate in us-east-1, CloudFront Function URI rewrite, default domain `fair.dataobservatory.net` overridable by `-c domainName=...`, stack `FairSiteStack`. The reference's account IDs, role ARNs and profile names must not be copied: use placeholders (`<ACCOUNT_ID>`) and document the cross-account DNS step as in the reference. Requirement: `cd infra && npm ci && npx cdk synth` succeeds with a dummy account and region. No `cdk deploy`, no `aws` CLI call, no deploy workflow in v1 (a deploy workflow is a later task). `BASE_PATH` supported for the app build.
+`infra/` adapted from the reference: S3 + CloudFront (OAC), ACM certificate in us-east-1, CloudFront Function URI rewrite, default domain `fair.dataobservatory.net` overridable by `-c domainName=...`, stack `FairSiteStack`. The reference's account IDs, role ARNs and profile names must not be copied: use placeholders (`<ACCOUNT_ID>`) and document the cross-account DNS step as in the reference. Requirement: `cd infra && npm ci && npx cdk synth` succeeds with a dummy account and region. Deployment is authorized only to the app account designated by the owner (kept outside tracked files), and is run by the lead session after the `cdk diff` is reviewed, never by a sub-agent. DNS records for the final domain are created only as authorized by the owner. No deploy workflow in v1 (a deploy workflow is a later task). `BASE_PATH` supported for the app build.
 
 ## 16. Testing Strategy (tests first)
 
@@ -309,7 +311,7 @@ Static checks in CI: `svelte-check`, `eslint`, `prettier --check`, `vitest run`,
 
 ## 17. Contributing
 
-`CONTRIBUTING.md` explains: copy `content/tools/_template.yaml`, fill it, run `npm run validate` (schema, cross-checks, style lint, link check for the new file), open a PR. A PR template lists the checklist (URL opened by hand, `last_verified` set, both languages present, neutral wording, no emoji or dashes). Outsiders may provide English only and mark Spanish as `TODO`; CI treats a `TODO` in `es` as a failure for merge to main, so maintainers translate in the PR before merging.
+`CONTRIBUTING.md` explains: copy `content/tools/_template.yaml`, fill it, run `npm run validate` (schema, cross-checks, style lint, link check for the new file), open a PR. A PR template lists the checklist (URL opened by hand, `last_verified` set, both languages present, neutral wording, no emoji or dashes). Outsiders may provide English only and mark Spanish as `TODO`; CI treats a `TODO` in `es` as a failure for merge to main, so maintainers translate in the PR before merging. In practice a `TODO` in `es` makes `npm run validate` fail (and therefore the build), so an English-only PR needs a maintainer to supply the Spanish text before it can merge.
 
 ## 18. Open Items (owner)
 

@@ -13,20 +13,23 @@ npm run dev
 npm run check        # svelte-check
 npm run lint         # prettier + eslint
 npm run format       # prettier --write
+npm run test:unit    # vitest (watch mode; use `npx vitest run` for a single run)
+npm run test:e2e     # playwright (installs browsers, builds, then serves the build)
 npm run build        # runs `npm run validate` first (prebuild), then static output in build/
 npm run validate     # content schema, cross-checks, style lint over content and messages
 npm run schema       # regenerate content/tool.schema.json
 npm run links        # link and freshness report (see below)
 npm run check:base-path  # build with BASE_PATH=/fair and check internal links
+                         # (it regenerates src/lib/paraglide: run `npm run build` afterwards)
 npm run preview
 ```
 
 Node 22.6 or later is required: the `validate`, `schema` and `links` scripts use
 `--experimental-strip-types`.
 
-`npm run build` fails until `content/` exists: the `prebuild` script runs
-`npm run validate`, which reports the missing content files (and still lints
-`messages/*.json`). This is expected until milestone M3 authors the content.
+`npm run build` runs `npm run validate` first (the `prebuild` script) and fails when the
+content or `messages/*.json` break a schema, cross-check or style rule. A `TODO` in an
+`es` field also fails validation.
 
 `npm install` and `npm run build` run `paraglide-js compile`, which loads
 plugins from jsdelivr, so these steps need network access.
@@ -57,7 +60,8 @@ See `CONTRIBUTING.md` for how to add or update a tool.
 
 ## Deployment
 
-The target domain is `fair.dataobservatory.net`.
+The target domain is `fair.dataobservatory.net`. The CDK stack and the deployment
+notes are in `infra/README.md`.
 
 ## Licenses
 
