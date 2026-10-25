@@ -1,0 +1,18 @@
+{
+	"$schema": "https://inlang.com/schema/inlang-message-format",
+
+	"site_name": "FAIR Resources Finder",
+	"nav_home": "Home",
+	"nav_about": "About",
+	"skip_to_content": "Skip to content",
+	"language_switcher_label": "Language",
+
+	"home_title": "FAIR Resources Finder",
+	"home_placeholder": "Directory of external FAIR assessment resources. Content will be added here.",
+	"home_redirecting": "Redirecting...",
+	"home_redirecting_choose": "If this takes too long, choose a language:",
+
+	"about_title": "About",
+
+	"footer_license": "Code licensed under {codeLicense}. Content licensed under {contentLicense}."
+}
