@@ -2,19 +2,21 @@
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { browser } from '$app/environment';
+	import { replaceState } from '$app/navigation';
 	import { page } from '$app/state';
 	import CaveatBox from '$lib/components/CaveatBox.svelte';
 	import FilterBar from '$lib/components/FilterBar.svelte';
 	import FinderTable from '$lib/components/FinderTable.svelte';
 	import SectionBlock from '$lib/components/SectionBlock.svelte';
-	import { getContent } from '$lib/core/content';
 	import {
-		filterTools,
+		hasActiveSelection,
 		selectionFromQuery,
 		selectionToQuery,
 		type Selection
 	} from '$lib/core/filter';
+	import { allowedValuesOf, expandForPrint, matchingIds, urlWithQuery } from '$lib/core/home-state';
 	import { localized } from '$lib/i18n';
+	import { currentQuery } from '$lib/query-state.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -33,28 +35,54 @@
 		// A full navigation, not goto(): the target locale's <html lang>/dir are baked
 		// into its own prerendered document at build time, and only apply on a real
 		// page load.
-		window.location.replace(localized(resolve('/'), { locale: preferred }));
+		// Let the declared fonts and the icon finish loading first: leaving earlier aborts those
+		// downloads, which Firefox reports as console errors and failed requests.
+		const target = localized(resolve('/'), { locale: preferred });
+		const icons = [...document.querySelectorAll<HTMLLinkElement>('link[rel~="icon"]')].map((link) =>
+			fetch(link.href).catch(() => undefined)
+		);
+		const fonts = [...document.fonts].map((face) => face.load().catch(() => face));
+		// The browser's own icon request is not observable, so allow it a short moment as well.
+		const settle = new Promise((done) => setTimeout(done, 300));
+		void Promise.all([...icons, ...fonts, settle]).then(() => window.location.replace(target));
 	});
 
 	// Filters are progressive enhancement: the prerendered page shows every resource, and the
 	// selection is read from the query string on the client only, after mount.
-	const tools = getContent().tools;
+	const cards = $derived(view.sections.flatMap((section) => section.tools));
 	let selection = $state<Selection>({});
-	const visible = $derived(filterTools(tools, selection).map((tool) => tool.id));
+	const filterActive = $derived(hasActiveSelection(selection));
+	const visible = $derived(matchingIds(cards, selection));
 
 	onMount(() => {
-		const groups = view.filterGroups.map((group) => group.id);
-		selection = selectionFromQuery(new URLSearchParams(window.location.search), groups);
+		selection = selectionFromQuery(
+			new URLSearchParams(window.location.search),
+			view.filterGroups.map((group) => group.id),
+			allowedValuesOf(view.filterGroups)
+		);
+
+		// Printing shows every card: open all sections, then put each one back as it was.
+		let restore: (() => void) | undefined;
+		const beforePrint = () => {
+			restore?.();
+			restore = expandForPrint(document.querySelectorAll('details'));
+		};
+		const afterPrint = () => {
+			restore?.();
+			restore = undefined;
+		};
+		window.addEventListener('beforeprint', beforePrint);
+		window.addEventListener('afterprint', afterPrint);
+		return () => {
+			window.removeEventListener('beforeprint', beforePrint);
+			window.removeEventListener('afterprint', afterPrint);
+		};
 	});
 
 	function syncUrl() {
-		const query = selectionToQuery(selection).toString();
-		const { pathname, hash } = window.location;
-		window.history.replaceState(
-			window.history.state,
-			'',
-			`${pathname}${query ? `?${query}` : ''}${hash}`
-		);
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- same page, only the query changes
+		replaceState(urlWithQuery(page.url, selectionToQuery(selection).toString()), page.state);
+		currentQuery.search = window.location.search;
 	}
 
 	function toggle(group: string, id: string, checked: boolean) {
@@ -101,7 +129,7 @@
 			<p class="mx-auto mt-5 max-w-xl text-lg font-light text-zinc-700">{view.tagline}</p>
 		</section>
 
-		<CaveatBox caveats={view.caveats} />
+		<CaveatBox caveats={view.caveats} headingLevel={2} />
 
 		<FilterBar
 			groups={view.filterGroups}
@@ -112,7 +140,7 @@
 		/>
 
 		{#each view.sections as section (section.id)}
-			<SectionBlock {section} {visible} />
+			<SectionBlock {section} {visible} {filterActive} />
 		{/each}
 
 		{#if view.finder}

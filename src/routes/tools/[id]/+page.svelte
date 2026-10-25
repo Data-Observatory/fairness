@@ -2,7 +2,8 @@
 	import { resolve } from '$app/paths';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import StatusChip from '$lib/components/StatusChip.svelte';
-	import { FACT_LABELS, type FactItem } from '$lib/core/view';
+	import { FACT_LABELS } from '$lib/core/labels';
+	import type { FactItem } from '$lib/core/view';
 	import { localized } from '$lib/i18n';
 	import * as m from '$lib/paraglide/messages';
 	import { getLocale } from '$lib/paraglide/runtime';
@@ -65,7 +66,7 @@
 		>
 			{m.card_open()}<span class="sr-only">: {tool.name}</span>
 		</ExternalLink>
-		<span class="text-sm break-all text-zinc-700">{tool.host}</span>
+		<span class="text-sm break-all text-zinc-700">{tool.url}</span>
 	</p>
 
 	{#if tool.statusNote}

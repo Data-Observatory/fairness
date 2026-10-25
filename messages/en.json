@@ -61,6 +61,10 @@
 	"about_origin_body": "This site is built in the style of the Repository Crisis Scorecards project by Data Observatory.",
 	"about_origin_link": "Repository Crisis Scorecards",
 
+	"not_found_title": "Page not found",
+	"not_found_body": "This page does not exist, or the link is out of date.",
+	"not_found_back": "Back to all resources",
+
 	"footer_license": "Code licensed under {codeLicense}. Content licensed under {contentLicense}.",
 	"footer_repository": "Source repository",
 	"footer_contribute": "Contribute",

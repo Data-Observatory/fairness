@@ -28,12 +28,19 @@
 		shown === 1 ? m.results_shown_one({ count: shown }) : m.results_shown_other({ count: shown })
 	);
 
+	// The selection is read from the URL after mount, so a shared filtered link opens the panel
+	// here rather than in onMount.
+	$effect(() => {
+		if (active) open = true;
+	});
+
 	onMount(() => {
-		// Below the md breakpoint the controls start collapsed, from md up they are always open.
+		// Below the md breakpoint the controls start collapsed unless a filter is active, from md
+		// up they are always open.
 		const wide = window.matchMedia('(min-width: 768px)');
-		open = wide.matches;
+		open = wide.matches || active;
 		enhanced = true;
-		const update = (event: MediaQueryListEvent) => (open = event.matches);
+		const update = (event: MediaQueryListEvent) => (open = event.matches || active);
 		wide.addEventListener('change', update);
 		return () => wide.removeEventListener('change', update);
 	});

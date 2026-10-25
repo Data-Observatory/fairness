@@ -23,19 +23,39 @@ function valuesOf(tool: Tool, group: string): string[] {
 	}
 }
 
+/** Groups of a selection that impose a constraint (known group, at least one value). */
+function activeGroups(selection: Selection): [string, string[]][] {
+	const known: readonly string[] = FILTER_GROUPS;
+	return Object.entries(selection).filter(
+		(entry): entry is [string, string[]] => known.includes(entry[0]) && (entry[1]?.length ?? 0) > 0
+	);
+}
+
+/** True when at least one known group has a selected value. */
+export function hasActiveSelection(selection: Selection): boolean {
+	return activeGroups(selection).length > 0;
+}
+
+/**
+ * OR within a group, AND across groups, for anything that can list its taxonomy ids per group
+ * (a tool, or the `filterFields` of a card in the view model).
+ */
+export function matchesSelection(
+	valuesIn: (group: string) => readonly string[],
+	selection: Selection
+): boolean {
+	return activeGroups(selection).every(([group, wanted]) =>
+		valuesIn(group).some((value) => wanted.includes(value))
+	);
+}
+
 /**
  * OR within a group, AND across groups. Entries that lack a field never match a
  * non-empty selection on it. Groups that are not in FILTER_GROUPS are ignored.
  * Returns a new array in the original order.
  */
 export function filterTools(tools: readonly Tool[], selection: Selection): Tool[] {
-	const known: readonly string[] = FILTER_GROUPS;
-	const active = Object.entries(selection).filter(
-		(entry): entry is [string, string[]] => known.includes(entry[0]) && (entry[1]?.length ?? 0) > 0
-	);
-	return tools.filter((tool) =>
-		active.every(([group, wanted]) => valuesOf(tool, group).some((value) => wanted.includes(value)))
-	);
+	return tools.filter((tool) => matchesSelection((group) => valuesOf(tool, group), selection));
 }
 
 function normalize(values: readonly string[]): string[] {

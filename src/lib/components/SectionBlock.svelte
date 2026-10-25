@@ -1,11 +1,22 @@
 <script lang="ts">
+	import { createOpenMemory } from '$lib/core/home-state';
 	import type { HomeView } from '$lib/core/view';
 	import * as m from '$lib/paraglide/messages';
 	import ToolCard from './ToolCard.svelte';
 
 	type Section = HomeView['sections'][number];
 
-	let { section, visible }: { section: Section; visible: readonly string[] } = $props();
+	let {
+		section,
+		visible,
+		filterActive
+	}: { section: Section; visible: readonly string[]; filterActive: boolean } = $props();
+
+	let details = $state<HTMLDetailsElement>();
+	const applyOpen = createOpenMemory();
+	$effect(() => {
+		if (details) applyOpen(details, filterActive);
+	});
 
 	const shown = $derived(section.tools.filter((tool) => visible.includes(tool.id)).length);
 </script>
@@ -17,7 +28,7 @@
 	<p data-testid="section-empty" class="mt-4 text-sm text-zinc-700" hidden={shown > 0}>
 		{m.section_empty()}
 	</p>
-	<ul class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+	<ul class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 print:grid-cols-1">
 		{#each section.tools as tool (tool.id)}
 			<li hidden={!visible.includes(tool.id)}>
 				<ToolCard {tool} />
@@ -28,7 +39,7 @@
 
 <section data-section-id={section.id} class="mt-12">
 	{#if section.collapsed}
-		<details class="group">
+		<details class="group" bind:this={details}>
 			<summary
 				class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-1 py-1 [&::-webkit-details-marker]:hidden"
 			>

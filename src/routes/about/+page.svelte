@@ -22,7 +22,7 @@
 		<h2 id="about-what" class={h2}>{m.about_what_title()}</h2>
 		<p class="mt-3">{m.about_what_body_1()}</p>
 		<p class="mt-3">{m.about_what_body_2()}</p>
-		<div class="mt-5"><CaveatBox caveats={data.caveats} /></div>
+		<div class="mt-5"><CaveatBox caveats={data.caveats} headingLevel={3} /></div>
 	</section>
 
 	<section aria-labelledby="about-verified">

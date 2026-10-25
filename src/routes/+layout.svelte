@@ -1,10 +1,13 @@
 <script lang="ts">
 	import './layout.css';
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import type { ResolvedPathname } from '$app/types';
 	import { locales, getLocale } from '$lib/paraglide/runtime';
+	import { withSearch } from '$lib/core/home-state';
 	import { localized } from '$lib/i18n';
+	import { currentQuery } from '$lib/query-state.svelte';
 	import * as m from '$lib/paraglide/messages';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 
@@ -21,11 +24,33 @@
 		return page.route.id === routeId;
 	}
 
+	// The query string is only known in the browser (prerendering has none), so the locale links
+	// gain it after mount, on every navigation, and when the filters change it (see the home page).
+	afterNavigate(() => {
+		currentQuery.search = window.location.search;
+	});
+
+	// Same page in another locale, with the current query string.
+	const localeHref = (locale: (typeof locales)[number]): ResolvedPathname =>
+		withSearch(
+			localized(page.url.pathname as ResolvedPathname, { locale }),
+			currentQuery.search
+		) as ResolvedPathname;
+
+	function skipToContent(event: MouseEvent) {
+		const main = document.getElementById('main-content');
+		if (!main) return;
+		event.preventDefault();
+		main.focus();
+		main.scrollIntoView();
+	}
+
 	const localeLabels: Record<string, string> = { en: 'EN', es: 'ES' };
 </script>
 
 <a
 	href="#main-content"
+	onclick={skipToContent}
 	class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-full focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
 >
 	{m.skip_to_content()}
@@ -40,7 +65,7 @@
 				href={localized(resolve('/'))}
 				class="mr-2 pl-3 font-heading text-sm font-semibold tracking-tight text-zinc-800"
 			>
-				FAIR
+				{data.site.shortName}
 			</a>
 			{#each navLinks as link (link.href)}
 				<a
@@ -61,7 +86,7 @@
 			>
 				{#each locales as locale (locale)}
 					<a
-						href={localized(page.url.pathname as ResolvedPathname, { locale })}
+						href={localeHref(locale)}
 						data-testid={`locale-switch-${locale}`}
 						hreflang={locale}
 						lang={locale}
@@ -81,7 +106,7 @@
 		</nav>
 	</header>
 
-	<main id="main-content" class="flex-1">
+	<main id="main-content" tabindex="-1" class="flex-1 focus:outline-none">
 		{@render children()}
 	</main>
 
