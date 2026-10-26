@@ -64,10 +64,12 @@
 
 	// After a step change the focused control may be gone or its meaning changed: move focus to
 	// the new question or to the results heading so keyboard and screen reader users keep their place.
-	async function moveTo(next: WizardState) {
+	// `target` defaults to the element marked data-wizard-focus; a level switch from the results
+	// removes the pressed button, so it passes the level switch button instead.
+	async function moveTo(next: WizardState, target = '[data-wizard-focus]') {
 		update(next);
 		await tick();
-		root?.querySelector<HTMLElement>('[data-wizard-focus]')?.focus();
+		root?.querySelector<HTMLElement>(target)?.focus();
 	}
 
 	function answer(question: string, option: string, checked: boolean) {
@@ -81,6 +83,10 @@
 
 	function choose(level: WizardLevel) {
 		update(switchLevel(wizard, level, config));
+	}
+
+	function chooseFromResults(level: WizardLevel) {
+		void moveTo(switchLevel(wizard, level, config), `[data-testid=wizard-level-${level}]`);
 	}
 
 	const total = $derived(config.levels.simple.length);
@@ -237,7 +243,7 @@
 					<button
 						type="button"
 						data-testid="wizard-change-level"
-						onclick={() => choose('advanced')}
+						onclick={() => chooseFromResults('advanced')}
 						class={buttonClass}
 					>
 						{m.wizard_use_advanced()}
