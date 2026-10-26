@@ -10,7 +10,8 @@ const WIZARD = 'content/wizard.yaml';
 const valid = loadFixtureFiles();
 const wizardDoc = () => parse(valid[WIZARD]);
 const edit = (change: (doc: any) => void): Files => mutate(valid, WIZARD, change);
-const messages = (files: Files) => issuesOf(files).map((issue) => `${issue.path}: ${issue.message}`);
+const messages = (files: Files) =>
+	issuesOf(files).map((issue) => `${issue.path}: ${issue.message}`);
 
 describe('wizard.yaml: schema', () => {
 	it('the fixture parses', () => {
