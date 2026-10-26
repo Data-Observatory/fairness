@@ -5,6 +5,7 @@ import {
 	parseWizardQuery,
 	setAnswer,
 	switchLevel,
+	wizardFallback,
 	wizardStateToQuery,
 	type WizardConfig,
 	type WizardState,
@@ -310,5 +311,15 @@ describe('switchLevel', () => {
 	it('switching to the current level changes nothing', () => {
 		const state: WizardState = { level: 'simple', answers: { target: ['dataset'] }, step: 2 };
 		expect(switchLevel(state, 'simple', config)).toEqual(state);
+	});
+});
+
+describe('wizardFallback', () => {
+	it('points at the finder table when it is shown', () => {
+		expect(wizardFallback(true)).toEqual({ fragment: '#finder', variant: 'table' });
+	});
+
+	it('points at the plain home page and describes no table when it is off', () => {
+		expect(wizardFallback(false)).toEqual({ fragment: '', variant: 'home' });
 	});
 });

@@ -40,6 +40,8 @@
 	"wizard_noscript_title": "The guided finder needs JavaScript",
 	"wizard_noscript_body": "This page asks questions and filters the list in your browser, so it requires JavaScript. Without it, you can use the finder table on the home page, which lists the tools by the data you have.",
 	"wizard_noscript_link": "Open the finder table on the home page",
+	"wizard_noscript_body_home": "This page asks questions and filters the list in your browser, so it requires JavaScript. Without JavaScript, the list of resources is available on the home page.",
+	"wizard_noscript_link_home": "Open the home page",
 	"wizard_progress": "Question {step} of {total}",
 	"wizard_no_preference": "No preference",
 	"wizard_back": "Back",

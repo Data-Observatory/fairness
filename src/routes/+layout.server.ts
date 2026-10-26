@@ -19,6 +19,6 @@ export const load = () => {
 			repository: site.repository,
 			contributeUrl: site.contributeUrl
 		},
-		features: { wizard: site.features.wizard }
+		features: { wizard: site.features.wizard, finderTable: site.features.finderTable }
 	};
 };

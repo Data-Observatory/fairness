@@ -172,3 +172,16 @@ export function wizardConfigOf(view: WizardView): WizardConfig {
 		)
 	};
 }
+
+/**
+ * What the page offers without JavaScript: a link to the finder table (`#finder`) when the home
+ * page shows it, otherwise a plain link to the home page and a text that does not mention a table.
+ */
+export function wizardFallback(finderTable: boolean): {
+	fragment: '#finder' | '';
+	variant: 'table' | 'home';
+} {
+	return finderTable
+		? { fragment: '#finder', variant: 'table' }
+		: { fragment: '', variant: 'home' };
+}

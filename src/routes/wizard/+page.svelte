@@ -15,6 +15,7 @@
 		setAnswer,
 		switchLevel,
 		wizardConfigOf,
+		wizardFallback,
 		wizardStateToQuery,
 		type WizardLevel,
 		type WizardState
@@ -48,7 +49,8 @@
 				.map((option) => option.label)
 		}))
 	);
-	const finderHref = $derived(`${localized(resolve('/'))}#finder` as ResolvedPathname);
+	const fallback = $derived(wizardFallback(data.features.finderTable));
+	const finderHref = $derived(`${localized(resolve('/'))}${fallback.fragment}` as ResolvedPathname);
 
 	onMount(() => {
 		wizard = parseWizardQuery(new URLSearchParams(window.location.search), config);
@@ -119,13 +121,15 @@
 			class="mt-8 rounded-2xl bg-zinc-50 p-5 text-sm text-zinc-800 ring-1 ring-zinc-200"
 		>
 			<p class="font-semibold text-zinc-900">{m.wizard_noscript_title()}</p>
-			<p class="mt-2">{m.wizard_noscript_body()}</p>
+			<p class="mt-2">
+				{fallback.variant === 'table' ? m.wizard_noscript_body() : m.wizard_noscript_body_home()}
+			</p>
 			<p class="mt-3">
 				<a
 					href={finderHref}
 					class="text-blue-700 underline decoration-blue-700/40 underline-offset-2 hover:text-blue-900"
 				>
-					{m.wizard_noscript_link()}
+					{fallback.variant === 'table' ? m.wizard_noscript_link() : m.wizard_noscript_link_home()}
 				</a>
 			</p>
 		</div>

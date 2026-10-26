@@ -40,6 +40,8 @@
 	"wizard_noscript_title": "El buscador guiado requiere JavaScript",
 	"wizard_noscript_body": "Esta página formula preguntas y filtra la lista en su navegador, por lo que requiere JavaScript. Sin JavaScript, puede usar la tabla de búsqueda de la página de inicio, que enumera las herramientas según los datos con que usted cuenta.",
 	"wizard_noscript_link": "Abrir la tabla de búsqueda de la página de inicio",
+	"wizard_noscript_body_home": "Esta página formula preguntas y filtra la lista en su navegador, por lo que requiere JavaScript. Sin JavaScript, puede consultar la lista de recursos en la página de inicio.",
+	"wizard_noscript_link_home": "Abrir la página de inicio",
 	"wizard_progress": "Pregunta {step} de {total}",
 	"wizard_no_preference": "Sin preferencia",
 	"wizard_back": "Atrás",
