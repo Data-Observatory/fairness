@@ -21,10 +21,14 @@ export const section = (page: Page, id: string): Locator =>
  */
 export async function expandAllSections(page: Page): Promise<void> {
 	const closed = page.locator('section[data-section-id] details:not([open]) > summary');
-	await closed.evaluateAll((summaries) => {
-		for (const summary of summaries) (summary as HTMLElement).click();
-	});
-	await expect(closed).toHaveCount(0);
+	// Repeated until nothing is closed: a click made before hydration can be undone when the page
+	// hydrates and applies its own open state, which happened on slow CI runners after a reload.
+	await expect(async () => {
+		await closed.evaluateAll((summaries) => {
+			for (const summary of summaries) (summary as HTMLElement).click();
+		});
+		await expect(closed).toHaveCount(0, { timeout: 1000 });
+	}).toPass({ timeout: 10_000 });
 }
 
 /** Matches `n` as a whole number inside a text such as "12 resources shown". */
