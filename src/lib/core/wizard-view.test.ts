@@ -182,3 +182,13 @@ describe('wizardConfigOf', () => {
 		expect(matchingToolIds(view.tools, { input: ['doi'] })).toEqual(['f-uji', 'fair-enough']);
 	});
 });
+
+describe('buildWizardView: a question without taxonomy options', () => {
+	it('throws when api has no option label instead of inventing one', () => {
+		const content = fixture();
+		const api = content.wizard.questions.find((item) => item.id === 'api');
+		if (!api) throw new Error('no api question in the fixture');
+		delete api.option;
+		expect(() => buildWizardView(content, 'en', FIXTURE_TODAY)).toThrow(/api/);
+	});
+});
