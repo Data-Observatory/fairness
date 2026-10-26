@@ -198,6 +198,25 @@ Cross-check: every tool id must exist; rows may only list tools whose `inputs` i
 
 Short localized paragraphs for the "What automated FAIR checks can and cannot tell you" box on the home page and the About page. Must include: tools implement different metric sets and can return different results for the same resource; a result describes what the tool could detect from public metadata, not the quality of the data; the site does not endorse any tool. Cites the 2024 Data Science Journal paper "The FAIR Assessment Conundrum: Reflections on Tools and Metrics" as a reference (DOI to be verified by the implementing agent before use).
 
+### 5.7 `content/wizard.yaml` ("Guided finder")
+
+Drives the `/wizard` page. Questions, help texts and the two levels are content, not code.
+
+```yaml
+questions:
+  - id: target # taxonomy group (target, mode, input, framework, status), or api, self_hostable
+    question: { en: ..., es: ... }
+    help: { en: ..., es: ... } # optional
+    option: { en: ..., es: ... } # only for api and self_hostable: the label of their single "yes" option
+levels:
+  simple: [target, input] # question ids, in display order
+  advanced: [target, input, mode, framework, api, self_hostable]
+```
+
+Cross-checks (tests enforce them): every id in `levels` has a question; no duplicate ids in a level or in `questions`; `simple` is a subset of `advanced`; `api` and `self_hostable` questions carry `option`, taxonomy questions do not; ids are known.
+
+Matching: OR within a question, AND across questions, as the home filters. A tool with no recorded value for a question never matches an answer to it (for `api` and `self_hostable`, only `true` matches). Tools of kind `framework` and `directory` have no targets, inputs or mode, so they match only when no answered question needs those fields. Results keep the home page order (sections order, then tool order) and are never ranked.
+
 ## 6. Pages and Navigation
 
 Pill nav as in the reference. Items: Home, About. Locale switch EN / ES. Skip-to-content link. Footer with licenses, repository link, contribute link, privacy statement.
@@ -206,6 +225,7 @@ Pill nav as in the reference. Items: Home, About. Locale switch EN / ES. Skip-to
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/`                                | Hero (name, tagline). Caveat box. Filter bar. Sections in `sections.yaml` order, each a grid of tool cards (name, summary, chips for mode / targets / status, "best for" line if enabled, "Open" external button, "Details" link). Collapsed sections use native `<details>`. "Which tool fits?" table. |
 | `/tools/[id]`                      | Prerendered for every tool. Name, summary, best for, definition list of all factual fields (operator, targets, mode, inputs, frameworks, output, API, source code, self-hostable, license, status and note, last verified with staleness note), references, "Open" button, back link.                   |
+| `/wizard`                          | Guided finder, prerendered. Level switch (Simple, Advanced). Simple: one question per step (single choice, "No preference" always available), then results. Advanced: every question on one page (multiple choice), results update live. Options with no matching tool are disabled. Results are tool cards in home order plus the caveat box. State in the query string (`level=advanced`, `step=N` or `step=results`, one parameter per question id) so a result can be shared. Without JavaScript the page explains that and links to the finder table on the home page. `features.wizard: false` hides the nav item and the home link (the route stays prerendered). |
 | `/about`                           | What FAIR assessment is (short), caveats, how entries are verified, how to suggest a tool (link to CONTRIBUTING), licenses, citation of this site, attribution to the reference project style (neutral).                                                                                                |
 
 Filters are client-side progressive enhancement: with JavaScript disabled, all tools are visible and the page remains fully usable. Filter state is mirrored in the URL query string (`?mode=automated&target=dataset`) so a filtered view can be shared; it is read on the client only (pages stay prerendered). Within one filter group the selection is OR, across groups AND. An empty result shows a neutral message and a "clear filters" control.
@@ -317,8 +337,8 @@ Static checks in CI: `svelte-check`, `eslint`, `prettier --check`, `vitest run`,
 
 - Repository: `https://github.com/Data-Observatory/fairness` (public). The site links to it from the footer, About page and contribution links.
 - Spanish review of all text. Wording chosen by the implementation that deserves a look: "Autoalojable" (self-hostable), "Caso de uso" (label of the `best_for` line), "Ficha técnica" (detail facts title), "Dato de partida" (finder input column).
-- Whether to add the finder as a guided wizard in a later phase.
-- Weekly link-check workflow: scheduled, has not run on GitHub yet. Trigger it once to confirm it works (it opens an issue when it finds problems).
+- Guided wizard: decided 2026-10-26 (route `/wizard`, nav item, link from the home finder section, simple and advanced levels, section 5.7).
+- Weekly link-check workflow: has run once on GitHub and passed.
 - Re-verification: entries carry `last_verified` and are flagged after `verification.staleAfterDays` (180). A maintainer re-checks them; the weekly link check reports broken links.
 - Hardening backlog (no known blocker): hash-based CSP, CloudFront and S3 access logging (see section 19).
 - Deploy workflow (GitHub Actions) and the AWS account decisions for it: deferred. Deploys are manual for now.
