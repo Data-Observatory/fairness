@@ -16,7 +16,8 @@ test.describe('mobile viewport 375x812', () => {
 		'/en/about',
 		'/en/tools/f-uji',
 		'/en/wizard',
-		'/en/wizard?level=advanced'
+		'/en/wizard?level=advanced',
+		'/es/wizard'
 	]) {
 		test(`${url} has no horizontal scroll`, async ({ page }) => {
 			await page.goto(url);
