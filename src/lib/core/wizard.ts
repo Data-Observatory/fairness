@@ -29,9 +29,18 @@ export type WizardTool = {
 
 const sorted = (values: Iterable<string>): string[] => [...new Set(values)].sort();
 
-/** The ids of the tools that fit the answers, in the order of `tools`: OR within, AND across. */
-export function matchingToolIds(tools: readonly WizardTool[], answers: WizardAnswers): string[] {
-	const known = new Set(tools.flatMap((tool) => Object.keys(tool.fields)));
+/**
+ * The ids of the tools that fit the answers, in the order of `tools`: OR within, AND across.
+ * `questions` lists the known question ids: an answer to one of them is always applied and a tool
+ * without that key has no value, so it does not match (specs 5.7). Without it, the known ids are
+ * the keys found in the tools and an answer to any other id is ignored.
+ */
+export function matchingToolIds(
+	tools: readonly WizardTool[],
+	answers: WizardAnswers,
+	questions?: readonly string[]
+): string[] {
+	const known = new Set(questions ?? tools.flatMap((tool) => Object.keys(tool.fields)));
 	const active = Object.entries(answers).filter(
 		([question, values]) => values.length > 0 && known.has(question)
 	);
@@ -52,10 +61,11 @@ export function optionCounts(
 	tools: readonly WizardTool[],
 	answers: WizardAnswers,
 	question: string,
-	optionIds: readonly string[]
+	optionIds: readonly string[],
+	questions?: readonly string[]
 ): Record<string, number> {
 	const others = Object.fromEntries(Object.entries(answers).filter(([id]) => id !== question));
-	const remaining = new Set(matchingToolIds(tools, others));
+	const remaining = new Set(matchingToolIds(tools, others, questions));
 	const counts: Record<string, number> = Object.fromEntries(optionIds.map((id) => [id, 0]));
 	for (const tool of tools) {
 		if (!remaining.has(tool.id)) continue;

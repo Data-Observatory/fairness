@@ -33,10 +33,11 @@
 	let wizard = $state<WizardState>({ level: 'simple', answers: {}, step: 1 });
 	let root = $state<HTMLElement>();
 
+	const questionIds = $derived(Object.keys(config.options));
 	const questions = $derived(
 		config.levels[wizard.level].flatMap((id) => view.questions.filter((item) => item.id === id))
 	);
-	const matching = $derived(new Set(matchingToolIds(view.tools, wizard.answers)));
+	const matching = $derived(new Set(matchingToolIds(view.tools, wizard.answers, questionIds)));
 	const cards = $derived(view.tools.filter((tool) => matching.has(tool.id)));
 	const summary = $derived(
 		questions.map((item) => ({
@@ -168,7 +169,8 @@
 							view.tools,
 							wizard.answers,
 							item.id,
-							item.options.map((option) => option.id)
+							item.options.map((option) => option.id),
+							questionIds
 						)}
 						onchange={(option, checked) => answer(item.id, option, checked)}
 						onclear={() => clearAnswer(item.id)}
@@ -201,7 +203,8 @@
 							view.tools,
 							wizard.answers,
 							current.id,
-							current.options.map((option) => option.id)
+							current.options.map((option) => option.id),
+							questionIds
 						)}
 						focusTarget
 						onchange={(option, checked) => answer(current.id, option, checked)}
