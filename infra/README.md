@@ -114,7 +114,8 @@ The DNS records change accordingly.
 
 - The stack `FairSiteStack` is deployed (us-east-1, the app account). Outputs are available with `aws cloudformation describe-stacks --stack-name FairSiteStack`.
 - The ACM validation CNAME exists in the DNS account, and the certificate is issued.
-- The alias A record for the domain (step 2 above) is not created yet. Until it exists, the site is reachable only at the `DistributionDomainName` host, whose TLS certificate does not match that host name, so browsers show a warning. To test before publishing, map the domain to a CloudFront edge address (for example with Chromium's `--host-resolver-rules`) as the maintainers did.
+- The alias A record for the domain (step 2 above) exists, and the site is public at `https://fair.dataobservatory.net`. The `DistributionDomainName` host itself shows a certificate warning, because the certificate covers only the custom domain.
+- Resolvers that looked up the name before the record existed can cache the "not found" answer for up to 15 minutes (the zone SOA negative TTL). A device that still cannot resolve the name shortly after a first publication needs a DNS cache flush or a short wait.
 - Published pages come from `../build`. To publish a new version, run `npm run build` at the repository root and `npx cdk deploy` again; the deployment invalidates the HTML cache.
 
 ## Credentials with SSO profiles

@@ -65,7 +65,7 @@ notes are in `infra/README.md`.
 
 ## Status
 
-Implemented and deployed to AWS (S3 + CloudFront) but not yet published at the domain: see `specs.md` sections 18 and 19 and `infra/README.md` ("Current deployment state") for open items, deviations and the pending DNS record.
+Implemented, deployed to AWS (S3 + CloudFront) and public at https://fair.dataobservatory.net. See `specs.md` sections 18 and 19 and `infra/README.md` ("Current deployment state") for open items and deviations.
 
 ## Licenses
 

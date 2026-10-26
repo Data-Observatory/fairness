@@ -316,7 +316,6 @@ Static checks in CI: `svelte-check`, `eslint`, `prettier --check`, `vitest run`,
 ## 18. Open Items (owner)
 
 - Repository: `repository` and `contributeUrl` in `content/site.yaml` point at a placeholder (`Data-Observatory/fairness-resources-finder`) that does not exist yet. Create the repository or change the URL, then redeploy.
-- Publication: the stack is deployed, but the public alias DNS record for the domain is not created yet (see `infra/README.md`, "Current deployment state").
 - Spanish review of all text. Wording chosen by the implementation that deserves a look: "Autoalojable" (self-hostable), "Caso de uso" (label of the `best_for` line), "Ficha técnica" (detail facts title), "Dato de partida" (finder input column).
 - Whether to add the finder as a guided wizard in a later phase.
 - Deploy workflow (GitHub Actions) and the AWS account decisions for it: deferred. Deploys are manual for now.

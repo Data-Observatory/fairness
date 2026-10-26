@@ -54,8 +54,8 @@ Exit: everything green, review report presented to the owner with open items.
 
 M1 to M6 are done and reviewed (Opus reviews after M2, M4 and at the end; findings fixed). Verification at the last commit: 559 unit tests, 494 end-to-end tests (Chromium and Firefox), 50 infra tests, `check`, `lint`, `validate`, `check:base-path` and `cdk synth` all clean.
 
-Deployment: `FairSiteStack` is deployed to the reference RCS app account (us-east-1). The ACM validation CNAME exists in the DNS account. The CloudFront alias A record for the domain is NOT created yet, so the site is not public at the domain. It was held back because the repository links in `content/site.yaml` still point to a repository that does not exist. See `infra/README.md`, "Current deployment state".
+Deployment: `FairSiteStack` is deployed to the reference RCS app account (us-east-1). The ACM validation CNAME exists in the DNS account. The CloudFront alias A record for the domain exists and the site is public at `https://fair.dataobservatory.net`. The repository links in `content/site.yaml` still point to a placeholder repository that does not exist. See `infra/README.md`, "Current deployment state".
 
 ## Owner decisions still open
 
-See `specs.md` section 18 (repository URL, publishing the alias record, Spanish review, wizard, deploy workflow) and section 19 (deviations and deferred items).
+See `specs.md` section 18 (repository URL, Spanish review, wizard, deploy workflow) and section 19 (deviations and deferred items).
