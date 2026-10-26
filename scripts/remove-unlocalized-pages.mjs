@@ -4,7 +4,8 @@
 // identical content to their /en/* counterpart (getLocale() falls back to the base
 // locale with no prefix present): pure duplicates, never linked from anywhere in the
 // app. Delete them so only /en, /es, and the root redirect stub ship.
-// The same applies to the tools/ directory (detail pages come from the route's entries()).
+// The same applies to the about/ and wizard/ directories (their __data.json duplicates) and to
+// the tools/ directory (detail pages come from the route's entries()).
 import { readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -16,7 +17,7 @@ const buildDir = process.env.BUILD_DIR
 	? pathToFileURL(`${resolve(process.env.BUILD_DIR)}/`)
 	: new URL('../build/', import.meta.url);
 
-const paths = ['about.html', 'wizard.html', 'tools'];
+const paths = ['about.html', 'wizard.html', 'about', 'wizard', 'tools'];
 
 for (const path of paths) {
 	const target = new URL(path, buildDir);
