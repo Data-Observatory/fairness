@@ -1,0 +1,19 @@
+questions:
+  - id: target
+    question: { en: What do you want to assess?, es: ¿Qué desea evaluar? }
+    help: { en: Choose the type of object., es: Elija el tipo de objeto. }
+  - id: input
+    question: { en: What do you have at hand?, es: ¿Con qué cuenta? }
+  - id: mode
+    question: { en: How should the check run?, es: ¿Cómo debe ejecutarse la comprobación? }
+  - id: framework
+    question: { en: Which metric set?, es: ¿Qué conjunto de métricas? }
+  - id: api
+    question: { en: Do you need an API?, es: ¿Necesita una API? }
+    option: { en: Offers an API, es: Ofrece una API }
+  - id: self_hostable
+    question: { en: Do you need to run it yourself?, es: ¿Necesita ejecutarla por su cuenta? }
+    option: { en: Can be self-hosted, es: Puede autoalojarse }
+levels:
+  simple: [target, input]
+  advanced: [target, input, mode, framework, api, self_hostable]
