@@ -422,6 +422,24 @@ describe('lintContent', () => {
 		);
 	});
 
+	it('lints the wizard texts', () => {
+		const question = mutate(valid, 'content/wizard.yaml', (doc) => {
+			doc.questions[0].question.en = 'Which is the best option?';
+			doc.questions[0].help.es = 'Si tenés dudas, elija una.';
+			doc.questions[4].option.en = 'Offers an API :)';
+		});
+		const found = lint(question);
+		expect(found).toContainEqual(
+			hit('content/wizard.yaml', 'questions.0.question.en', 'forbidden-term', 'best')
+		);
+		expect(found).toContainEqual(
+			hit('content/wizard.yaml', 'questions.0.help.es', 'voseo', 'tenés')
+		);
+		expect(found).toContainEqual(
+			hit('content/wizard.yaml', 'questions.4.option.en', 'emoticon', ':)')
+		);
+	});
+
 	it('uses the rules from site.yaml', () => {
 		const files = mutate(valid, 'content/site.yaml', (doc) => {
 			doc.style.forbiddenTerms.en.push('scalable');

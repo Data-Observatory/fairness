@@ -292,3 +292,45 @@ describe('real content: site.shortName', () => {
 		}
 	});
 });
+
+describe('real content: wizard', () => {
+	const ALL = ['target', 'input', 'mode', 'framework', 'api', 'self_hostable'];
+
+	it('is enabled in site.yaml', () => {
+		expect(content().site.features.wizard).toBe(true);
+	});
+
+	it('asks target and input in the simple level and all six questions in the advanced level', () => {
+		const { levels } = content().wizard;
+		expect(levels.simple).toEqual(['target', 'input']);
+		expect(levels.advanced).toEqual(ALL);
+	});
+
+	it('has one question per id, with en and es text', () => {
+		const { questions } = content().wizard;
+		expect(questions.map((item) => item.id).sort()).toEqual([...ALL].sort());
+		for (const item of questions) {
+			expect(item.question.en.trim(), item.id).not.toBe('');
+			expect(item.question.es.trim(), item.id).not.toBe('');
+		}
+	});
+
+	it('gives api and self_hostable an option label and a help text about missing values', () => {
+		const { questions } = content().wizard;
+		for (const id of ['api', 'self_hostable']) {
+			const item = questions.find((question) => question.id === id)!;
+			expect(item.option, id).toBeDefined();
+			expect(item.help?.en, id).toMatch(/no recorded value/i);
+			expect(item.help?.es, id).toMatch(/sin valor registrado/i);
+		}
+	});
+
+	it('gives taxonomy questions no option label', () => {
+		const { questions } = content().wizard;
+		for (const item of questions.filter(
+			(question) => !['api', 'self_hostable'].includes(question.id)
+		)) {
+			expect(item.option, item.id).toBeUndefined();
+		}
+	});
+});
