@@ -82,9 +82,36 @@ describe('matchingToolIds', () => {
 	});
 });
 
+describe('matchingToolIds with a known question list', () => {
+	const sparse: WizardTool[] = [{ id: 'a', fields: { target: ['x'] } }];
+
+	it('a tool with no key for a known question never matches an answer to it', () => {
+		expect(matchingToolIds(sparse, { api: ['yes'] }, ['target', 'api'])).toEqual([]);
+	});
+
+	it('still ignores answers for questions that are not in the list', () => {
+		expect(matchingToolIds(sparse, { color: ['red'] }, ['target', 'api'])).toEqual(['a']);
+	});
+
+	it('matches as before when the key is present', () => {
+		expect(matchingToolIds(sparse, { target: ['x'] }, ['target', 'api'])).toEqual(['a']);
+		expect(matchingToolIds(sparse, { target: ['y'] }, ['target', 'api'])).toEqual([]);
+	});
+
+	it('is used by optionCounts for the answers to the other questions', () => {
+		expect(optionCounts(sparse, { api: ['yes'] }, 'target', ['x'], ['target', 'api'])).toEqual({
+			x: 0
+		});
+	});
+});
+
 describe('optionCounts', () => {
 	it('counts tools per option given the other answers, ignoring the question itself', () => {
-		const counts = optionCounts(tools, { target: ['dataset'] }, 'input', ['doi', 'landing_page_url', 'none']);
+		const counts = optionCounts(tools, { target: ['dataset'] }, 'input', [
+			'doi',
+			'landing_page_url',
+			'none'
+		]);
 		expect(counts).toEqual({ doi: 2, landing_page_url: 1, none: 1 });
 	});
 
@@ -121,7 +148,10 @@ describe('parseWizardQuery', () => {
 	});
 
 	it('reads answers, comma separated or repeated, sorted and de-duplicated, in advanced', () => {
-		const state = parseWizardQuery(q('level=advanced&target=software,dataset&target=dataset'), config);
+		const state = parseWizardQuery(
+			q('level=advanced&target=software,dataset&target=dataset'),
+			config
+		);
 		expect(state.answers).toEqual({ target: ['dataset', 'software'] });
 		expect(state.step).toBe('results');
 	});
