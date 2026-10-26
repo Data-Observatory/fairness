@@ -54,6 +54,16 @@ a single open issue labelled `link-check`. When there are none and an issue is o
 adds a comment and leaves the issue open. A 200 response does not confirm that a tool
 works, so `last_verified` is updated by hand.
 
+## Guided finder
+
+The page `/wizard` is driven by `content/wizard.yaml`: the questions, their help texts and the
+two levels (simple and advanced). The options of a question come from `content/taxonomy.yaml`;
+`api` and `self_hostable` carry their own single option label. `npm run validate` and the unit
+tests cross-check the file: every id in `levels` has a question, there are no duplicate ids, the
+simple level is a subset of the advanced one, and only `api` and `self_hostable` carry `option`.
+`features.wizard` in `content/site.yaml` shows or hides the navigation item and the link from the
+home page; the route stays prerendered either way. See `specs.md`, section 5.7.
+
 ## Contributing
 
 See `CONTRIBUTING.md` for how to add or update a tool.

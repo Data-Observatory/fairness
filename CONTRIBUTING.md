@@ -18,6 +18,15 @@ files under `content/`; no code changes are needed to add a tool.
 
 To update an existing tool, edit its file and follow steps 3 to 5.
 
+## Guided finder questions
+
+The questions of the guided finder (`/wizard`) are in `content/wizard.yaml`: the question and help
+texts (each with `en` and `es`) and the lists of question ids asked at the simple and advanced
+levels. The options come from `content/taxonomy.yaml`, so a new taxonomy value appears in its
+question without a change to `wizard.yaml`. `npm run validate` runs the cross-checks (see
+`specs.md`, section 5.7). `features.wizard` in `content/site.yaml` turns the navigation item and
+the home link on or off.
+
 ## Content rules
 
 See `specs.md`, section 7.
