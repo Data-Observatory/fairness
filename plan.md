@@ -56,6 +56,17 @@ M1 to M6 are done and reviewed (Opus reviews after M2, M4 and at the end; findin
 
 Deployment: `FairSiteStack` is deployed to the reference RCS app account (us-east-1). The ACM validation CNAME exists in the DNS account. The CloudFront alias A record for the domain exists and the site is public at `https://fair.dataobservatory.net`. The repository links in `content/site.yaml` still point to a placeholder repository that does not exist. See `infra/README.md`, "Current deployment state".
 
+## Wizard (2026-10-26)
+
+The guided finder (`/wizard`, `content/wizard.yaml`, specs section 5.7) is implemented in the
+order core logic, end-to-end specs, UI, Opus review, fixes, each by its own agent. Fixes after the
+review: focus after the level switch from the results, focus and count announcement specs, a
+missing field counts as no value when the question list is known, the no-JavaScript box follows
+`features.finderTable` and is hidden before hydration by a `js` class, removal of the unlocalized
+`about` and `wizard` build directories, and the documentation. Verification at the last commit:
+641 unit tests, 754 end-to-end tests (Chromium and Firefox), `check`, `lint`, `validate`, `build`
+and `check:base-path` clean. Infra was not changed.
+
 ## Owner decisions still open
 
-See `specs.md` section 18 (repository URL, Spanish review, wizard, deploy workflow) and section 19 (deviations and deferred items).
+See `specs.md` section 18 (repository URL, Spanish review, deploy workflow) and section 19 (deviations and deferred items).
