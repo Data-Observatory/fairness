@@ -199,6 +199,12 @@ function wizardFieldsOf(tool: Tool): Record<string, string[]> {
 	};
 }
 
+function yesLabel(item: Content['wizard']['questions'][number], locale: Locale): string {
+	// The schema cross-check requires `option` for these questions: a missing one is a bug.
+	if (item.option === undefined) throw new Error(`wizard question ${item.id} has no option label`);
+	return text(item.option, locale);
+}
+
 export function buildWizardView(content: Content, locale: Locale, today: Date): WizardView {
 	const label = labeler(content, locale);
 	const groups: readonly string[] = TAXONOMY_GROUPS;
@@ -221,7 +227,7 @@ export function buildWizardView(content: Content, locale: Locale, today: Date): 
 							? {}
 							: { description: text(option.description, locale) })
 					}))
-				: [{ id: 'yes', label: item.option === undefined ? 'yes' : text(item.option, locale) }]
+				: [{ id: 'yes', label: yesLabel(item, locale) }]
 		})),
 		tools: content.sections.flatMap((section) =>
 			content.tools
