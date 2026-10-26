@@ -59,6 +59,10 @@ if (failures.length === 0) {
 	for (const page of [...pages, toolPage]) {
 		if (!existsSync(join(outDir, page))) fail(`missing ${page}`);
 	}
+	// The unprefixed duplicates of the localized routes must not ship (remove-unlocalized-pages).
+	for (const leftover of ['about', 'about.html', 'wizard', 'wizard.html', 'tools']) {
+		if (existsSync(join(outDir, leftover))) fail(`unlocalized ${leftover} must be removed`);
+	}
 	const notFound = join(outDir, '404.html');
 	if (
 		!existsSync(notFound) ||
