@@ -48,7 +48,15 @@ if (build.status !== 0) {
 
 if (failures.length === 0) {
 	const toolPage = 'en/tools/f-uji.html';
-	for (const page of ['en.html', 'es.html', 'en/about.html', 'es/about.html', toolPage]) {
+	const pages = [
+		'en.html',
+		'es.html',
+		'en/about.html',
+		'es/about.html',
+		'en/wizard.html',
+		'es/wizard.html'
+	];
+	for (const page of [...pages, toolPage]) {
 		if (!existsSync(join(outDir, page))) fail(`missing ${page}`);
 	}
 	const notFound = join(outDir, '404.html');

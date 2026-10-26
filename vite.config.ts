@@ -42,6 +42,8 @@ export default defineConfig({
 					'/es',
 					'/en/about',
 					'/es/about',
+					'/en/wizard',
+					'/es/wizard',
 					...toolIds.flatMap((id): `/${string}`[] => [`/en/tools/${id}`, `/es/tools/${id}`])
 				]
 			},

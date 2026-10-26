@@ -16,6 +16,9 @@
 
 	const navLinks = $derived([
 		{ href: localized(resolve('/')), label: m.nav_home(), routeId: '/' },
+		...(data.features.wizard
+			? [{ href: localized(resolve('/wizard')), label: m.nav_wizard(), routeId: '/wizard' }]
+			: []),
 		{ href: localized(resolve('/about')), label: m.nav_about(), routeId: '/about' }
 	]);
 
@@ -88,15 +91,16 @@
 		>
 			<a
 				href={localized(resolve('/'))}
-				class="mr-2 pl-3 font-heading text-sm font-semibold tracking-tight text-zinc-800"
+				class="mr-1 pl-2 font-heading text-sm font-semibold tracking-tight text-zinc-800 sm:mr-2 sm:pl-3"
 			>
 				{data.site.shortName}
 			</a>
 			{#each navLinks as link (link.href)}
 				<a
 					href={link.href}
+					aria-current={isActive(link.routeId) ? 'page' : undefined}
 					class={[
-						'rounded-full px-4 py-2 text-sm font-medium transition-colors',
+						'rounded-full px-3 py-2 text-sm font-medium transition-colors sm:px-4',
 						isActive(link.routeId) ? 'bg-blue-600 text-white' : 'text-zinc-700 hover:bg-zinc-100'
 					]}
 				>

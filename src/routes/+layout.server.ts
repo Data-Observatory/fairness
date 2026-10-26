@@ -18,6 +18,7 @@ export const load = () => {
 			domain: site.domain,
 			repository: site.repository,
 			contributeUrl: site.contributeUrl
-		}
+		},
+		features: { wizard: site.features.wizard }
 	};
 };

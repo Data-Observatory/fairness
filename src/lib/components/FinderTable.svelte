@@ -4,14 +4,26 @@
 	import type { HomeView } from '$lib/core/view';
 	import * as m from '$lib/paraglide/messages';
 
-	let { rows }: { rows: NonNullable<HomeView['finder']> } = $props();
+	let { rows, wizard = false }: { rows: NonNullable<HomeView['finder']>; wizard?: boolean } =
+		$props();
 </script>
 
-<section data-testid="finder" class="mt-16" aria-labelledby="finder-title">
+<section id="finder" data-testid="finder" class="mt-16" aria-labelledby="finder-title">
 	<h2 id="finder-title" class="font-heading text-2xl font-semibold tracking-tight text-zinc-900">
 		{m.finder_title()}
 	</h2>
 	<p class="mt-2 max-w-3xl text-sm text-zinc-700">{m.finder_intro()}</p>
+	{#if wizard}
+		<p class="mt-2 max-w-3xl text-sm print:hidden">
+			<a
+				href={localized(resolve('/wizard'))}
+				data-testid="wizard-link"
+				class="text-blue-700 underline decoration-blue-700/40 underline-offset-2 hover:text-blue-900"
+			>
+				{m.finder_wizard_link()}
+			</a>
+		</p>
+	{/if}
 	<table
 		data-testid="finder-table"
 		class="mt-5 w-full table-fixed border-separate border-spacing-0 overflow-hidden rounded-2xl text-left text-sm ring-1 ring-zinc-200"

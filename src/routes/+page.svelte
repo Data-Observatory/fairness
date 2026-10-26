@@ -144,7 +144,7 @@
 		{/each}
 
 		{#if view.finder}
-			<FinderTable rows={view.finder} />
+			<FinderTable rows={view.finder} wizard={data.wizard} />
 		{/if}
 	</div>
 {/if}
