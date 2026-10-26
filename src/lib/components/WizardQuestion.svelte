@@ -44,6 +44,20 @@
 		<p id={helpId} class="mt-1 max-w-3xl text-sm text-zinc-700">{question.help}</p>
 	{/if}
 	<div class="mt-4 flex flex-col gap-2">
+		{#if kind === 'radio'}
+			<label class={[optionClass, 'text-zinc-800']}>
+				<input
+					type="radio"
+					name={question.id}
+					value=""
+					data-testid="wizard-no-preference"
+					checked={selected.length === 0}
+					onchange={onclear}
+					class="mt-0.5 size-4 shrink-0 accent-blue-600"
+				/>
+				<span>{m.wizard_no_preference()}</span>
+			</label>
+		{/if}
 		{#each question.options as option (option.id)}
 			{@const checked = selected.includes(option.id)}
 			{@const disabled = !checked && (counts[option.id] ?? 0) === 0}
@@ -65,19 +79,5 @@
 				</span>
 			</label>
 		{/each}
-		{#if kind === 'radio'}
-			<label class={[optionClass, 'text-zinc-800']}>
-				<input
-					type="radio"
-					name={question.id}
-					value=""
-					data-testid="wizard-no-preference"
-					checked={selected.length === 0}
-					onchange={onclear}
-					class="mt-0.5 size-4 shrink-0 accent-blue-600"
-				/>
-				<span>{m.wizard_no_preference()}</span>
-			</label>
-		{/if}
 	</div>
 </fieldset>
