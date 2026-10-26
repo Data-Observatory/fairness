@@ -31,6 +31,7 @@
 <section data-testid="wizard-results" aria-labelledby="wizard-results-title" class="mt-10">
 	<h2
 		id="wizard-results-title"
+		aria-describedby="wizard-results-count"
 		data-wizard-focus={focusTarget ? '' : undefined}
 		tabindex="-1"
 		class="font-heading text-2xl font-semibold tracking-tight text-zinc-900 focus:outline-none"
@@ -64,7 +65,12 @@
 		</div>
 	{/if}
 
-	<p role="status" data-testid="wizard-result-count" class="mt-4 text-sm font-medium text-zinc-900">
+	<p
+		id="wizard-results-count"
+		role="status"
+		data-testid="wizard-result-count"
+		class="mt-4 text-sm font-medium text-zinc-900"
+	>
 		{count}
 	</p>
 	{#if cards.length === 0}
