@@ -5,6 +5,20 @@ to them. Content is plain YAML under `content/`; UI strings are in
 `messages/{en,es}.json`. English and Spanish. The site is fully prerendered and
 makes no runtime requests to third parties. See `specs.md` and `plan.md`.
 
+## Run locally
+
+Requires Node 22.6 or later and network access for the first install (see below).
+
+```sh
+npm install
+npm run dev
+```
+
+Open the address that `npm run dev` prints (Vite defaults to `http://localhost:5173`). The
+root redirects to `/en` or `/es`; the guided finder is at `/en/wizard`.
+
+To see the static build that is deployed, run `npm run build` and then `npm run preview`.
+
 ## Commands
 
 ```sh
