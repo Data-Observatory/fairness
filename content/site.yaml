@@ -6,8 +6,8 @@ tagline:
 domain: fair.dataobservatory.net
 # Placeholder: the GitHub repository does not exist yet. Update repository and contributeUrl
 # when it is created.
-repository: https://github.com/Data-Observatory/fariness
-contributeUrl: https://github.com/Data-Observatory/fariness/blob/main/CONTRIBUTING.md
+repository: https://github.com/Data-Observatory/fairness
+contributeUrl: https://github.com/Data-Observatory/fairness/blob/main/CONTRIBUTING.md
 locales: [en, es]
 defaultLocale: en
 features:

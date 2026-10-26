@@ -315,11 +315,10 @@ Static checks in CI: `svelte-check`, `eslint`, `prettier --check`, `vitest run`,
 
 ## 18. Open Items (owner)
 
-- Repository: `https://github.com/Data-Observatory/fariness` (private at the time of writing). The site links to it from the footer, About page and contribution links, so outsiders see a 404 until it is made public.
+- Repository: `https://github.com/Data-Observatory/fairness` (public). The site links to it from the footer, About page and contribution links.
 - Spanish review of all text. Wording chosen by the implementation that deserves a look: "Autoalojable" (self-hostable), "Caso de uso" (label of the `best_for` line), "Ficha técnica" (detail facts title), "Dato de partida" (finder input column).
 - Whether to add the finder as a guided wizard in a later phase.
 - First GitHub Actions runs: the CI and weekly link-check workflows had never run before the first push. Check that they pass (the WebKit e2e project only runs there) and fix anything environment specific.
-- Visibility: the repository is private. Make it public for outsiders to submit tools by pull request.
 - Re-verification: entries carry `last_verified` and are flagged after `verification.staleAfterDays` (180). A maintainer re-checks them; the weekly link check reports broken links.
 - Hardening backlog (no known blocker): hash-based CSP, CloudFront and S3 access logging (see section 19).
 - Deploy workflow (GitHub Actions) and the AWS account decisions for it: deferred. Deploys are manual for now.
