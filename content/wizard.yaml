@@ -1,0 +1,55 @@
+# Guided finder (/wizard). Questions, help texts and the two levels are content, not code.
+# A question id is a taxonomy group (target, mode, input, framework, status), or api or
+# self_hostable. Only api and self_hostable carry `option`, the label of their single "yes" option.
+questions:
+  - id: target
+    question:
+      en: What do you want to assess?
+      es: ¿Qué desea evaluar?
+    help:
+      en: Select the type of object. Frameworks and directories do not record a target, so they are not matched when this question is answered.
+      es: Seleccione el tipo de objeto. Los marcos de referencia y los directorios no registran un objetivo, por lo que no se incluyen cuando se responde esta pregunta.
+  - id: input
+    question:
+      en: What can you provide to start the assessment?
+      es: ¿Qué puede proporcionar para iniciar la evaluación?
+    help:
+      en: Select the identifier or file that you have at hand. Entries that do not record inputs are not matched when this question is answered.
+      es: Seleccione el identificador o el archivo con que cuenta. Las entradas que no registran datos de entrada no se incluyen cuando se responde esta pregunta.
+  - id: mode
+    question:
+      en: How should the assessment run?
+      es: ¿Cómo debe ejecutarse la evaluación?
+    help:
+      en: Automated tools run their checks without manual answers. Manual tools ask the person to answer a questionnaire or checklist.
+      es: Las herramientas automáticas ejecutan sus comprobaciones sin respuestas manuales. Las herramientas manuales piden a la persona que responda un cuestionario o una lista de verificación.
+  - id: framework
+    question:
+      en: Which metric set should the tool use?
+      es: ¿Qué conjunto de métricas debe usar la herramienta?
+    help:
+      en: Tools implement different metric sets, so results for the same resource can differ.
+      es: Las herramientas implementan conjuntos de métricas distintos, por lo que los resultados para un mismo recurso pueden diferir.
+  - id: api
+    question:
+      en: Do you need to use the tool through an API?
+      es: ¿Necesita usar la herramienta mediante una API?
+    help:
+      en: Only tools with a recorded API are matched. Tools with no recorded value are not matched.
+      es: Solo se incluyen las herramientas con una API registrada. Las herramientas sin valor registrado no se incluyen.
+    option:
+      en: Offers an API
+      es: Ofrece una API
+  - id: self_hostable
+    question:
+      en: Do you need to run the tool on your own infrastructure?
+      es: ¿Necesita ejecutar la herramienta en su propia infraestructura?
+    help:
+      en: Only tools recorded as self-hostable are matched. Tools with no recorded value are not matched.
+      es: Solo se incluyen las herramientas registradas como autoalojables. Las herramientas sin valor registrado no se incluyen.
+    option:
+      en: Can be self-hosted
+      es: Puede autoalojarse
+levels:
+  simple: [target, input]
+  advanced: [target, input, mode, framework, api, self_hostable]

@@ -2,7 +2,7 @@ import type { Content } from './content.ts';
 import { FILTER_GROUPS, filterTools } from './filter.ts';
 import { daysSince, isStale } from './freshness.ts';
 import { FILTER_GROUP_LABELS, FACT_LABELS, type Locale } from './labels.ts';
-import type { Localized, Tool, ToolKind } from './schema.ts';
+import { TAXONOMY_GROUPS, type Localized, type Tool, type ToolKind } from './schema.ts';
 
 export type { Locale } from './labels.ts';
 export { FACT_LABELS, FILTER_GROUP_LABELS } from './labels.ts';
@@ -48,6 +48,21 @@ export type HomeView = {
 				tools: { id: string; name: string }[];
 		  }[]
 		| null;
+};
+
+export type WizardView = {
+	siteName: string;
+	caveats: string[];
+	/** Question ids asked at each level, in display order. */
+	levels: { simple: string[]; advanced: string[] };
+	questions: {
+		id: string;
+		question: string;
+		help?: string;
+		options: { id: string; label: string; description?: string }[];
+	}[];
+	/** Every tool in the home order. `fields` holds the option ids per question id. */
+	tools: (ToolCard & { fields: Record<string, string[]> })[];
 };
 
 export type FactItem = { text: string; href?: string };
@@ -169,6 +184,53 @@ export function buildHomeView(content: Content, locale: Locale, today: Date): Ho
 					tools: row.tools.map((id) => ({ id, name: toolName.get(id) ?? id }))
 				}))
 			: null
+	};
+}
+
+function wizardFieldsOf(tool: Tool): Record<string, string[]> {
+	return {
+		target: [...(tool.targets ?? [])],
+		input: [...(tool.inputs ?? [])],
+		mode: tool.mode === undefined ? [] : [tool.mode],
+		framework: [...(tool.frameworks ?? [])],
+		status: [tool.status],
+		api: tool.api?.available === true ? ['yes'] : [],
+		self_hostable: tool.self_hostable === true ? ['yes'] : []
+	};
+}
+
+export function buildWizardView(content: Content, locale: Locale, today: Date): WizardView {
+	const label = labeler(content, locale);
+	const groups: readonly string[] = TAXONOMY_GROUPS;
+	return {
+		siteName: text(content.site.name, locale),
+		caveats: content.caveats.map((item) => text(item.text, locale)),
+		levels: {
+			simple: [...content.wizard.levels.simple],
+			advanced: [...content.wizard.levels.advanced]
+		},
+		questions: content.wizard.questions.map((item) => ({
+			id: item.id,
+			question: text(item.question, locale),
+			help: item.help === undefined ? undefined : text(item.help, locale),
+			options: groups.includes(item.id)
+				? content.taxonomy[item.id as (typeof TAXONOMY_GROUPS)[number]].map((option) => ({
+						id: option.id,
+						label: text(option.label, locale),
+						...(option.description === undefined
+							? {}
+							: { description: text(option.description, locale) })
+					}))
+				: [{ id: 'yes', label: item.option === undefined ? 'yes' : text(item.option, locale) }]
+		})),
+		tools: content.sections.flatMap((section) =>
+			content.tools
+				.filter((tool) => tool.section === section.id)
+				.map((tool) => ({
+					...cardOf(content, tool, locale, today, label),
+					fields: wizardFieldsOf(tool)
+				}))
+		)
 	};
 }
 

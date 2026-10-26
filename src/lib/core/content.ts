@@ -8,13 +8,16 @@ import {
 	siteSchema,
 	taxonomySchema,
 	toolSchema,
+	wizardSchema,
 	TAXONOMY_GROUPS,
+	WIZARD_BOOLEAN_QUESTIONS,
 	type Caveats,
 	type Finder,
 	type Sections,
 	type Site,
 	type Taxonomy,
-	type Tool
+	type Tool,
+	type Wizard
 } from './schema.ts';
 import { localIsoDate } from './freshness.ts';
 
@@ -26,6 +29,7 @@ export type Content = {
 	sections: Sections;
 	finder: Finder;
 	caveats: Caveats;
+	wizard: Wizard;
 	/** Sorted by id (plain string order). */
 	tools: Tool[];
 };
@@ -56,8 +60,9 @@ const TAXONOMY = 'content/taxonomy.yaml';
 const SECTIONS = 'content/sections.yaml';
 const FINDER = 'content/finder.yaml';
 const CAVEATS = 'content/caveats.yaml';
+const WIZARD = 'content/wizard.yaml';
 const TOOL_FILE = /^content\/tools\/([^/]+)\.yaml$/;
-const KNOWN_FILES = new Set([SITE, TAXONOMY, SECTIONS, FINDER, CAVEATS]);
+const KNOWN_FILES = new Set([SITE, TAXONOMY, SECTIONS, FINDER, CAVEATS, WIZARD]);
 
 const DOI_URL = /^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)?(10\.\d{4,9}\/\S+)$/i;
 const URL_KEYS = new Set(['url', 'source_code', 'repository', 'contributeUrl']);
@@ -163,7 +168,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 			add(
 				file,
 				'',
-				'Unexpected file (allowed: content/{site,taxonomy,sections,finder,caveats}.yaml and content/tools/<id>.yaml)'
+				'Unexpected file (allowed: content/{site,taxonomy,sections,finder,caveats,wizard}.yaml and content/tools/<id>.yaml)'
 			);
 		}
 	}
@@ -173,6 +178,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 	const sections = load(SECTIONS, sectionsSchema);
 	const finder = load(FINDER, finderSchema);
 	const caveats = load(CAVEATS, caveatsSchema);
+	const wizard = load(WIZARD, wizardSchema);
 
 	const tools: { file: string; tool: Tool }[] = [];
 	const toolFiles = Object.keys(files)
@@ -192,6 +198,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 		{ file: SECTIONS, data: sections },
 		{ file: FINDER, data: finder },
 		{ file: CAVEATS, data: caveats },
+		{ file: WIZARD, data: wizard },
 		...tools.map(({ file, tool }) => ({ file, data: tool }))
 	];
 
@@ -273,6 +280,45 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 		toolIds.add(tool.id);
 	}
 
+	// Wizard: questions are unique, levels only list asked questions, simple is a subset of advanced,
+	// and only the boolean questions (api, self_hostable) carry an option label.
+	if (wizard) {
+		const asked = new Set<string>();
+		wizard.questions.forEach((question, index) => {
+			if (asked.has(question.id)) {
+				add(WIZARD, `questions.${index}.id`, `Duplicate question id "${question.id}"`);
+			}
+			asked.add(question.id);
+			const boolean = (WIZARD_BOOLEAN_QUESTIONS as readonly string[]).includes(question.id);
+			if (boolean && question.option === undefined) {
+				add(WIZARD, `questions.${index}.option`, `Required for the question "${question.id}"`);
+			}
+			if (!boolean && question.option !== undefined) {
+				add(
+					WIZARD,
+					`questions.${index}.option`,
+					`Not allowed for the taxonomy question "${question.id}"`
+				);
+			}
+		});
+		for (const level of ['simple', 'advanced'] as const) {
+			const seen = new Set<string>();
+			wizard.levels[level].forEach((id, index) => {
+				const path = `levels.${level}.${index}`;
+				if (seen.has(id)) add(WIZARD, path, `Duplicate question id "${id}" in this level`);
+				seen.add(id);
+				if (!asked.has(id))
+					add(WIZARD, path, `Question "${id}" is listed but has no entry in questions`);
+			});
+		}
+		const advanced = new Set<string>(wizard.levels.advanced);
+		wizard.levels.simple.forEach((id, index) => {
+			if (!advanced.has(id)) {
+				add(WIZARD, `levels.simple.${index}`, `Question "${id}" must also be listed in advanced`);
+			}
+		});
+	}
+
 	// References resolve, dates are not in the future.
 	const today = localIsoDate(options.today ?? new Date());
 	const sectionIds = new Set(sections?.map((section) => section.id));
@@ -330,6 +376,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 		sections: sections!,
 		finder: finder!,
 		caveats: caveats!,
+		wizard: wizard!,
 		tools: tools.map(({ tool }) => tool).sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 	};
 }

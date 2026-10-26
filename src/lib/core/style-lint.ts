@@ -112,6 +112,7 @@ export function lintContent(content: Content): Violation[] {
 	lintFile('content/sections.yaml', content.sections);
 	lintFile('content/finder.yaml', content.finder);
 	lintFile('content/caveats.yaml', content.caveats);
+	lintFile('content/wizard.yaml', content.wizard);
 	for (const tool of content.tools) lintFile(`content/tools/${tool.id}.yaml`, tool);
 	return violations;
 }

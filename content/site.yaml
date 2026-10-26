@@ -14,6 +14,7 @@ features:
   bestFor: true
   finderTable: true
   statusFilter: true
+  wizard: true
 verification:
   staleAfterDays: 180
 style:

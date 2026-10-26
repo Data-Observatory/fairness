@@ -66,7 +66,8 @@ export const siteSchema = z.strictObject({
 	features: z.strictObject({
 		bestFor: z.boolean(),
 		finderTable: z.boolean(),
-		statusFilter: z.boolean()
+		statusFilter: z.boolean(),
+		wizard: z.boolean()
 	}),
 	verification: z.strictObject({
 		staleAfterDays: z.number().int().positive()
@@ -132,6 +133,31 @@ export type Finder = z.infer<typeof finderSchema>;
 
 export const caveatsSchema = z.array(z.strictObject({ id: text, text: localized }));
 export type Caveats = z.infer<typeof caveatsSchema>;
+
+/* wizard.yaml */
+
+/** Question ids of the guided finder: a taxonomy group, or one of the two boolean tool facts. */
+export const WIZARD_BOOLEAN_QUESTIONS = ['api', 'self_hostable'] as const;
+export const WIZARD_QUESTION_IDS = [...TAXONOMY_GROUPS, ...WIZARD_BOOLEAN_QUESTIONS] as const;
+export type WizardQuestionId = (typeof WIZARD_QUESTION_IDS)[number];
+
+const wizardQuestionId = z.enum(WIZARD_QUESTION_IDS);
+
+export const wizardSchema = z.strictObject({
+	questions: z.array(
+		z.strictObject({
+			id: wizardQuestionId,
+			question: localized,
+			help: localized.optional(),
+			option: localized.optional()
+		})
+	),
+	levels: z.strictObject({
+		simple: z.array(wizardQuestionId).min(1),
+		advanced: z.array(wizardQuestionId).min(1)
+	})
+});
+export type Wizard = z.infer<typeof wizardSchema>;
 
 /* tools/<id>.yaml */
 
