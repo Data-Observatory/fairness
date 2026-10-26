@@ -43,6 +43,12 @@ h4 {
 	font-family: var(--font-heading);
 }
 
+/* The no-JavaScript box is in the prerendered HTML. The inline script in app.html adds the class
+   `js` before first paint, so visitors with JavaScript never see it. */
+.js [data-testid='wizard-noscript'] {
+	display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
