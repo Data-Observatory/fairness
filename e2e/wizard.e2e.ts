@@ -253,7 +253,7 @@ for (const locale of LOCALES) {
 			await expect(tid(page, 'wizard-progress')).toContainText(progressPattern(1, simple.length));
 			await expect(noPreference(page)).toBeChecked();
 			await expect(tid(page, 'wizard-results')).toBeHidden();
-			await expect.poll(() => new URL(page.url()).searchParams.get('step')).toMatch(/^(1)?$/);
+			await expect.poll(() => new URL(page.url()).searchParams.get('step') ?? '').toMatch(/^(1)?$/);
 			for (const id of simple) await expectQuery(page, { [id]: null });
 		});
 
