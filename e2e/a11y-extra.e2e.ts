@@ -13,7 +13,14 @@ test.describe('axe: root redirect', () => {
 test.describe('axe at 375x812', () => {
 	test.use({ viewport: { width: 375, height: 812 } });
 
-	for (const url of ['/en', '/es', '/en/tools/fair-enough', '/es/tools/fair-enough']) {
+	for (const url of [
+		'/en',
+		'/es',
+		'/en/tools/fair-enough',
+		'/es/tools/fair-enough',
+		'/en/wizard',
+		'/en/wizard?level=advanced&target=dataset'
+	]) {
 		test(`${url} has no violations`, async ({ page }) => {
 			await page.goto(url);
 			await expectRealPage(page, url);

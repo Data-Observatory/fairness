@@ -10,7 +10,14 @@ const noHorizontalScroll = (page: Page) =>
 test.describe('mobile viewport 375x812', () => {
 	test.use({ viewport: { width: 375, height: 812 } });
 
-	for (const url of ['/en', '/es', '/en/about', '/en/tools/f-uji']) {
+	for (const url of [
+		'/en',
+		'/es',
+		'/en/about',
+		'/en/tools/f-uji',
+		'/en/wizard',
+		'/en/wizard?level=advanced'
+	]) {
 		test(`${url} has no horizontal scroll`, async ({ page }) => {
 			await page.goto(url);
 			await expectRealPage(page, url);
@@ -27,7 +34,7 @@ test.describe('mobile viewport 375x812', () => {
 });
 
 test.describe('print', () => {
-	for (const url of ['/en', '/es', '/en/tools/f-uji']) {
+	for (const url of ['/en', '/es', '/en/tools/f-uji', '/en/wizard']) {
 		test(`${url} hides the navigation and keeps the content`, async ({ page }) => {
 			await page.goto(url);
 			await expectRealPage(page, url);

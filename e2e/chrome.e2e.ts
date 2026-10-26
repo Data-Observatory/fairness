@@ -4,7 +4,7 @@ import { checkbox, expectExternalLink, expectRealPage, section } from './helpers
 
 const site = loadSite();
 
-const PAGES = ['', '/about', '/tools/f-uji', '/tools/fair-enough'];
+const PAGES = ['', '/about', '/tools/f-uji', '/tools/fair-enough', '/wizard'];
 
 test.describe('footer on every page', () => {
 	for (const locale of LOCALES) {

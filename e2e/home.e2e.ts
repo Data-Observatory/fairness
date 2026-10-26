@@ -83,6 +83,25 @@ for (const locale of LOCALES) {
 			}
 		});
 
+		test('the finder section links to the guided finder only when the feature is on', async ({
+			page
+		}) => {
+			test.skip(!site.features.finderTable, 'finderTable is disabled in site.yaml');
+			const finder = page.locator('section#finder[data-testid=finder]');
+			await expect(finder).toHaveCount(1);
+			const link = finder.locator('[data-testid=wizard-link]');
+			if (!site.features.wizard) {
+				await expect(link).toHaveCount(0);
+				return;
+			}
+			await expect(link).toHaveCount(1);
+			await expect(link).toBeVisible();
+			await expect(link).toHaveAttribute('href', new RegExp(`/${locale}/wizard/?$`));
+			await link.click();
+			await expect(page).toHaveURL(new RegExp(`/${locale}/wizard/?$`));
+			await expect(page.locator('h1')).toHaveCount(1);
+		});
+
 		test('renders the finder table with one row per finder entry', async ({ page }) => {
 			test.skip(!site.features.finderTable, 'finderTable is disabled in site.yaml');
 			await expect(page.locator('table[data-testid=finder-table]')).toBeVisible();

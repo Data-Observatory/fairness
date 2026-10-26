@@ -2,7 +2,15 @@ import { expect, test } from '@playwright/test';
 import { expectNoSkippedHeadingLevels, expectRealPage } from './helpers';
 
 test.describe('heading levels', () => {
-	for (const url of ['/en', '/en/about', '/en/tools/f-uji']) {
+	for (const url of [
+		'/en',
+		'/en/about',
+		'/en/tools/f-uji',
+		'/en/wizard',
+		'/es/wizard',
+		'/en/wizard?level=advanced&target=dataset',
+		'/en/wizard?target=dataset&input=doi&step=results'
+	]) {
 		test(`${url} has one h1 and never skips a level`, async ({ page }) => {
 			await page.goto(url);
 			await expectRealPage(page, url);

@@ -54,7 +54,8 @@ export async function expectExternalLink(link: Locator, href: string): Promise<v
  * exactly one visible h1 on every route plus real, route-specific elements (cards and caveats
  * and filter bar on home, name/open link/facts on a detail page, caveats and privacy on about).
  * A route it does not know is an error, so a typo cannot pass silently. Query and hash are
- * ignored. It does not apply to the bare root, which only redirects.
+ * ignored (the wizard page shows a question, results or the no-JavaScript block, by state). It
+ * does not apply to the bare root, which only redirects.
  */
 export async function expectRealPage(page: Page, url: string): Promise<void> {
 	const path = url.split(/[?#]/)[0].replace(/\/$/, '');
@@ -86,6 +87,17 @@ export async function expectRealPage(page: Page, url: string): Promise<void> {
 				.filter({ hasText: /cookies/i })
 				.first()
 		).toBeVisible();
+	} else if (/^\/(en|es)\/wizard$/.test(path)) {
+		// A question (simple or advanced), the results view, or the JavaScript-disabled block:
+		// which one depends on the query string and on JavaScript.
+		await expect(
+			page
+				.locator(
+					'[data-testid=wizard-question], [data-testid=wizard-results], [data-testid=wizard-noscript]'
+				)
+				.first()
+		).toBeVisible();
+		await expect(page.locator('[data-testid=caveats]')).toBeVisible();
 	} else {
 		throw new Error(`expectRealPage: no check is defined for ${url}`);
 	}

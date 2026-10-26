@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 const path = (url: string) => new URL(url).pathname.replace(/\/$/, '');
 
 test.describe('locale switch keeps the page path', () => {
-	for (const page of ['', '/about', '/tools/f-uji']) {
+	for (const page of ['', '/about', '/tools/f-uji', '/wizard']) {
 		test(`/en${page} and /es${page} switch to each other`, async ({ page: browserPage }) => {
 			await browserPage.goto(`/en${page}`);
 			await browserPage.locator('[data-testid=locale-switch-es]').click();

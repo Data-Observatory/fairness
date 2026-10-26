@@ -10,7 +10,8 @@ const origin = `https://${site.domain}`;
 const CASES = [
 	{ path: '', label: 'home' },
 	{ path: '/about', label: 'about' },
-	{ path: '/tools/f-uji', label: 'tool detail' }
+	{ path: '/tools/f-uji', label: 'tool detail' },
+	{ path: '/wizard', label: 'guided finder' }
 ];
 
 for (const locale of LOCALES) {

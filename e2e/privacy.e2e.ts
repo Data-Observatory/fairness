@@ -10,7 +10,11 @@ const PAGES = [
 	'/en/tools/f-uji',
 	'/es/tools/f-uji',
 	'/en/tools/fair-enough',
-	'/es/tools/fair-eva'
+	'/es/tools/fair-eva',
+	'/en/wizard',
+	'/es/wizard',
+	'/en/wizard?level=advanced&target=dataset&input=doi',
+	'/es/wizard?target=dataset&input=doi&step=results'
 ];
 
 test.describe('no third-party requests', () => {

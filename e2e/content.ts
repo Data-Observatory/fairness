@@ -55,7 +55,7 @@ export const loadSite = () =>
 		shortName?: { en: string; es: string };
 		repository: string;
 		contributeUrl: string;
-		features: { bestFor: boolean; finderTable: boolean; statusFilter: boolean };
+		features: { bestFor: boolean; finderTable: boolean; statusFilter: boolean; wizard: boolean };
 	};
 
 export const loadSections = () => read('sections.yaml') as { id: string; collapsed?: boolean }[];
@@ -65,3 +65,96 @@ export const loadTaxonomy = () =>
 
 export const loadFinder = () =>
 	read('finder.yaml') as { rows: { input: string; tools: string[] }[] };
+
+// Guided finder (content/wizard.yaml). It is read lazily, inside tests, so that collecting the
+// specs does not depend on the file.
+
+export type Localized = { en: string; es: string };
+
+export type WizardQuestion = {
+	id: string;
+	question: Localized;
+	help?: Localized;
+	option?: Localized;
+};
+
+export type Wizard = {
+	questions: WizardQuestion[];
+	levels: { simple: string[]; advanced: string[] };
+};
+
+export const loadWizard = () => read('wizard.yaml') as Wizard;
+
+/** Questions that are not taxonomy groups: a tool fact with the single option "yes". */
+export const BOOLEAN_QUESTIONS = ['api', 'self_hostable'];
+
+/** Option id of the single option of a boolean question. */
+export const YES = 'yes';
+
+/** Option ids of a question in display order: taxonomy ids, or the single "yes" option. */
+export function optionIds(questionId: string): string[] {
+	if (BOOLEAN_QUESTIONS.includes(questionId)) return [YES];
+	const group = loadTaxonomy()[questionId] as { id: string }[] | undefined;
+	if (!group) throw new Error(`wizard question ${questionId} is not a taxonomy group`);
+	return group.map((option) => option.id);
+}
+
+/** Taxonomy label of an option in a locale (the boolean questions use their own `option`). */
+export function optionLabel(questionId: string, optionId: string, locale: Locale): string {
+	if (BOOLEAN_QUESTIONS.includes(questionId)) {
+		return loadWizard().questions.find((item) => item.id === questionId)!.option![locale];
+	}
+	const group = loadTaxonomy()[questionId] as unknown as { id: string; label: Localized }[];
+	return group.find((option) => option.id === optionId)!.label[locale];
+}
+
+/** Values a tool records for a wizard question (nothing recorded gives an empty list). */
+export function toolValues(tool: Tool, questionId: string): string[] {
+	switch (questionId) {
+		case 'target':
+			return tool.targets ?? [];
+		case 'mode':
+			return tool.mode === undefined ? [] : [tool.mode];
+		case 'input':
+			return tool.inputs ?? [];
+		case 'framework':
+			return tool.frameworks ?? [];
+		case 'status':
+			return [tool.status];
+		case 'api':
+			return tool.api?.available === true ? [YES] : [];
+		case 'self_hostable':
+			return tool.self_hostable === true ? [YES] : [];
+		default:
+			throw new Error(`unknown wizard question ${questionId}`);
+	}
+}
+
+export type Answers = Record<string, string[]>;
+
+/** Tools in home order: sections order, then tool id order within a section. */
+export function homeOrder(tools: Tool[] = loadTools()): Tool[] {
+	const order = loadSections().map((item) => item.id);
+	return [...tools].sort(
+		(a, b) =>
+			order.indexOf(a.section) - order.indexOf(b.section) ||
+			(a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+	);
+}
+
+/**
+ * Matching rule of the spec: OR within a question, AND across questions. A tool with no recorded
+ * value for an answered question never matches.
+ */
+export function wizardMatches(answers: Answers): Tool[] {
+	return homeOrder().filter((tool) =>
+		Object.entries(answers).every(([id, wanted]) => {
+			if (wanted.length === 0) return true;
+			return toolValues(tool, id).some((value) => wanted.includes(value));
+		})
+	);
+}
+
+/** Number of tools an option would match given the other answers (its own question ignored). */
+export const optionCount = (answers: Answers, questionId: string, optionId: string): number =>
+	wizardMatches({ ...answers, [questionId]: [optionId] }).length;

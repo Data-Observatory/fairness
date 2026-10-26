@@ -10,7 +10,11 @@ const PAGES = [
 	'/en/about',
 	'/es/about',
 	'/en/tools/f-uji',
-	'/es/tools/fair-enough'
+	'/es/tools/fair-enough',
+	'/en/wizard',
+	'/es/wizard',
+	'/en/wizard?level=advanced&target=dataset&input=doi',
+	'/es/wizard?target=dataset&input=doi&step=results'
 ];
 
 test.describe('no console errors and no failed requests', () => {
