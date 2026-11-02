@@ -21,6 +21,10 @@ const PAGES = [
 	'/es/tools/fair-eva',
 	'/en/wizard',
 	'/es/wizard',
+	'/en/compare',
+	'/es/compare',
+	'/en/compare?tools=f-uji,fair-enough,fair-eva',
+	'/es/compare?tools=f-uji,fair-enough',
 	'/en/wizard?level=advanced&target=dataset&input=doi',
 	'/es/wizard?target=dataset&input=doi&step=results'
 ];

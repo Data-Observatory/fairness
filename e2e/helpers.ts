@@ -92,6 +92,13 @@ export async function expectRealPage(page: Page, url: string): Promise<void> {
 		await expect(page.locator('[data-testid=changelog-day]')).toHaveCount(days.size);
 		await expect(page.locator('[data-testid=changelog-entry]')).toHaveCount(loadChangelog().length);
 		await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible();
+	} else if (/^\/(en|es)\/compare$/.test(path)) {
+		// The picker (after hydration) or the JavaScript-disabled block, plus the caveat box. The
+		// table only exists for two or three selected tools, so it is not required here.
+		await expect(
+			page.locator('[data-testid=compare-picker], [data-testid=compare-noscript]').first()
+		).toBeVisible();
+		await expect(page.locator('[data-testid=caveats]')).toBeVisible();
 	} else if (/^\/(en|es)\/wizard$/.test(path)) {
 		// A question (simple or advanced), the results view, or the JavaScript-disabled block:
 		// which one depends on the query string and on JavaScript.

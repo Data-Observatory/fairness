@@ -21,7 +21,9 @@ test.describe('axe at 375x812', () => {
 		'/en/changelog',
 		'/es/changelog',
 		'/en/wizard',
-		'/en/wizard?level=advanced&target=dataset'
+		'/en/wizard?level=advanced&target=dataset',
+		'/en/compare',
+		'/es/compare'
 	]) {
 		test(`${url} has no violations`, async ({ page }) => {
 			await page.goto(url);

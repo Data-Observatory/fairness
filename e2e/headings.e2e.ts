@@ -10,6 +10,9 @@ test.describe('heading levels', () => {
 		'/en/tools/f-uji',
 		'/en/wizard',
 		'/es/wizard',
+		'/en/compare',
+		'/es/compare',
+		'/en/compare?tools=f-uji,fair-enough,fair-eva',
 		'/en/wizard?level=advanced&target=dataset',
 		'/en/wizard?target=dataset&input=doi&step=results'
 	]) {

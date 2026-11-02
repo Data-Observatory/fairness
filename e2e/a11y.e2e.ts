@@ -11,7 +11,11 @@ const PAGES = [
 	'/en/tools/f-uji',
 	'/es/tools/f-uji',
 	'/en/wizard',
-	'/es/wizard'
+	'/es/wizard',
+	'/en/compare',
+	'/es/compare',
+	'/en/compare?tools=f-uji,fair-enough',
+	'/es/compare?tools=f-uji,fair-enough,fair-eva'
 ];
 
 // States of the guided finder: simple results, advanced with answers (some options disabled) and

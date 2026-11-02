@@ -18,6 +18,9 @@ test.describe('mobile viewport 375x812', () => {
 		'/en/tools/f-uji',
 		'/en/wizard',
 		'/en/wizard?level=advanced',
+		'/en/compare',
+		'/en/compare?tools=f-uji,fair-enough,fair-eva',
+		'/es/compare?tools=f-uji,fair-enough,fair-eva',
 		'/es/wizard'
 	]) {
 		test(`${url} has no horizontal scroll`, async ({ page }) => {

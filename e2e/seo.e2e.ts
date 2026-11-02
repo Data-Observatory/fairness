@@ -12,7 +12,8 @@ const CASES = [
 	{ path: '/about', label: 'about' },
 	{ path: '/changelog', label: 'changelog' },
 	{ path: '/tools/f-uji', label: 'tool detail' },
-	{ path: '/wizard', label: 'guided finder' }
+	{ path: '/wizard', label: 'guided finder' },
+	{ path: '/compare', label: 'comparison' }
 ];
 
 for (const locale of LOCALES) {
