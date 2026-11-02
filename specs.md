@@ -349,7 +349,7 @@ Static checks in CI: `svelte-check`, `eslint`, `prettier --check`, `vitest run`,
 - Guided wizard: decided 2026-10-26 (route `/wizard`, nav item, link from the home finder section, simple and advanced levels, section 5.7).
 - Weekly link-check workflow: has run once on GitHub and passed.
 - Re-verification: entries carry `last_verified` and are flagged after `verification.staleAfterDays` (180). A maintainer re-checks them; the weekly link check reports broken links.
-- Hardening backlog (no known blocker): hash-based CSP, CloudFront and S3 access logging (see section 19).
+- Hardening backlog (no known blocker): CloudFront and S3 access logging, and removing `'unsafe-inline'` from `script-src` in the CloudFront header after a deploy check (see section 19).
 - Deploy workflow (GitHub Actions) and the AWS account decisions for it: deferred. Deploys are manual for now.
 
 ## 19. Deviations from the original plan and deferred items
@@ -363,7 +363,7 @@ Deviations (decided during implementation):
 - Pages are prerendered with server loads (`+*.server.ts`), so the content loader (yaml, zod) is not in any client bundle.
 - `/en/` maps to `/en.html` in the CloudFront Function because the build has no per-directory index files.
 - A `portal_record` input type was added to the taxonomy for tools that work on records already registered in their own portal (O'FAIRe).
-- Content CSP allows inline scripts and styles because SvelteKit's bootstrap needs them. A hash-based CSP (`kit.csp`) would tighten it.
+- Script CSP: `kit.csp` (hash mode, `vite.config.ts`) adds a `<meta http-equiv="content-security-policy">` to every prerendered page with `script-src 'self' https://www.googletagmanager.com 'sha256-...'`, `object-src 'none'` and `base-uri 'self'`. The hash is of the bootstrap script, which has per-page data, so it cannot live in a static header. The meta carries no `style-src` (style attributes and `static/404.html` need inline styles) and cannot carry `frame-ancestors`, which stays in the CloudFront header. Browsers enforce the header and the meta together, so scripts must pass both. `static/404.html` is not processed by SvelteKit and has no script. The CloudFront header still lists `'unsafe-inline'` in `script-src`: it may be removed in a separate step, after the owner deploys this change and checks the live pages (no violation in the console, tag loads after Accept). `e2e/csp.e2e.ts` covers the meta and the consent flow.
 - The no-JavaScript box of `/wizard` is a normal block in the prerendered HTML, not a `<noscript>` element. The synchronous script `static/consent-loader.js` (referenced from `src/app.html`) adds the class `js` to the root element and `src/routes/layout.css` hides the box under it, so visitors with JavaScript never see it before hydration. Without JavaScript the box stays visible. When `features.finderTable` is false the box links to the plain home page and does not mention the table.
 - Switching the wizard from advanced to simple keeps, for each simple question, the first value in alphabetical order of the option ids (the answers are stored sorted), not the first in display order.
 - The home finder section carries `id="finder"`, the target of the link in the no-JavaScript box of `/wizard`.
