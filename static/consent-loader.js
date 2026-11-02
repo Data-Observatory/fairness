@@ -7,6 +7,8 @@
 	var VERSION = 1;
 	var MAX_AGE_DAYS = 365;
 	var TAG_ID = 'G-X6BJF4NQ71';
+	// The cookie of this property. The tag names it _ga_ followed by the id without the prefix.
+	var PROPERTY_COOKIE = '_ga_' + TAG_ID.replace('G-', '');
 	var loaded = false;
 
 	// Read by the stylesheet to hide the no-JavaScript blocks.
@@ -87,31 +89,40 @@
 		script.src = 'https://www.googletagmanager.com/gtag/js?id=' + TAG_ID;
 		document.head.appendChild(script);
 		gtag('js', new Date());
-		gtag('config', TAG_ID);
+		// Cookies stay on the exact host: the parent domain runs its own property and shares _ga there.
+		gtag('config', TAG_ID, { cookie_domain: window.location.hostname });
 	}
 
-	// Expires the Google Analytics cookies (_ga, _ga_<id>, _gid, _gat*) on the current host and on
-	// every parent domain with at least two labels, because the tag sets them on the parent.
+	// Expires the Google Analytics cookies. The tag is configured with cookie_domain set to the host,
+	// so _ga, _gid and _gat* are expired only without a domain attribute and with the exact host.
+	// Parent domains may hold cookies of another property (the organization site shares _ga there),
+	// so only the cookie of this property is also expired on every parent domain with at least two
+	// labels.
 	function deleteCookies() {
 		try {
 			var names = [];
 			document.cookie.split(';').forEach(function (pair) {
 				var name = pair.split('=')[0].trim();
-				if (/^_(ga|gid|gat)/.test(name)) names.push(name);
+				if (/^_(ga|gid|gat)/.test(name) && names.indexOf(name) < 0) names.push(name);
 			});
-			var labels = window.location.hostname.split('.');
-			var domains = [''];
-			for (var start = 0; start < labels.length; start++) {
-				var domain = labels.slice(start).join('.');
-				if (start === 0 || labels.length - start >= 2) domains.push(domain);
+			var host = window.location.hostname;
+			var labels = host.split('.');
+			var parents = [];
+			for (var start = 1; start < labels.length; start++) {
+				if (labels.length - start >= 2) parents.push(labels.slice(start).join('.'));
+			}
+			function expire(name, domain) {
+				document.cookie =
+					name +
+					'=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' +
+					(domain ? '; domain=' + domain : '');
 			}
 			names.forEach(function (name) {
-				domains.forEach(function (domain) {
-					document.cookie =
-						name +
-						'=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' +
-						(domain ? '; domain=' + domain : '');
-				});
+				var own = /^_ga$|^_gid$|^_gat/.test(name) || name === PROPERTY_COOKIE;
+				if (!own) return;
+				expire(name, '');
+				expire(name, host);
+				if (name === PROPERTY_COOKIE) parents.forEach(function (domain) { expire(name, domain); });
 			});
 		} catch {
 			// Nothing to delete when cookies are not available.
