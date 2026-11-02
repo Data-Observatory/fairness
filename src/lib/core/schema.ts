@@ -153,7 +153,7 @@ export type Wizard = z.infer<typeof wizardSchema>;
 
 /* tools/<id>.yaml */
 
-export const TOOL_KINDS = ['tool', 'framework', 'directory'] as const;
+export const TOOL_KINDS = ['tool', 'framework', 'directory', 'guide'] as const;
 export type ToolKind = (typeof TOOL_KINDS)[number];
 
 const TOOL_ONLY_FIELDS = ['targets', 'mode', 'inputs', 'output'] as const;
@@ -190,6 +190,20 @@ export const toolSchema = z
 						code: 'custom',
 						path: [key],
 						message: `Required when kind is "tool"`
+					});
+				}
+			}
+		}
+
+		// A guide is learning material: it has no target, mode, input or output, so it never matches
+		// those filters or wizard questions.
+		if (tool.kind === 'guide') {
+			for (const key of TOOL_ONLY_FIELDS) {
+				if (tool[key] !== undefined) {
+					ctx.addIssue({
+						code: 'custom',
+						path: [key],
+						message: `Not allowed when kind is "guide"`
 					});
 				}
 			}

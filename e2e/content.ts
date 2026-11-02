@@ -10,7 +10,7 @@ const read = (...parts: string[]) => parse(readFileSync(join(root, ...parts), 'u
 
 export type Tool = {
 	id: string;
-	kind: 'tool' | 'framework' | 'directory';
+	kind: 'tool' | 'framework' | 'directory' | 'guide';
 	section: string;
 	name: string;
 	url: string;

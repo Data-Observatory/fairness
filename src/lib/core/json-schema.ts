@@ -25,7 +25,7 @@ function addUrlPatterns(node: unknown): void {
 /**
  * The JSON schema for `content/tools/<id>.yaml`, used by editors. Built from the zod
  * `toolSchema` (zod's own `z.toJSONSchema`), then extended with what zod cannot express:
- * the tool-only fields required when `kind` is `tool`, an `https://` pattern on URL fields,
+ * the tool-only fields required when `kind` is `tool` and not allowed when it is `guide`, an `https://` pattern on URL fields,
  * and an ISO date pattern on `last_verified`.
  */
 export function generateToolSchema(): Json {
@@ -38,6 +38,12 @@ export function generateToolSchema(): Json {
 		{
 			if: { properties: { kind: { const: 'tool' } }, required: ['kind'] },
 			then: { required: ['targets', 'mode', 'inputs', 'output'] }
+		},
+		{
+			if: { properties: { kind: { const: 'guide' } }, required: ['kind'] },
+			then: {
+				not: { anyOf: ['targets', 'mode', 'inputs', 'output'].map((key) => ({ required: [key] })) }
+			}
 		}
 	];
 	return schema;
