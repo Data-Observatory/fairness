@@ -73,7 +73,7 @@
 	"compare_noscript_body_home": "This page reads your selection and builds the table in your browser, so it requires JavaScript. Without it, you can open the home page, which lists the resources, or the detail page of each tool.",
 	"compare_noscript_link_home": "Open the home page",
 	"compare_noscript_tools": "Detail pages of the tools:",
-	"compare_link_detail": "Compare with other resources",
+	"compare_link_detail": "Compare with other tools",
 	"compare_link_home": "Compare two or three tools side by side",
 
 	"about_title": "About",
@@ -89,7 +89,7 @@
 	"detail_references_title": "References",
 	"detail_implements_title": "Implements",
 	"detail_implemented_by_title": "Implemented by",
-	"detail_report_link": "Report a broken or changed tool",
+	"detail_report_link": "Report a broken or changed entry",
 	"about_what_title": "What FAIR assessment is",
 	"about_what_body_1": "FAIR stands for Findable, Accessible, Interoperable and Reusable. These principles describe how to manage research data and other digital objects so that people and machines can find and reuse them.",
 	"about_what_body_2": "A FAIR assessment checks an object against those principles. Some tools run the checks automatically. Others guide a person through a questionnaire or describe a framework.",

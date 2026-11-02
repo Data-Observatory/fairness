@@ -73,7 +73,7 @@
 	"compare_noscript_body_home": "Esta página lee su selección y construye la tabla en su navegador, por lo que requiere JavaScript. Sin JavaScript, puede abrir la página de inicio, que enumera los recursos, o la página de detalle de cada herramienta.",
 	"compare_noscript_link_home": "Abrir la página de inicio",
 	"compare_noscript_tools": "Páginas de detalle de las herramientas:",
-	"compare_link_detail": "Comparar con otros recursos",
+	"compare_link_detail": "Comparar con otras herramientas",
 	"compare_link_home": "Comparar dos o tres herramientas lado a lado",
 
 	"about_title": "Acerca de",
@@ -89,7 +89,7 @@
 	"detail_references_title": "Referencias",
 	"detail_implements_title": "Implementa",
 	"detail_implemented_by_title": "Implementado por",
-	"detail_report_link": "Informar de una herramienta rota o modificada",
+	"detail_report_link": "Informar de un recurso que no funciona o ha cambiado",
 	"about_what_title": "Qué es la evaluación FAIR",
 	"about_what_body_1": "FAIR corresponde a las iniciales en inglés de Findable, Accessible, Interoperable y Reusable (localizable, accesible, interoperable y reutilizable). Estos principios describen cómo gestionar datos de investigación y otros objetos digitales para que personas y máquinas puedan encontrarlos y reutilizarlos.",
 	"about_what_body_2": "Una evaluación FAIR contrasta un objeto con esos principios. Algunas herramientas ejecutan las comprobaciones de forma automática. Otras guían a una persona mediante un cuestionario o describen un marco de referencia.",
