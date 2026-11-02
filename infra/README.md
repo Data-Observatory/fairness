@@ -53,6 +53,7 @@ The DNS zone for dataobservatory.net lives in a different account, so the stack 
 - Custom error responses: 403 and 404 serve `/404.html` with status 404.
 - A response headers policy: HSTS (one year, includeSubdomains, no preload), nosniff, frame deny, referrer policy `strict-origin-when-cross-origin`, a Content-Security-Policy limited to same-origin sources plus the Google tag hosts (googletagmanager.com, google-analytics.com, analytics.google.com), and `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()`.
 - Two `BucketDeployment`s of `../build` (see Caching).
+- Optional access logging, off by default (see Access logging).
 
 Outputs: `DistributionDomainName`, `DistributionId`, `BucketName`, `CertificateArn`, `SiteUrl`.
 
@@ -68,6 +69,25 @@ The build is uploaded by two `BucketDeployment`s with the same `../build` source
 Prune is off for the immutable deployment on purpose: a page cached by a browser or by CloudFront can still import a chunk from a previous build, so old chunks must stay in the bucket after a new deploy. The second deployment excludes `_app/immutable/*`, so its prune never deletes them. It also depends on the first, so new chunks are uploaded before the pages that reference them. Invalidation is only needed for the files whose names do not change, so only the second deployment invalidates.
 
 Old chunks accumulate. Remove them manually (or with an S3 lifecycle rule) if storage grows.
+
+## Access logging
+
+Off by default: without the context the synthesized template is unchanged. Turn it on with a CDK context value:
+
+```sh
+npx cdk synth -c domainName=fair.example.test -c accessLogs=true -c accessLogRetentionDays=90
+```
+
+| Context                  | Default | Effect                                                    |
+| ------------------------ | ------- | --------------------------------------------------------- |
+| `accessLogs`             | `false` | `true` creates the log bucket and enables both log kinds. |
+| `accessLogRetentionDays` | `90`    | Days after which log objects expire. Positive integer.    |
+
+When on, the stack adds one log bucket (all public access blocked, TLS enforced, S3-managed encryption, object ownership `ObjectWriter` because CloudFront standard logging delivers through bucket ACLs, retained on stack deletion, lifecycle expiration after `accessLogRetentionDays`). CloudFront standard logs go to the prefix `cloudfront/` and S3 server access logs of the site bucket to the prefix `s3/`.
+
+The logs contain visitor IP addresses. If logging is enabled, the privacy statement must say so, with the retention period.
+
+Turning logging off again in a later deploy removes the logging settings from the distribution and the site bucket; the log bucket is retained with its contents until it is emptied and deleted by hand. Every deploy, including the one from the workflow below, takes the logging setting from its context values, so the same values must be passed each time.
 
 ## Build, test and synth (no AWS calls)
 
@@ -109,6 +129,23 @@ npx cdk deploy --profile <app-profile> -c domainName=<other-name>.dataobservator
 ```
 
 The DNS records change accordingly.
+
+## Deploy workflow: owner setup
+
+`.github/workflows/deploy.yml` runs the checks, builds the site, and runs `cdk diff` and `cdk deploy` through GitHub OIDC. It is inert until the owner completes the steps below: the job runs only when the repository variable `DEPLOY_ENABLED` is `true`. It starts after a completed `Link check` run on `main` or by hand (`workflow_dispatch`), never on `push`. No account id, ARN or profile name is stored in the repository.
+
+Owner steps, none of which is done by the workflow or by an agent:
+
+1. In the app account, create the GitHub OIDC identity provider (`token.actions.githubusercontent.com`, audience `sts.amazonaws.com`) if it does not exist.
+2. In the app account, create an IAM role for the workflow. Its trust policy allows `sts:AssumeRoleWithWebIdentity` from that provider only when the `sub` claim equals `repo:Data-Observatory/fairness:environment:production` (and `aud` equals `sts.amazonaws.com`). Its permissions allow it to assume only the CDK bootstrap roles of the account and region (the deploy, file-publishing, image-publishing and lookup roles created by `cdk bootstrap`) and nothing else.
+3. In the GitHub repository settings, create the environment `production` and add required reviewers. The job pauses at the environment until a reviewer approves, which gates the `cdk deploy` step.
+4. Add the repository variables `DEPLOY_ENABLED` (`true` to activate), `AWS_REGION` (`us-east-1`), `SITE_DOMAIN` (`fair.dataobservatory.net`), and optionally `ACCESS_LOGS` (`true` or empty) and `ACCESS_LOG_RETENTION_DAYS` (a number, or empty for 90).
+5. Add the repository secret `AWS_DEPLOY_ROLE_ARN` with the ARN of the role from step 2.
+6. If `ACCESS_LOGS` is `true`, update the privacy statement first: the logs contain visitor IP addresses.
+
+The DNS records in the separate DNS account stay manual (see Account topology). A first deploy of a new domain waits at the certificate until the validation CNAME exists, so it is not suited to the workflow.
+
+Third-party actions in the workflow are pinned by commit SHA, checked against each action's repository when the file was written: `actions/checkout` v4.3.1, `actions/setup-node` v4.4.0, `aws-actions/configure-aws-credentials` v6.3.0. Update the SHAs deliberately.
 
 ## Current deployment state
 
