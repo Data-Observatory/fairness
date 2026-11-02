@@ -3,7 +3,7 @@ import { expect, test, type Response } from '@playwright/test';
 // Review defect: the whole content pipeline (yaml parser, zod, raw YAML) shipped to the client
 // so the page could filter. The client needs only the view data.
 
-for (const url of ['/en', '/es']) {
+for (const url of ['/en', '/es', '/en/compare', '/en/changelog', '/en/tools/f-uji']) {
 	test(`${url} requests no JavaScript that carries the content pipeline`, async ({ page }) => {
 		const scripts: Response[] = [];
 		page.on('response', (response) => {
