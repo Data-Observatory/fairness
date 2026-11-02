@@ -47,6 +47,18 @@ export default defineConfig({
 					...toolIds.flatMap((id): `/${string}`[] => [`/en/tools/${id}`, `/es/tools/${id}`])
 				]
 			},
+			// Per-page hash policy, emitted as a <meta> element in the prerendered HTML (a static
+			// host cannot send per-page headers). The CloudFront header policy still applies and
+			// a browser enforces both. A meta cannot carry frame-ancestors: the header keeps it.
+			// style-src is left out on purpose: style attributes and static/404.html need inline styles.
+			csp: {
+				mode: 'hash',
+				directives: {
+					'script-src': ['self', 'https://www.googletagmanager.com'],
+					'object-src': ['none'],
+					'base-uri': ['self']
+				}
+			},
 			paths: {
 				base,
 
