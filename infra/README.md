@@ -132,20 +132,24 @@ The DNS records change accordingly.
 
 ## Deploy workflow: owner setup
 
-`.github/workflows/deploy.yml` runs the checks, builds the site, and runs `cdk diff` and `cdk deploy` through GitHub OIDC. It is inert until the owner completes the steps below: the job runs only when the repository variable `DEPLOY_ENABLED` is `true`. It starts after a completed `Link check` run on `main` or by hand (`workflow_dispatch`), never on `push`. No account id, ARN or profile name is stored in the repository.
+`.github/workflows/deploy.yml` runs the checks, builds the site, and runs `cdk diff` and `cdk deploy` through GitHub OIDC, in two jobs. It is inert until the owner completes the steps below: both jobs run only when the repository variable `DEPLOY_ENABLED` is `true`. It starts after a successful `CI` run on `main` (for the commit that passed, `workflow_run`) or by hand (`workflow_dispatch`, default ref), never on `push`. Runs do not overlap and a run in progress is not cancelled. No account id, ARN or profile name is stored in the repository.
+
+- Job `diff` (environment `production-diff`, no reviewers): runs `check`, `lint`, `validate`, the unit tests, `build`, `check:base-path` and the infra type-check and tests, then `cdk diff`. The diff is written to the job summary and the build is uploaded as the artifact `site-build`.
+- Job `deploy` (environment `production`, `needs: diff`): pauses until a reviewer approves, so the approver reads the diff first, then downloads `site-build` and runs `cdk deploy`. The reviewed build is the build that is published.
+- The infra packages are installed before the AWS credentials exist, so install scripts never see them.
 
 Owner steps, none of which is done by the workflow or by an agent:
 
 1. In the app account, create the GitHub OIDC identity provider (`token.actions.githubusercontent.com`, audience `sts.amazonaws.com`) if it does not exist.
-2. In the app account, create an IAM role for the workflow. Its trust policy allows `sts:AssumeRoleWithWebIdentity` from that provider only when the `sub` claim equals `repo:Data-Observatory/fairness:environment:production` (and `aud` equals `sts.amazonaws.com`). Its permissions allow it to assume only the CDK bootstrap roles of the account and region (the deploy, file-publishing, image-publishing and lookup roles created by `cdk bootstrap`) and nothing else.
-3. In the GitHub repository settings, create the environment `production` and add required reviewers. The job pauses at the environment until a reviewer approves, which gates the `cdk deploy` step.
+2. In the app account, create an IAM role for the workflow. Its trust policy allows `sts:AssumeRoleWithWebIdentity` from that provider only when the `sub` claim equals one of `repo:Data-Observatory/fairness:environment:production` (job `deploy`) and `repo:Data-Observatory/fairness:environment:production-diff` (job `diff`), and `aud` equals `sts.amazonaws.com`. Both jobs use the same role (secret `AWS_DEPLOY_ROLE_ARN`); a separate role with read-only permissions for `production-diff` is an option. Its permissions allow it to assume only the CDK bootstrap roles of the account and region (the deploy, file-publishing, image-publishing and lookup roles created by `cdk bootstrap`) and nothing else.
+3. In the GitHub repository settings, create the environment `production-diff` (no reviewers) and the environment `production` with required reviewers. The `deploy` job pauses at `production` until a reviewer approves, after the `diff` job has finished, which gates the `cdk deploy` step.
 4. Add the repository variables `DEPLOY_ENABLED` (`true` to activate), `AWS_REGION` (`us-east-1`), `SITE_DOMAIN` (`fair.dataobservatory.net`), and optionally `ACCESS_LOGS` (`true` or empty) and `ACCESS_LOG_RETENTION_DAYS` (a number, or empty for 90).
 5. Add the repository secret `AWS_DEPLOY_ROLE_ARN` with the ARN of the role from step 2.
 6. If `ACCESS_LOGS` is `true`, update the privacy statement first: the logs contain visitor IP addresses.
 
 The DNS records in the separate DNS account stay manual (see Account topology). A first deploy of a new domain waits at the certificate until the validation CNAME exists, so it is not suited to the workflow.
 
-Third-party actions in the workflow are pinned by commit SHA, checked against each action's repository when the file was written: `actions/checkout` v4.3.1, `actions/setup-node` v4.4.0, `aws-actions/configure-aws-credentials` v6.3.0. Update the SHAs deliberately.
+Third-party actions in the workflow are pinned by commit SHA, checked against each action's repository when the file was written: `actions/checkout` v4.3.1, `actions/setup-node` v4.4.0, `actions/upload-artifact` v4.6.2, `actions/download-artifact` v4.3.0, `aws-actions/configure-aws-credentials` v6.3.0. Update the SHAs deliberately.
 
 ## Current deployment state
 
@@ -153,6 +157,8 @@ Third-party actions in the workflow are pinned by commit SHA, checked against ea
 - The ACM validation CNAME exists in the DNS account, and the certificate is issued.
 - The alias A record for the domain (step 2 above) exists, and the site is public at `https://fair.dataobservatory.net`. The `DistributionDomainName` host itself shows a certificate warning, because the certificate covers only the custom domain.
 - Resolvers that looked up the name before the record existed can cache the "not found" answer for up to 15 minutes (the zone SOA negative TTL). A device that still cannot resolve the name shortly after a first publication needs a DNS cache flush or a short wait.
+- The stack was redeployed on 2026-11-02 with the CSP update for the Google tag (Google hosts added to `script-src`, `img-src` and `connect-src`). The consent version of the site (consent banner, tag loaded only after Accept, host-scoped tag cookies) is not deployed yet: the live site runs the interim commit with the tag and no banner until the next deploy.
+- The deploy workflow exists and is inert (`DEPLOY_ENABLED` is not set); deploys remain manual.
 - Published pages come from `../build`. To publish a new version, run `npm run build` at the repository root and `npx cdk deploy` again; the deployment invalidates the HTML cache.
 
 ## Credentials with SSO profiles
