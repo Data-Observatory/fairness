@@ -13,15 +13,15 @@ export interface FairSiteStackProps extends StackProps {
 }
 
 // The built pages need one inline bootstrap script and inline styles, plus same-origin
-// modules, CSS, fonts and data fetches. The site makes no third-party requests, so no
-// external host appears in the policy.
+// modules, CSS, fonts and data fetches. The only third-party requests are the Google tag
+// (gtag.js) and its measurement hits (owner decision 2026-11-02), so only its hosts appear.
 const CONTENT_SECURITY_POLICY = [
 	"default-src 'self'",
-	"script-src 'self' 'unsafe-inline'",
+	"script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
 	"style-src 'self' 'unsafe-inline'",
-	"img-src 'self' data:",
+	"img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com",
 	"font-src 'self'",
-	"connect-src 'self'",
+	"connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
 	"object-src 'none'",
 	"base-uri 'self'",
 	"form-action 'self'",

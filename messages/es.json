@@ -97,5 +97,5 @@
 	"footer_license": "Código con licencia {codeLicense}. Contenido con licencia {contentLicense}.",
 	"footer_repository": "Repositorio de código fuente",
 	"footer_contribute": "Contribuir",
-	"privacy_statement": "Este sitio no recopila datos ni utiliza cookies. Los enlaces conducen a herramientas de terceros, que tienen sus propias políticas de privacidad."
+	"privacy_statement": "Este sitio utiliza Google Analytics para medir las visitas, lo que implica el uso de cookies y el envío de datos de uso a Google. Los enlaces conducen a herramientas de terceros, que tienen sus propias políticas de privacidad."
 }
