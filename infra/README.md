@@ -51,7 +51,7 @@ The DNS zone for dataobservatory.net lives in a different account, so the stack 
 - A CloudFront distribution: the domain as its only alias, HTTP to HTTPS redirect, TLS 1.2 (2021 policy) or newer, HTTP/2 and HTTP/3, `index.html` as root object.
 - A CloudFront Function (`cloudfront-fn/rewrite-uri.js`, viewer-request) that maps extensionless paths such as `/en/about` onto the flat files of the static build (`/en/about.html`).
 - Custom error responses: 403 and 404 serve `/404.html` with status 404.
-- A response headers policy: HSTS (one year, includeSubdomains, no preload), nosniff, frame deny, referrer policy `strict-origin-when-cross-origin`, a Content-Security-Policy limited to same-origin sources (no third-party hosts), and `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()`.
+- A response headers policy: HSTS (one year, includeSubdomains, no preload), nosniff, frame deny, referrer policy `strict-origin-when-cross-origin`, a Content-Security-Policy limited to same-origin sources plus the Google tag hosts (googletagmanager.com, google-analytics.com, analytics.google.com), and `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()`.
 - Two `BucketDeployment`s of `../build` (see Caching).
 
 Outputs: `DistributionDomainName`, `DistributionId`, `BucketName`, `CertificateArn`, `SiteUrl`.

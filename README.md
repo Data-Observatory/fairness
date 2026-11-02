@@ -3,7 +3,7 @@
 A static SvelteKit site that lists external FAIR assessment resources and links
 to them. Content is plain YAML under `content/`; UI strings are in
 `messages/{en,es}.json`. English and Spanish. The site is fully prerendered and
-makes no runtime requests to third parties. See `specs.md` and `plan.md`.
+makes no runtime requests to third parties except the Google tag (analytics). See `specs.md` and `plan.md`.
 
 ## Run locally
 
