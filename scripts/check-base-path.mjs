@@ -56,7 +56,9 @@ if (failures.length === 0) {
 		'en/wizard.html',
 		'es/wizard.html',
 		'en/changelog.html',
-		'es/changelog.html'
+		'es/changelog.html',
+		'en/compare.html',
+		'es/compare.html'
 	];
 	for (const page of [...pages, toolPage]) {
 		if (!existsSync(join(outDir, page))) fail(`missing ${page}`);
@@ -69,6 +71,8 @@ if (failures.length === 0) {
 		'wizard.html',
 		'changelog',
 		'changelog.html',
+		'compare',
+		'compare.html',
 		'tools'
 	]) {
 		if (existsSync(join(outDir, leftover))) fail(`unlocalized ${leftover} must be removed`);

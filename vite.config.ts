@@ -44,6 +44,8 @@ export default defineConfig({
 					'/es/about',
 					'/en/changelog',
 					'/es/changelog',
+					'/en/compare',
+					'/es/compare',
 					'/en/wizard',
 					'/es/wizard',
 					...toolIds.flatMap((id): `/${string}`[] => [`/en/tools/${id}`, `/es/tools/${id}`])

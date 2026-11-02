@@ -49,6 +49,11 @@ h4 {
 	display: none;
 }
 
+/* Same for the comparison page. */
+.js [data-testid='compare-noscript'] {
+	display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
