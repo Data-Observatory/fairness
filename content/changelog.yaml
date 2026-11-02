@@ -1,0 +1,56 @@
+# Changes visible to visitors: new or changed entries, new sections or pages, and changes to
+# privacy and consent. Not for code refactors. Newest first; several entries may share a date.
+# Add the date as YYYY-MM-DD, the text in both languages, and optionally the ids of the entries
+# (files in content/tools) the change refers to.
+- date: 2026-11-02
+  text:
+    en: A section "Guides and training" was added, with three guides about FAIR and research data management.
+    es: Se agregó la sección "Guías y formación", con tres guías sobre FAIR y gestión de datos de investigación.
+  tools: [fair-cookbook, rdmkit, the-turing-way]
+- date: 2026-11-02
+  text:
+    en: New entries for research software and repositories, a finder row for code repositories, and an entry for the FAIRsharing directory.
+    es: Nuevas fichas sobre software de investigación y repositorios, una fila del buscador para repositorios de código y una ficha del directorio FAIRsharing.
+  tools:
+    - fair4rs
+    - fair-software-recommendations
+    - howfairis
+    - rsfc
+    - rfair
+    - fair-software-checklist
+    - software-observatory
+    - cts-fair-capmat
+    - fairsharing
+- date: 2026-11-02
+  text:
+    en: All entries that were listed before this date were checked again on 2026-11-02, and some status notes were updated.
+    es: Todas las fichas listadas antes de esta fecha se revisaron de nuevo el 2026-11-02, y se actualizaron algunas notas de estado.
+- date: 2026-11-02
+  text:
+    en: A Google Analytics tag was added to measure visits. It loads only after the visitor accepts it in a cookie notice, the choice is stored in the browser and it can be changed from the footer. The privacy statement was updated.
+    es: Se agregó una etiqueta de Google Analytics para medir las visitas. Solo se carga cuando la persona visitante la acepta en un aviso de cookies, la elección se guarda en el navegador y puede cambiarse desde el pie de página. Se actualizó la declaración de privacidad.
+- date: 2026-10-26
+  text:
+    en: The guided finder was added. It asks a few questions about what is being assessed and lists the entries that match, at a simple level and an advanced level.
+    es: Se agregó el buscador guiado. Formula algunas preguntas sobre lo que se desea evaluar y lista las fichas que coinciden, en un nivel simple y un nivel avanzado.
+- date: 2026-10-25
+  text:
+    en: First release, in English and Spanish. It lists FAIR assessment tools, frameworks and directories in sections, with filters by assessed object, mode, input, framework and status, and a table "Which tool fits?" by the input at hand.
+    es: Primera publicación, en inglés y español. Lista herramientas, marcos de referencia y directorios de evaluación FAIR en secciones, con filtros por objeto evaluado, modo, entrada, marco y estado, y una tabla "¿Qué herramienta se ajusta a su caso?" según el dato de partida.
+  tools:
+    - f-uji
+    - fair-enough
+    - fair-champion
+    - fair-checker
+    - fair-evaluator
+    - fairshake
+    - ardc-fair-data-self-assessment
+    - fair-aware
+    - fair-eva
+    - ofaire
+    - foops
+    - fairsfair-data-object-metrics
+    - rda-fair-data-maturity-model
+    - fair-impact-metrics
+    - fairassist
+    - fair-impact-catalogue
