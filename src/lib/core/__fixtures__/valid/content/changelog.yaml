@@ -1,0 +1,14 @@
+- date: 2025-01-20
+  text:
+    en: Two entries were added.
+    es: Se agregaron dos fichas.
+  tools: [f-uji, fair-enough]
+- date: 2025-01-20
+  text:
+    en: The Spanish texts were revised.
+    es: Se revisaron los textos en español.
+- date: 2025-01-10
+  text:
+    en: First release.
+    es: Primera publicación.
+  tools: [fairsfair-metrics]

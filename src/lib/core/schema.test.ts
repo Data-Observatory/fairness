@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import {
 	caveatsSchema,
+	changelogSchema,
 	finderSchema,
 	sectionsSchema,
 	siteSchema,
@@ -23,6 +24,7 @@ describe('valid fixtures parse', () => {
 		['sections', sectionsSchema, 'content/sections.yaml'],
 		['finder', finderSchema, 'content/finder.yaml'],
 		['caveats', caveatsSchema, 'content/caveats.yaml'],
+		['changelog', changelogSchema, 'content/changelog.yaml'],
 		['tool', toolSchema, 'content/tools/f-uji.yaml'],
 		['fair-enough tool', toolSchema, 'content/tools/fair-enough.yaml'],
 		['framework entry', toolSchema, 'content/tools/fairsfair-metrics.yaml'],
@@ -453,5 +455,69 @@ describe('siteSchema: shortName', () => {
 		const site = clone(doc('content/site.yaml'));
 		site.shortName = { en: '  ', es: 'FAIR' };
 		expect(siteSchema.safeParse(site).success).toBe(false);
+	});
+});
+
+describe('changelogSchema', () => {
+	const entries = () => clone(doc('content/changelog.yaml')) as Record<string, any>[];
+
+	it('accepts entries with and without tools', () => {
+		const list = entries();
+		expect(list.some((entry) => entry.tools === undefined)).toBe(true);
+		expect(list.some((entry) => entry.tools !== undefined)).toBe(true);
+		expect(changelogSchema.safeParse(list).success).toBe(true);
+	});
+
+	it('keeps the date as a plain string', () => {
+		expect(changelogSchema.parse(entries())[0].date).toBe('2025-01-20');
+	});
+
+	it('rejects an empty list', () => {
+		expect(changelogSchema.safeParse([]).success).toBe(false);
+	});
+
+	it.each(['not-a-date', '2025-02-30', '2025-13-01', '20/01/2025', '2025-1-5'])(
+		'rejects the date %s',
+		(value) => {
+			const list = entries();
+			list[0].date = value;
+			expect(paths(changelogSchema.safeParse(list))).toContain('0.date');
+		}
+	);
+
+	it('requires date and text', () => {
+		const list = entries();
+		delete list[1].date;
+		delete list[2].text;
+		const found = paths(changelogSchema.safeParse(list));
+		expect(found).toContain('1.date');
+		expect(found).toContain('2.text');
+	});
+
+	it('requires en and es in text', () => {
+		const list = entries();
+		delete list[0].text.es;
+		expect(paths(changelogSchema.safeParse(list))).toContain('0.text.es');
+	});
+
+	it('rejects a blank text', () => {
+		const list = entries();
+		list[0].text.en = '   ';
+		expect(paths(changelogSchema.safeParse(list))).toContain('0.text.en');
+	});
+
+	it('rejects unknown keys on an entry', () => {
+		const list = entries();
+		list[0].extra = true;
+		expect(changelogSchema.safeParse(list).success).toBe(false);
+	});
+
+	it('rejects an empty tools list and a non-string tool id', () => {
+		const list = entries();
+		list[0].tools = [];
+		list[2].tools = [5];
+		const found = paths(changelogSchema.safeParse(list));
+		expect(found).toContain('0.tools');
+		expect(found).toContain('2.tools.0');
 	});
 });

@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Locator, type Page } from '@playwright/test';
-import { loadSections, loadTools } from './content';
+import { loadChangelog, loadSections, loadTools } from './content';
 
 export const cards = (page: Page): Locator => page.locator('[data-testid=tool-card]');
 export const visibleCards = (page: Page): Locator =>
@@ -87,6 +87,11 @@ export async function expectRealPage(page: Page, url: string): Promise<void> {
 				.filter({ hasText: /cookies/i })
 				.first()
 		).toBeVisible();
+	} else if (/^\/(en|es)\/changelog$/.test(path)) {
+		const days = new Set(loadChangelog().map((entry) => entry.date));
+		await expect(page.locator('[data-testid=changelog-day]')).toHaveCount(days.size);
+		await expect(page.locator('[data-testid=changelog-entry]')).toHaveCount(loadChangelog().length);
+		await expect(page.getByRole('heading', { level: 2 }).first()).toBeVisible();
 	} else if (/^\/(en|es)\/wizard$/.test(path)) {
 		// A question (simple or advanced), the results view, or the JavaScript-disabled block:
 		// which one depends on the query string and on JavaScript.

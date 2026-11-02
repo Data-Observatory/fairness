@@ -8,6 +8,7 @@ const TAXONOMY = 'content/taxonomy.yaml';
 const SECTIONS = 'content/sections.yaml';
 const FINDER = 'content/finder.yaml';
 const CAVEATS = 'content/caveats.yaml';
+const CHANGELOG = 'content/changelog.yaml';
 const FUJI = 'content/tools/f-uji.yaml';
 const ENOUGH = 'content/tools/fair-enough.yaml';
 const FRAMEWORK = 'content/tools/fairsfair-metrics.yaml';
@@ -27,6 +28,11 @@ describe('loadContent: valid set', () => {
 		]);
 		expect(content.finder.rows).toHaveLength(3);
 		expect(content.caveats).toHaveLength(3);
+		expect(content.changelog.map((entry) => entry.date)).toEqual([
+			'2025-01-20',
+			'2025-01-20',
+			'2025-01-10'
+		]);
 	});
 
 	it('returns the tools sorted by id (plain string order)', () => {
@@ -105,12 +111,15 @@ describe('ContentError', () => {
 });
 
 describe('loadContent: files and syntax', () => {
-	it.each([SITE, TAXONOMY, SECTIONS, FINDER, CAVEATS])('missing %s is reported', (file) => {
-		const issues = issuesOf(without(valid, file));
-		expect(issues).toContainEqual(
-			expect.objectContaining({ file, message: expect.stringMatching(/missing|not found/i) })
-		);
-	});
+	it.each([SITE, TAXONOMY, SECTIONS, FINDER, CAVEATS, CHANGELOG])(
+		'missing %s is reported',
+		(file) => {
+			const issues = issuesOf(without(valid, file));
+			expect(issues).toContainEqual(
+				expect.objectContaining({ file, message: expect.stringMatching(/missing|not found/i) })
+			);
+		}
+	);
 
 	it('reports invalid YAML against its file', () => {
 		const files: Files = { ...valid, [FUJI]: 'id: [unterminated\nkind: tool' };
@@ -684,5 +693,101 @@ describe('loadContent: shortName', () => {
 	it('a TODO placeholder in shortName.es is reported like any localized field', () => {
 		const files = mutate(valid, SITE, (site) => (site.shortName = { en: 'FAIR', es: 'TODO' }));
 		expect(issuesOf(files)).toContainEqual(issue(SITE, 'shortName.es'));
+	});
+});
+
+describe('loadContent: changelog', () => {
+	const edit = (change: (entries: any[]) => void) =>
+		mutate(valid, CHANGELOG, (entries) => change(entries));
+
+	it('schema failures carry the file and the entry path', () => {
+		const files = edit((entries) => delete entries[1].text.es);
+		expect(issuesOf(files)).toContainEqual(issue(CHANGELOG, '1.text.es'));
+	});
+
+	it('an invalid date is reported', () => {
+		const files = edit((entries) => (entries[0].date = '2025-02-30'));
+		expect(issuesOf(files)).toContainEqual(issue(CHANGELOG, '0.date'));
+	});
+
+	it('a future date is reported against today', () => {
+		const files = edit((entries) => (entries[0].date = '2999-01-01'));
+		expect(issuesOf(files)).toContainEqual(
+			expect.objectContaining({
+				file: CHANGELOG,
+				path: '0.date',
+				message: expect.stringMatching(/future/i)
+			})
+		);
+	});
+
+	it('the reference date is the one given in the options, not the machine date', () => {
+		const files = edit((entries) => (entries[0].date = '2025-01-20'));
+		expect(() => loadContent(files, { today: new Date(2025, 0, 20) })).not.toThrow();
+		expect(() => loadContent(files, { today: new Date(2025, 0, 19) })).toThrow(ContentError);
+	});
+
+	it('entries must be listed newest first', () => {
+		const files = edit((entries) => entries.reverse());
+		expect(issuesOf(files)).toContainEqual(
+			expect.objectContaining({
+				file: CHANGELOG,
+				path: '1.date',
+				message: expect.stringMatching(/order|newest/i)
+			})
+		);
+	});
+
+	it('an older entry listed before a newer one is reported on the newer one', () => {
+		const files = edit((entries) => {
+			entries[2].date = '2025-01-25';
+		});
+		expect(issuesOf(files)).toContainEqual(issue(CHANGELOG, '2.date'));
+	});
+
+	it('two entries on the same date are allowed', () => {
+		expect(() => loadContent(valid)).not.toThrow();
+		expect(valid[CHANGELOG]).toMatch(/2025-01-20[\s\S]*2025-01-20/);
+	});
+
+	it('an unknown tool id is reported with its position', () => {
+		const files = edit((entries) => (entries[0].tools = ['f-uji', 'no-such-tool']));
+		expect(issuesOf(files)).toContainEqual(
+			expect.objectContaining({
+				file: CHANGELOG,
+				path: '0.tools.1',
+				message: expect.stringContaining('no-such-tool')
+			})
+		);
+	});
+
+	it('a duplicate tool id in one entry is reported', () => {
+		const files = edit((entries) => (entries[0].tools = ['f-uji', 'f-uji']));
+		expect(issuesOf(files)).toContainEqual(issue(CHANGELOG, '0.tools.1'));
+	});
+
+	it('a tool id from a template or missing file is not silently accepted', () => {
+		const files = edit((entries) => (entries[0].tools = ['_template']));
+		expect(issuesOf(files)).toContainEqual(issue(CHANGELOG, '0.tools.0'));
+	});
+
+	it('a missing locale is reported', () => {
+		const files = edit((entries) => delete entries[0].text.en);
+		expect(issuesOf(files)).toContainEqual(issue(CHANGELOG, '0.text.en'));
+	});
+
+	it('a locale not declared in site.yaml is reported', () => {
+		const files = edit((entries) => (entries[0].text.fr = 'Texte'));
+		expect(issuesOf(files)).toContainEqual(issue(CHANGELOG, '0.text.fr'));
+	});
+
+	it('a TODO left in the Spanish text is reported', () => {
+		const files = edit((entries) => (entries[0].text.es = 'TODO: traducir'));
+		expect(issuesOf(files)).toContainEqual(issue(CHANGELOG, '0.text.es'));
+	});
+
+	it('an empty file is reported', () => {
+		const files = { ...valid, [CHANGELOG]: '[]' };
+		expect(issuesOf(files)).toContainEqual(expect.objectContaining({ file: CHANGELOG }));
 	});
 });

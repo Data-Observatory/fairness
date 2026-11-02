@@ -7,6 +7,7 @@ import { validateProject } from './validate';
 const valid = loadFixtureFiles();
 const FUJI = 'content/tools/f-uji.yaml';
 const SITE = 'content/site.yaml';
+const CHANGELOG = 'content/changelog.yaml';
 const cleanMessages = { en: { a: 'Hello' }, es: { a: 'Hola' } };
 
 describe('package.json scripts', () => {
@@ -38,6 +39,24 @@ describe('validateProject', () => {
 				file: FUJI,
 				path: 'summary.en',
 				message: expect.stringContaining('best')
+			})
+		);
+	});
+
+	it('lints the changelog text with the style rules of each locale', () => {
+		const files = mutate(valid, CHANGELOG, (entries) => {
+			entries[0].text.en = `The best list ${EM_DASH} revised.`;
+			entries[1].text.es = 'Si tenés dudas, consulte la ficha.';
+		});
+		const problems = validateProject(files, cleanMessages).problems;
+		expect(problems).toContainEqual(
+			expect.objectContaining({ file: CHANGELOG, path: '0.text.en' })
+		);
+		expect(problems).toContainEqual(
+			expect.objectContaining({
+				file: CHANGELOG,
+				path: '1.text.es',
+				message: expect.stringContaining('tenés')
 			})
 		);
 	});

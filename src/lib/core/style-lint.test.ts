@@ -337,6 +337,18 @@ describe('lintContent', () => {
 		expect(lint(valid)).toEqual([]);
 	});
 
+	it('flags style violations in the changelog text with the entry path', () => {
+		const files = mutate(valid, 'content/changelog.yaml', (entries) => {
+			entries[0].text.en = 'The best list.';
+			entries[2].text.es = 'Si tenés dudas.';
+		});
+		const found = lint(files);
+		expect(found).toContainEqual(
+			hit('content/changelog.yaml', '0.text.en', 'forbidden-term', 'best')
+		);
+		expect(found).toContainEqual(hit('content/changelog.yaml', '2.text.es', 'voseo', 'tenés'));
+	});
+
 	it('flags a forbidden term in en with the localized path', () => {
 		const files = mutate(valid, 'content/tools/f-uji.yaml', (tool) => {
 			tool.summary.en = 'The best checker.';

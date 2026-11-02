@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getContent, loadContent, type Content } from './content';
+import { buildChangelogView, lastUpdated } from './changelog';
 import { daysSince } from './freshness';
 import { lintContent, lintMessages } from './style-lint';
 import type { Tool } from './schema';
@@ -384,6 +385,53 @@ describe('real content: wizard', () => {
 			(question) => !['api', 'self_hostable'].includes(question.id)
 		)) {
 			expect(item.option, item.id).toBeUndefined();
+		}
+	});
+});
+
+describe('real content: changelog', () => {
+	it('lists entries newest first and none in the future', () => {
+		const dates = content().changelog.map((entry) => entry.date);
+		expect(dates.length).toBeGreaterThan(0);
+		expect(dates).toEqual([...dates].sort().reverse());
+	});
+
+	it('starts with the initial release on 2026-10-25', () => {
+		const dates = content().changelog.map((entry) => entry.date);
+		expect(dates[dates.length - 1]).toBe('2026-10-25');
+	});
+
+	it('has an entry for the guided finder on 2026-10-26', () => {
+		expect(content().changelog.map((entry) => entry.date)).toContain('2026-10-26');
+	});
+
+	it('lastUpdated is the newest date and every listed tool resolves to a name', () => {
+		const all = content();
+		expect(lastUpdated(all)).toBe(all.changelog[0].date);
+		const names = new Map(all.tools.map((item) => [item.id, item.name]));
+		for (const locale of ['en', 'es'] as const) {
+			for (const day of buildChangelogView(all, locale).days) {
+				for (const entry of day.entries) {
+					expect(entry.text.trim()).not.toBe('');
+					for (const listed of entry.tools) expect(listed.name).toBe(names.get(listed.id));
+				}
+			}
+		}
+	});
+
+	it('mentions the new software entries and the guides on 2026-11-02', () => {
+		const ids = content()
+			.changelog.filter((entry) => entry.date === '2026-11-02')
+			.flatMap((entry) => entry.tools ?? []);
+		for (const id of [
+			'fairsharing',
+			'howfairis',
+			'rsfc',
+			'fair-cookbook',
+			'rdmkit',
+			'the-turing-way'
+		]) {
+			expect(ids).toContain(id);
 		}
 	});
 });

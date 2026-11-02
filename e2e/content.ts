@@ -58,6 +58,11 @@ export const loadSite = () =>
 		features: { bestFor: boolean; finderTable: boolean; statusFilter: boolean; wizard: boolean };
 	};
 
+export type ChangelogEntry = { date: string; text: Localized; tools?: string[] };
+
+/** content/changelog.yaml, newest first. The yaml package keeps ISO dates as strings. */
+export const loadChangelog = () => read('changelog.yaml') as ChangelogEntry[];
+
 export const loadSections = () => read('sections.yaml') as { id: string; collapsed?: boolean }[];
 
 export const loadTaxonomy = () =>
