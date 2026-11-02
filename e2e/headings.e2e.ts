@@ -5,6 +5,8 @@ test.describe('heading levels', () => {
 	for (const url of [
 		'/en',
 		'/en/about',
+		'/en/changelog',
+		'/es/changelog',
 		'/en/tools/f-uji',
 		'/en/wizard',
 		'/es/wizard',

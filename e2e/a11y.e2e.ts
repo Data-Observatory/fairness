@@ -6,6 +6,8 @@ const PAGES = [
 	'/es',
 	'/en/about',
 	'/es/about',
+	'/en/changelog',
+	'/es/changelog',
 	'/en/tools/f-uji',
 	'/es/tools/f-uji',
 	'/en/wizard',

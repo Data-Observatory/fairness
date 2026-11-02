@@ -14,6 +14,7 @@ test.describe('mobile viewport 375x812', () => {
 		'/en',
 		'/es',
 		'/en/about',
+		'/en/changelog',
 		'/en/tools/f-uji',
 		'/en/wizard',
 		'/en/wizard?level=advanced',

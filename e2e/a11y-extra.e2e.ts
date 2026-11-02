@@ -18,6 +18,8 @@ test.describe('axe at 375x812', () => {
 		'/es',
 		'/en/tools/fair-enough',
 		'/es/tools/fair-enough',
+		'/en/changelog',
+		'/es/changelog',
 		'/en/wizard',
 		'/en/wizard?level=advanced&target=dataset'
 	]) {

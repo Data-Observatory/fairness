@@ -10,6 +10,7 @@ const origin = `https://${site.domain}`;
 const CASES = [
 	{ path: '', label: 'home' },
 	{ path: '/about', label: 'about' },
+	{ path: '/changelog', label: 'changelog' },
 	{ path: '/tools/f-uji', label: 'tool detail' },
 	{ path: '/wizard', label: 'guided finder' }
 ];
