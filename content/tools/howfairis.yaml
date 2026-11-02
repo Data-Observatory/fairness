@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: howfairis
+kind: tool
+section: other-objects
+name: howfairis
+url: https://github.com/fair-software/howfairis
+operator:
+  name: fair-software organization on GitHub (author Jurriaan H. Spaaks)
+  url: https://github.com/fair-software
+summary:
+  en: >-
+    howfairis is a Python command-line tool that checks a GitHub or GitLab repository against the
+    five fair-software.eu recommendations. It runs locally (pip or Docker) and reads the repository
+    through the GitHub and GitLab APIs. The project describes no hosted web service.
+  es: >-
+    howfairis es una herramienta de línea de comandos en Python que comprueba un repositorio de
+    GitHub o GitLab frente a las cinco recomendaciones de fair-software.eu. Se ejecuta de forma
+    local (pip o Docker) y lee el repositorio mediante las API de GitHub y GitLab. El proyecto no
+    describe un servicio web alojado.
+best_for:
+  en: Checking whether a public GitHub or GitLab repository meets the five fair-software.eu recommendations.
+  es: Comprobar si un repositorio público de GitHub o GitLab cumple las cinco recomendaciones de fair-software.eu.
+targets: [software]
+mode: automated
+inputs: [code_repository_url]
+frameworks: [fair_software_recommendations]
+output:
+  en: >-
+    A list of checks for each of the five recommendations, a compliance score shown as dots and a
+    suggested fair-software badge for the README. The option --json-output returns a true or false
+    result for each recommendation.
+  es: >-
+    Una lista de comprobaciones para cada una de las cinco recomendaciones, una puntuación de
+    cumplimiento mostrada con puntos y una insignia de fair-software sugerida para el README. La
+    opción --json-output devuelve un resultado verdadero o falso para cada recomendación.
+source_code: https://github.com/fair-software/howfairis
+self_hostable: true
+license: Apache-2.0
+status: available
+status_note:
+  en: >-
+    Checked on 2026-11-02 from the README, the PyPI listing (version 0.14.2, released 2022-09-01)
+    and the GitHub repository (not archived, last push 2025-05-07). The command was not run. It
+    covers github.com and gitlab.com, not self-hosted GitLab instances.
+  es: >-
+    Verificado el 2026-11-02 a partir del README, de la ficha en PyPI (versión 0.14.2, publicada el
+    2022-09-01) y del repositorio de GitHub (no archivado, último push el 2025-05-07). El comando
+    no se ejecutó. Cubre github.com y gitlab.com, no las instancias de GitLab autoalojadas.
+last_verified: 2026-11-02
+references:
+  - title: howfairis README (GitHub)
+    url: https://github.com/fair-software/howfairis
+  - title: howfairis on PyPI
+    url: https://pypi.org/project/howfairis/
+  - title: fair-software.eu recommendations
+    url: https://fair-software.eu/
