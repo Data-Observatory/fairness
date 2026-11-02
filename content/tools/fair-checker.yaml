@@ -37,7 +37,7 @@ source_code: https://github.com/IFB-ElixirFr/FAIR-checker
 self_hostable: true
 license: MIT
 status: available
-last_verified: 2026-10-25
+last_verified: 2026-11-02
 references:
   - title: 'FAIR-Checker: supporting digital resource findability and reuse with Knowledge Graphs and Semantic Web standards (Journal of Biomedical Semantics, 2023)'
     url: https://doi.org/10.1186/s13326-023-00289-5
