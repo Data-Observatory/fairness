@@ -438,4 +438,20 @@ describe('real content: changelog', () => {
 			expect(ids).toContain(id);
 		}
 	});
+
+	it('records the compare page, report link, cross-links and changelog page on 2026-11-02', () => {
+		const texts = content()
+			.changelog.filter((entry) => entry.date === '2026-11-02')
+			.map((entry) => entry.text);
+		for (const locale of ['en', 'es'] as const) {
+			const all = texts.map((text) => text[locale]).join('\n');
+			expect(all, locale).toContain('/compare');
+			expect(all, locale).toMatch(
+				locale === 'en' ? /two or three tools/ : /dos o tres herramientas/
+			);
+			expect(all, locale).toMatch(locale === 'en' ? /report/i : /informar/i);
+			expect(all, locale).toMatch(locale === 'en' ? /implement/i : /implementan/i);
+			expect(all, locale).toMatch(locale === 'en' ? /Last updated/ : /Última actualización/);
+		}
+	});
 });
