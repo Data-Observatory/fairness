@@ -1,0 +1,41 @@
+name: Report a broken or changed tool
+description: Report a listed resource that no longer works as described or whose entry is incorrect.
+title: 'Report: '
+labels: [tool-report]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the report. Please do not submit real or sensitive data to the tool while gathering this information. Opening its pages is enough.
+  - type: input
+    id: tool
+    attributes:
+      label: Tool id
+      description: The id of the entry, as in its page address (for example f-uji).
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      description: The https:// link listed for the tool.
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: Kind of problem
+      options:
+        - Broken link
+        - Changed behavior
+        - Incorrect fact
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What you observed, the date on which you observed it, and links to documentation or announcements if available.
+    validations:
+      required: true
