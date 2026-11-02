@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { expandAllSections, expectRealPage } from './helpers';
 
-// Owner decision 2026-11-02: the Google tag is the only third-party request. Its hosts are
-// stubbed here so test runs send no hits to Google.
+// Owner requirement: no Google request before consent. The Google tag is the only third-party
+// request and it loads only after the visitor accepts (see consent.e2e.ts). Its hosts are still
+// stubbed here so a regression cannot send hits to Google from a test run.
 const GOOGLE_HOST =
 	/^(www|region\d+)?\.?(googletagmanager|google-analytics|analytics\.google)\.com$/;
-const GOOGLE_TAG_ID = 'G-X6BJF4NQ71';
 
 const PAGES = [
 	'/',
@@ -23,16 +23,15 @@ const PAGES = [
 	'/es/wizard?target=dataset&input=doi&step=results'
 ];
 
-test.describe('only the Google tag requests a third party', () => {
+test.describe('no third-party request before a consent choice', () => {
 	for (const url of PAGES) {
-		test(`${url} only requests its own origin`, async ({ page, baseURL }) => {
+		test(`${url} only requests its own origin before a choice`, async ({ page, baseURL }) => {
 			const origin = new URL(baseURL!).origin;
 			const foreign: string[] = [];
 			page.on('request', (request) => {
 				const target = request.url();
 				if (target.startsWith('data:') || target.startsWith('blob:')) return;
-				if (new URL(target).origin !== origin && !GOOGLE_HOST.test(new URL(target).hostname))
-					foreign.push(target);
+				if (new URL(target).origin !== origin) foreign.push(target);
 			});
 			await page.route(
 				(target) => GOOGLE_HOST.test(target.hostname),
@@ -54,13 +53,12 @@ test.describe('only the Google tag requests a third party', () => {
 	}
 });
 
-test.describe('Google tag', () => {
+test.describe('Google tag before consent', () => {
 	for (const url of ['/en', '/es', '/en/about', '/en/tools/f-uji', '/en/wizard']) {
-		test(`${url} loads gtag.js once for the configured id`, async ({ page }) => {
-			const tagRequests: string[] = [];
+		test(`${url} sends no Google request before a choice`, async ({ page }) => {
+			const googleRequests: string[] = [];
 			page.on('request', (request) => {
-				if (request.url().startsWith('https://www.googletagmanager.com/gtag/js'))
-					tagRequests.push(request.url());
+				if (GOOGLE_HOST.test(new URL(request.url()).hostname)) googleRequests.push(request.url());
 			});
 			await page.route(
 				(target) => GOOGLE_HOST.test(target.hostname),
@@ -68,10 +66,8 @@ test.describe('Google tag', () => {
 			);
 			await page.goto(url);
 			await page.waitForLoadState('networkidle');
-			expect(tagRequests).toEqual([`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_TAG_ID}`]);
-			expect(await page.evaluate(() => typeof (window as { gtag?: unknown }).gtag)).toBe(
-				'function'
-			);
+			expect(googleRequests).toEqual([]);
+			expect(await page.locator('script[src*="googletagmanager"]').count()).toBe(0);
 		});
 	}
 });

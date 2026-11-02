@@ -110,7 +110,7 @@ test.describe('privacy statement', () => {
 			page
 				.locator('main')
 				.getByText(
-					'This site uses Google Analytics to measure visits, which sets cookies and sends usage data to Google. Links lead to third-party tools, which have their own privacy policies.',
+					'Google Analytics is used only if you accept it. If you do, it sets cookies and sends usage data to Google to measure visits. Your choice is stored in this browser and can be changed at any time. Links lead to third-party tools, which have their own privacy policies.',
 					{ exact: true }
 				)
 		).toBeVisible();
