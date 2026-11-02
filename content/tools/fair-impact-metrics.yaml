@@ -18,7 +18,7 @@ summary:
     sociales que pueden sustituir a sus equivalentes independientes del dominio.
 frameworks: [fairsfair_metrics]
 status: available
-last_verified: 2026-10-25
+last_verified: 2026-11-02
 references:
   - title: D5.1 Implementing metrics for automated FAIR digital objects assessment in a disciplinary context (Zenodo)
     url: https://doi.org/10.5281/zenodo.7784120
