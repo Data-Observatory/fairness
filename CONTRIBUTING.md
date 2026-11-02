@@ -21,6 +21,15 @@ files under `content/`; no code changes are needed to add a tool.
 
 To update an existing tool, edit its file and follow steps 3 to 5.
 
+## Reports about a listed tool
+
+Each tool page has a link "Report a broken or changed tool". It opens the issue form
+`.github/ISSUE_TEMPLATE/report-tool.yml` on GitHub with the tool id, its URL and the title
+prefilled. The link is a plain link: nothing is sent until the visitor submits the form on GitHub.
+The form adds the label `tool-report`, which a maintainer creates once in the repository (GitHub
+ignores a label that does not exist). Maintainers handle a report like a correction: open the
+resource, then follow "Add or update a tool" from step 3.
+
 ## Guided finder questions
 
 The questions of the guided finder (`/wizard`) are in `content/wizard.yaml`: the question and help
