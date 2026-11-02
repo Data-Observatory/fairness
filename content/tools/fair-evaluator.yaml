@@ -36,7 +36,10 @@ status_note:
     https://fairdata.services:7171/FAIR_Evaluator, with the semanticscience.org address commented
     out. That backend listed 36 collections and one evaluation run against collection 1 completed
     and returned a result. The FAIR Champion README describes FAIR Champion as an evolution of the
-    FAIR Evaluator. None of the pages opened states that FAIR Champion replaces it.
+    FAIR Evaluator. None of the pages opened states that FAIR Champion replaces it. On 2026-11-02 the
+    front-end configuration still set the same backend, the backend entry page and the list of collections
+    responded, and the front-end maintenance notice was switched off in its configuration. No new
+    evaluation was run on that date.
   es: >-
     El 2026-10-25 el servidor fair-evaluator.semanticscience.org no se resolvió (error 6 de curl).
     La interfaz web se cargó y su script (scripts/controllers/configCtrl.js) fija el backend en
@@ -44,8 +47,10 @@ status_note:
     comentada. Ese backend listó 36 colecciones y una evaluación ejecutada con la colección 1 se
     completó y devolvió un resultado. El README de FAIR Champion describe a FAIR Champion como una
     evolución de FAIR Evaluator. Ninguna de las páginas abiertas indica que FAIR Champion lo
-    reemplace.
-last_verified: 2026-10-25
+    reemplace. El 2026-11-02 la configuración de la interfaz web seguía fijando el mismo backend, la
+    página de entrada del backend y la lista de colecciones respondieron, y el aviso de mantenimiento de
+    la interfaz estaba desactivado en su configuración. Ese día no se ejecutó ninguna evaluación nueva.
+last_verified: 2026-11-02
 references:
   - title: FAIR Evaluator front-end source code (GitHub, MIT license)
     url: https://github.com/FAIRsharing/FAIR-Evaluator-FrontEnd
