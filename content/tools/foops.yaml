@@ -36,13 +36,19 @@ status_note:
     On 2026-10-25 https://w3id.org/foops answered with a 301 redirect to
     https://foops.linkeddata.es/FAIR_validator.html. That host (138.100.11.160) did not complete a
     connection on port 443: curl timed out after 15 to 25 seconds and a second client received
-    ECONNREFUSED. The GitHub repository loaded.
+    ECONNREFUSED. The GitHub repository loaded. On 2026-11-02 https://w3id.org/foops still answered with
+    a 301 redirect to the same address, ports 443 and 80 of that host did not accept a connection (timeout
+    after 25 seconds) and the GitHub repository loaded. The README still names https://w3id.org/foops/api
+    as the public API address.
   es: >-
     El 2026-10-25 https://w3id.org/foops respondió con una redirección 301 a
     https://foops.linkeddata.es/FAIR_validator.html. Ese servidor (138.100.11.160) no completó la
     conexión en el puerto 443: curl agotó el tiempo de espera tras 15 a 25 segundos y un segundo
-    cliente recibió ECONNREFUSED. El repositorio de GitHub se cargó.
-last_verified: 2026-10-25
+    cliente recibió ECONNREFUSED. El repositorio de GitHub se cargó. El 2026-11-02 https://w3id.org/foops
+    seguía respondiendo con una redirección 301 a la misma dirección, los puertos 443 y 80 de ese servidor
+    no aceptaron conexión (tiempo de espera agotado a los 25 segundos) y el repositorio de GitHub se cargó.
+    El README sigue indicando https://w3id.org/foops/api como dirección pública de la API.
+last_verified: 2026-11-02
 references:
   - title: FOOPS! source code and documentation (GitHub)
     url: https://github.com/oeg-upm/fair_ontologies
