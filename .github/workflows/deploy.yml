@@ -3,26 +3,38 @@ name: Deploy
 # Inert until the repository variable DEPLOY_ENABLED is set to 'true'. The owner setup is in
 # infra/README.md ("Deploy workflow: owner setup"). No account id or ARN is stored here:
 # the role comes from a secret, the region, the domain and the logging options from variables.
+# Two jobs: "diff" runs the checks, builds the site and writes the cdk diff to the job summary
+# (environment production-diff, no reviewers); "deploy" waits for the approval of the environment
+# production, so the approver reads the diff first, and deploys the build artifact made by "diff".
 # Third-party actions are pinned by commit SHA (checked against each action's repository):
-#   actions/checkout v4.3.1, actions/setup-node v4.4.0, aws-actions/configure-aws-credentials v6.3.0
+#   actions/checkout v4.3.1, actions/setup-node v4.4.0, actions/upload-artifact v4.6.2,
+#   actions/download-artifact v4.3.0, aws-actions/configure-aws-credentials v6.3.0
 
 on:
   workflow_run:
-    workflows: ['Link check']
+    workflows: ['CI']
     types: [completed]
     branches: [main]
   workflow_dispatch:
 
+# One run at a time; a run in progress is never cancelled.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
 jobs:
-  deploy:
+  diff:
     runs-on: ubuntu-latest
     if: vars.DEPLOY_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
-    environment: production
+    environment: production-diff
     permissions:
       id-token: write
       contents: read
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          # The commit that passed CI. Empty for a manual run, which uses the default ref.
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
@@ -42,6 +54,21 @@ jobs:
 
       - run: npm run build
 
+      - run: npm run check:base-path
+
+      # Installed before the AWS credentials exist, so install scripts never see them.
+      - name: Install the infra packages
+        working-directory: infra
+        run: npm ci
+
+      - name: Type-check the infra code
+        working-directory: infra
+        run: npx tsc --noEmit
+
+      - name: Test the infra code
+        working-directory: infra
+        run: npx vitest run
+
       - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
@@ -49,10 +76,64 @@ jobs:
 
       - name: Review the changes
         working-directory: infra
+        env:
+          SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+          ACCESS_LOGS: ${{ vars.ACCESS_LOGS }}
+          ACCESS_LOG_RETENTION_DAYS: ${{ vars.ACCESS_LOG_RETENTION_DAYS }}
         run: |
-          npm ci
-          ./node_modules/.bin/cdk diff -c domainName=${{ vars.SITE_DOMAIN }} -c accessLogs=${{ vars.ACCESS_LOGS }} -c accessLogRetentionDays=${{ vars.ACCESS_LOG_RETENTION_DAYS }}
+          ./node_modules/.bin/cdk diff --no-color -c domainName="$SITE_DOMAIN" -c accessLogs="$ACCESS_LOGS" -c accessLogRetentionDays="$ACCESS_LOG_RETENTION_DAYS" 2>&1 | tee cdk-diff.txt
+          {
+            echo '## cdk diff'
+            echo
+            echo '```'
+            cat cdk-diff.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # The reviewed build is the build that the deploy job publishes.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: site-build
+          path: build
+          if-no-files-found: error
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: diff
+    if: vars.DEPLOY_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22.x
+          cache: npm
+
+      # Installed before the AWS credentials exist, so install scripts never see them.
+      - name: Install the infra packages
+        working-directory: infra
+        run: npm ci
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: site-build
+          path: build
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Deploy
         working-directory: infra
-        run: ./node_modules/.bin/cdk deploy --require-approval never -c domainName=${{ vars.SITE_DOMAIN }} -c accessLogs=${{ vars.ACCESS_LOGS }} -c accessLogRetentionDays=${{ vars.ACCESS_LOG_RETENTION_DAYS }}
+        env:
+          SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+          ACCESS_LOGS: ${{ vars.ACCESS_LOGS }}
+          ACCESS_LOG_RETENTION_DAYS: ${{ vars.ACCESS_LOG_RETENTION_DAYS }}
+        run: ./node_modules/.bin/cdk deploy --require-approval never -c domainName="$SITE_DOMAIN" -c accessLogs="$ACCESS_LOGS" -c accessLogRetentionDays="$ACCESS_LOG_RETENTION_DAYS"
