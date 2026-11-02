@@ -40,13 +40,20 @@ status_note:
   en: >-
     On 2026-10-25 the GitHub repository loaded. The hosted service addresses named in the README
     (services.agroportal.lirmm.fr, bioportal.lirmm.fr, industryportal.enit.fr) did not respond within
-    30 seconds, and agroportal.lirmm.fr redirected to agroportal.eu, which reset the connection.
+    30 seconds, and agroportal.lirmm.fr redirected to agroportal.eu, which reset the connection. On 2026-11-02
+    bioportal.lirmm.fr and industryportal.enit.fr again did not connect within 30 seconds;
+    services.agroportal.lirmm.fr redirected to agroportal.lirmm.fr/ofaire/ and then to agroportal.eu/ofaire/,
+    which returned 404, and the services.agroportal.eu address did not respond within 25 seconds. The
+    agroportal.eu home page loaded.
   es: >-
     El 2026-10-25 el repositorio de GitHub se cargó. Las direcciones del servicio alojado que
     menciona el README (services.agroportal.lirmm.fr, bioportal.lirmm.fr, industryportal.enit.fr) no
     respondieron en 30 segundos, y agroportal.lirmm.fr redirigió a agroportal.eu, que cerró la
-    conexión (connection reset).
-last_verified: 2026-10-25
+    conexión (connection reset). El 2026-11-02 bioportal.lirmm.fr e industryportal.enit.fr de nuevo no
+    conectaron en 30 segundos; services.agroportal.lirmm.fr redirigió a agroportal.lirmm.fr/ofaire/ y
+    luego a agroportal.eu/ofaire/, que devolvió 404, y la dirección services.agroportal.eu no respondió
+    en 25 segundos. La página de inicio de agroportal.eu se cargó.
+last_verified: 2026-11-02
 references:
   - title: "O'FAIRe: Ontology FAIRness Evaluator in the AgroPortal semantic resource repository (ESWC 2022 poster, HAL record)"
     url: https://hal-lirmm.ccsd.cnrs.fr/lirmm-03630543v1
