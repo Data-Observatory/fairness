@@ -5,12 +5,17 @@ rows:
     note:
       en: The tool resolves the DOI and reads the metadata published for it.
       es: La herramienta resuelve el DOI y lee los metadatos publicados para él.
-    tools: [f-uji, fair-enough, fair-champion, fair-checker, fair-evaluator]
+    tools: [f-uji, fair-enough, fair-champion, fair-checker, fair-evaluator, rfair]
   - input: landing_page_url
     note:
       en: The tool reads the metadata embedded in the page or linked from it.
       es: La herramienta lee los metadatos incluidos en la página o enlazados desde ella.
-    tools: [f-uji, fair-enough, fair-champion, fair-checker, fair-evaluator]
+    tools: [f-uji, fair-enough, fair-champion, fair-checker, fair-evaluator, rfair]
+  - input: code_repository_url
+    note:
+      en: The tool reads a public GitHub or GitLab repository and checks it against its tests.
+      es: La herramienta lee un repositorio público de GitHub o GitLab y lo comprueba con sus pruebas.
+    tools: [howfairis, rsfc, rfair]
   - input: metadata_file
     note:
       en: The tool accepts a metadata file or an ontology file supplied by the user.
@@ -18,6 +23,13 @@ rows:
     tools: [foops]
   - input: none
     note:
-      en: The tool starts from a questionnaire and needs no identifier.
-      es: La herramienta parte de un cuestionario y no necesita un identificador.
-    tools: [ardc-fair-data-self-assessment, fair-aware, fairshake]
+      en: The tool or template starts from a questionnaire and needs no identifier.
+      es: La herramienta o la plantilla parte de un cuestionario y no necesita un identificador.
+    tools:
+      [
+        ardc-fair-data-self-assessment,
+        fair-aware,
+        fairshake,
+        fair-software-checklist,
+        cts-fair-capmat
+      ]
