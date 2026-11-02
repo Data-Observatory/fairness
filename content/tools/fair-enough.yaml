@@ -42,13 +42,18 @@ status_note:
     returned its OpenAPI definition, the list of collections and the list of stored evaluations.
     Two evaluation requests, for two different resources (collection fair-enough-metadata),
     returned 502 Bad Gateway from nginx after about 70 to 80 seconds. The most recent push to the GitHub repository is dated 2023-07-17.
+    On 2026-11-02 the web front-end loaded and the API again returned its OpenAPI definition and the list of four collections;
+    no evaluation was requested on that date, so the 502 result was not re-tested. The most recent push to the repository is still dated 2023-07-17.
   es: >-
     El 2026-10-25 la interfaz web se cargó y la API en api.fair-enough.semanticscience.org devolvió
     su definición OpenAPI, la lista de colecciones y la lista de evaluaciones almacenadas. Dos
     solicitudes de evaluación, para dos recursos distintos (colección fair-enough-metadata),
     devolvieron un error 502 Bad Gateway de nginx tras unos 70 a 80 segundos. La última
     actualización (push) del repositorio de GitHub tiene fecha del 2023-07-17.
-last_verified: 2026-10-25
+    El 2026-11-02 la interfaz web se cargó y la API devolvió de nuevo su definición OpenAPI y la lista de cuatro colecciones;
+    ese día no se solicitó ninguna evaluación, por lo que el error 502 no se volvió a comprobar. La última actualización (push) del
+    repositorio sigue con fecha del 2023-07-17.
+last_verified: 2026-11-02
 references:
   - title: FAIR enough source code and documentation (GitHub)
     url: https://github.com/MaastrichtU-IDS/fair-enough
