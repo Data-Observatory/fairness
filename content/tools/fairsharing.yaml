@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fairsharing
+kind: directory
+section: directories
+name: FAIRsharing
+url: https://fairsharing.org/
+operator:
+  name: FAIRsharing team, University of Oxford
+  url: https://fairsharing.org/about
+summary:
+  en: >-
+    A community-driven, manually curated registry of data and metadata standards, databases and
+    data policies, for all subject areas. It also holds collections that group records, and
+    searching or browsing needs no account.
+  es: >-
+    Un registro comunitario y curado manualmente de estándares de datos y metadatos, bases de datos
+    y políticas de datos, para todas las áreas temáticas. También contiene colecciones que agrupan
+    registros, y buscar o explorar no requiere una cuenta.
+status: available
+status_note:
+  en: >-
+    The site needs JavaScript to show its content. The description comes from the page metadata and
+    from the documentation at fairsharing.gitbook.io, read on 2026-11-02.
+  es: >-
+    El sitio necesita JavaScript para mostrar su contenido. La descripción proviene de los metadatos
+    de la página y de la documentación en fairsharing.gitbook.io, leída el 2026-11-02.
+last_verified: 2026-11-02
+references:
+  - title: FAIRsharing documentation
+    url: https://fairsharing.gitbook.io/fairsharing
+  - title: About FAIRsharing
+    url: https://fairsharing.org/about
