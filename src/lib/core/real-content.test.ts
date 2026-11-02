@@ -41,7 +41,7 @@ const REQUIRED_TOOL_IDS = [
 	'cts-fair-capmat',
 	'fairsharing'
 ];
-const SECTION_IDS = ['datasets', 'other-objects', 'frameworks', 'directories'];
+const SECTION_IDS = ['datasets', 'other-objects', 'frameworks', 'directories', 'guides'];
 const FINDER_INPUTS = ['doi', 'landing_page_url', 'code_repository_url', 'metadata_file', 'none'];
 const MAX_AGE_DAYS = 30;
 
@@ -114,7 +114,7 @@ describe('real content: required entries', () => {
 });
 
 describe('real content: sections', () => {
-	it('has exactly datasets, other-objects, frameworks, directories in that order', () => {
+	it('has exactly datasets, other-objects, frameworks, directories, guides in that order', () => {
 		expect(content().sections.map((section) => section.id)).toEqual(SECTION_IDS);
 	});
 
@@ -123,6 +123,14 @@ describe('real content: sections', () => {
 		for (const section of sections) {
 			expect(tools.filter((item) => item.section === section.id).length).toBeGreaterThanOrEqual(1);
 		}
+	});
+
+	it('keeps the guides section collapsed and fills it with entries of kind guide', () => {
+		const { sections, tools } = content();
+		expect(sections.find((section) => section.id === 'guides')?.collapsed).toBe(true);
+		const guides = tools.filter((item) => item.section === 'guides');
+		expect(guides.length).toBeGreaterThanOrEqual(1);
+		for (const item of guides) expect(item.kind).toBe('guide');
 	});
 
 	it('puts every tool in an existing section', () => {

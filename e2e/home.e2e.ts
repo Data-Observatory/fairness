@@ -25,7 +25,7 @@ for (const locale of LOCALES) {
 				.locator('section[data-section-id]')
 				.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-section-id')));
 			expect(ids).toEqual(sections.map((item) => item.id));
-			expect(ids).toHaveLength(4);
+			expect(ids).toHaveLength(5);
 		});
 
 		test('collapsed sections are details elements that toggle open and closed', async ({
