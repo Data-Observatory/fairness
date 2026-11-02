@@ -72,6 +72,11 @@ input:
     description:
       en: The URI of the ontology to assess.
       es: El URI de la ontología que se evalúa.
+  - id: code_repository_url
+    label: { en: Code repository URL, es: URL del repositorio de código }
+    description:
+      en: The web address of a public source code repository, for example on GitHub or GitLab.
+      es: La dirección web de un repositorio público de código fuente, por ejemplo en GitHub o GitLab.
   - id: none
     label: { en: None, es: Ninguna }
     description:
@@ -103,6 +108,16 @@ framework:
     description:
       en: The FAIR Data Maturity Model of the Research Data Alliance.
       es: El modelo de madurez de datos FAIR (FDMM) de la Research Data Alliance.
+  - id: fair4rs
+    label: { en: FAIR4RS Principles, es: Principios FAIR4RS }
+    description:
+      en: The FAIR Principles for Research Software, published by the RDA FAIR for Research Software working group.
+      es: Los principios FAIR para software de investigación, publicados por el grupo de trabajo FAIR for Research Software de la RDA.
+  - id: fair_software_recommendations
+    label: { en: fair-software.eu recommendations, es: Recomendaciones de fair-software.eu }
+    description:
+      en: Five recommendations for research software (repository, license, registry, citation and checklist) published at fair-software.eu.
+      es: Cinco recomendaciones para software de investigación (repositorio, licencia, registro, citación y lista de verificación) publicadas en fair-software.eu.
   - id: custom
     label: { en: Custom, es: Personalizado }
     description:
