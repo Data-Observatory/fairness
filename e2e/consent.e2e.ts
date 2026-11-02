@@ -179,7 +179,10 @@ test.describe('before a choice', () => {
 		for (const url of ['/en', '/es/about', '/en/tools/f-uji']) {
 			const html = await (await request.get(url)).text();
 			expect(html, url).toContain('consent-loader.js');
-			expect(html, url).not.toContain('googletagmanager');
+			// The host appears in the CSP meta (script-src) and nowhere else: no script or link
+			// in the HTML refers to it.
+			const withoutPolicy = html.replace(/<meta http-equiv="content-security-policy"[^>]*>/i, '');
+			expect(withoutPolicy, url).not.toContain('googletagmanager');
 			expect(html, url).not.toContain('G-X6BJF4NQ71');
 		}
 	});
