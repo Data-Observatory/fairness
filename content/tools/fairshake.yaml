@@ -32,7 +32,7 @@ api:
 source_code: https://github.com/MaayanLab/FAIRshake
 license: CC-BY-NC-SA-4.0
 status: available
-last_verified: 2026-10-25
+last_verified: 2026-11-02
 references:
   - title: 'FAIRshake: Toolkit to Evaluate the FAIRness of Research Digital Resources (Cell Systems, 2019)'
     url: https://doi.org/10.1016/j.cels.2019.09.011
