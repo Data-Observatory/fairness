@@ -126,6 +126,24 @@ export type Finder = z.infer<typeof finderSchema>;
 export const caveatsSchema = z.array(z.strictObject({ id: text, text: localized }));
 export type Caveats = z.infer<typeof caveatsSchema>;
 
+/* changelog.yaml */
+
+/**
+ * A hand-maintained list of user-visible changes (content and features), newest first. The order
+ * and the dates are cross-checked in `content.ts`.
+ */
+export const changelogSchema = z
+	.array(
+		z.strictObject({
+			date: isoDate,
+			text: localized,
+			tools: z.array(text).min(1).optional()
+		})
+	)
+	.min(1);
+export type Changelog = z.infer<typeof changelogSchema>;
+export type ChangelogEntry = Changelog[number];
+
 /* wizard.yaml */
 
 /** Question ids of the guided finder: a taxonomy group, or one of the two boolean tool facts. */

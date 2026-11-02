@@ -2,6 +2,7 @@ import { parse } from 'yaml';
 import { z } from 'zod';
 import {
 	caveatsSchema,
+	changelogSchema,
 	finderSchema,
 	isIsoDate,
 	sectionsSchema,
@@ -12,6 +13,7 @@ import {
 	TAXONOMY_GROUPS,
 	WIZARD_BOOLEAN_QUESTIONS,
 	type Caveats,
+	type Changelog,
 	type Finder,
 	type Sections,
 	type Site,
@@ -30,13 +32,15 @@ export type Content = {
 	finder: Finder;
 	caveats: Caveats;
 	wizard: Wizard;
+	/** Newest first; the cross-checks guarantee the order and that the dates are not in the future. */
+	changelog: Changelog;
 	/** Sorted by id (plain string order). */
 	tools: Tool[];
 };
 
 export type LoadOptions = {
 	/**
-	 * Reference date for the "not in the future" check on `last_verified`. Defaults to now.
+	 * Reference date for the "not in the future" check on `last_verified` and changelog dates. Defaults to now.
 	 * Only its LOCAL calendar date counts.
 	 */
 	today?: Date;
@@ -61,8 +65,9 @@ const SECTIONS = 'content/sections.yaml';
 const FINDER = 'content/finder.yaml';
 const CAVEATS = 'content/caveats.yaml';
 const WIZARD = 'content/wizard.yaml';
+const CHANGELOG = 'content/changelog.yaml';
 const TOOL_FILE = /^content\/tools\/([^/]+)\.yaml$/;
-const KNOWN_FILES = new Set([SITE, TAXONOMY, SECTIONS, FINDER, CAVEATS, WIZARD]);
+const KNOWN_FILES = new Set([SITE, TAXONOMY, SECTIONS, FINDER, CAVEATS, WIZARD, CHANGELOG]);
 
 const DOI_URL = /^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)?(10\.\d{4,9}\/\S+)$/i;
 const URL_KEYS = new Set(['url', 'source_code', 'repository', 'contributeUrl']);
@@ -168,7 +173,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 			add(
 				file,
 				'',
-				'Unexpected file (allowed: content/{site,taxonomy,sections,finder,caveats,wizard}.yaml and content/tools/<id>.yaml)'
+				'Unexpected file (allowed: content/{site,taxonomy,sections,finder,caveats,wizard,changelog}.yaml and content/tools/<id>.yaml)'
 			);
 		}
 	}
@@ -179,6 +184,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 	const finder = load(FINDER, finderSchema);
 	const caveats = load(CAVEATS, caveatsSchema);
 	const wizard = load(WIZARD, wizardSchema);
+	const changelog = load(CHANGELOG, changelogSchema);
 
 	const tools: { file: string; tool: Tool }[] = [];
 	const toolFiles = Object.keys(files)
@@ -199,6 +205,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 		{ file: FINDER, data: finder },
 		{ file: CAVEATS, data: caveats },
 		{ file: WIZARD, data: wizard },
+		{ file: CHANGELOG, data: changelog },
 		...tools.map(({ file, tool }) => ({ file, data: tool }))
 	];
 
@@ -341,6 +348,34 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 		}
 	}
 
+	// Changelog: dates are not in the future, entries are listed newest first (several entries may
+	// share a date), and the tool ids resolve.
+	if (changelog) {
+		const knownTools = new Set(tools.map(({ tool }) => tool.id));
+		changelog.forEach((entry, index) => {
+			if (isIsoDate(entry.date) && entry.date > today) {
+				add(CHANGELOG, `${index}.date`, `date ${entry.date} is in the future`);
+			}
+			if (index > 0 && entry.date > changelog[index - 1].date) {
+				add(
+					CHANGELOG,
+					`${index}.date`,
+					`Entries must be listed newest first: ${entry.date} follows ${changelog[index - 1].date}`
+				);
+			}
+			const seen = new Set<string>();
+			entry.tools?.forEach((id, toolIndex) => {
+				const path = `${index}.tools.${toolIndex}`;
+				if (seen.has(id)) add(CHANGELOG, path, `Duplicate tool id "${id}" in this entry`);
+				seen.add(id);
+				// Only report when every tool file loaded; otherwise the tool's own issues explain it.
+				if (!knownTools.has(id) && tools.length === toolFiles.length) {
+					add(CHANGELOG, path, `Unknown tool id "${id}"`);
+				}
+			});
+		});
+	}
+
 	// Finder rows only list existing tools that accept the row input.
 	if (finder) {
 		const byId = new Map(tools.map(({ tool }) => [tool.id, tool]));
@@ -377,6 +412,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 		finder: finder!,
 		caveats: caveats!,
 		wizard: wizard!,
+		changelog: changelog!,
 		tools: tools.map(({ tool }) => tool).sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 	};
 }

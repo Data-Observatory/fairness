@@ -113,6 +113,7 @@ export function lintContent(content: Content): Violation[] {
 	lintFile('content/finder.yaml', content.finder);
 	lintFile('content/caveats.yaml', content.caveats);
 	lintFile('content/wizard.yaml', content.wizard);
+	lintFile('content/changelog.yaml', content.changelog);
 	for (const tool of content.tools) lintFile(`content/tools/${tool.id}.yaml`, tool);
 	return violations;
 }
