@@ -73,6 +73,8 @@
 	"compare_noscript_body_home": "This page reads your selection and builds the table in your browser, so it requires JavaScript. Without it, you can open the home page, which lists the resources, or the detail page of each tool.",
 	"compare_noscript_link_home": "Open the home page",
 	"compare_noscript_tools": "Detail pages of the tools:",
+	"compare_link_detail": "Compare with other resources",
+	"compare_link_home": "Compare two or three tools side by side",
 
 	"about_title": "About",
 	"detail_back": "Back to all resources",

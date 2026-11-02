@@ -73,6 +73,8 @@
 	"compare_noscript_body_home": "Esta página lee su selección y construye la tabla en su navegador, por lo que requiere JavaScript. Sin JavaScript, puede abrir la página de inicio, que enumera los recursos, o la página de detalle de cada herramienta.",
 	"compare_noscript_link_home": "Abrir la página de inicio",
 	"compare_noscript_tools": "Páginas de detalle de las herramientas:",
+	"compare_link_detail": "Comparar con otros recursos",
+	"compare_link_home": "Comparar dos o tres herramientas lado a lado",
 
 	"about_title": "Acerca de",
 	"detail_back": "Volver a todos los recursos",

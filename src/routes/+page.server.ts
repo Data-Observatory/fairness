@@ -8,6 +8,7 @@ export const load = () => {
 	return {
 		view: buildHomeView(content, getLocale(), new Date(__BUILD_DATE__)),
 		// The link to the guided finder follows the feature flag (the route itself stays prerendered).
-		wizard: content.site.features.wizard
+		wizard: content.site.features.wizard,
+		compare: content.site.features.compare
 	};
 };

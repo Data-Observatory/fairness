@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import type { ResolvedPathname } from '$app/types';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 	import StatusChip from '$lib/components/StatusChip.svelte';
+	import { compareQuery } from '$lib/core/compare-state';
+	import { withSearch } from '$lib/core/home-state';
 	import { FACT_LABELS } from '$lib/core/labels';
 	import type { FactItem } from '$lib/core/view';
 	import { localized } from '$lib/i18n';
@@ -19,6 +22,10 @@
 		{ key: 'implements', title: m.detail_implements_title(), items: tool.implements },
 		{ key: 'implemented-by', title: m.detail_implemented_by_title(), items: tool.implementedBy }
 	]);
+
+	const compareHref = $derived(
+		withSearch(localized(resolve('/compare')), compareQuery([tool.id])) as ResolvedPathname
+	);
 
 	const linkClass = 'text-blue-700 underline underline-offset-2 break-words hover:text-blue-800';
 	const isExternal = (item: FactItem) => item.href !== undefined && /^https?:\/\//.test(item.href);
@@ -158,6 +165,14 @@
 			{m.detail_report_link()}
 		</ExternalLink>
 	</p>
+
+	{#if data.features.compare && tool.kind === 'tool'}
+		<p class="mt-2 text-sm print:hidden">
+			<a href={compareHref} data-testid="compare-link" class={linkClass}>
+				{m.compare_link_detail()}
+			</a>
+		</p>
+	{/if}
 
 	{#if tool.references.length > 0}
 		<h2 class="mt-10 font-heading text-xl font-semibold text-zinc-900">

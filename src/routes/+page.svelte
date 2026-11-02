@@ -143,6 +143,18 @@
 			<SectionBlock {section} {visible} {filterActive} />
 		{/each}
 
+		{#if data.compare}
+			<p class="mt-12 max-w-3xl text-sm print:hidden">
+				<a
+					href={localized(resolve('/compare'))}
+					data-testid="compare-link"
+					class="text-blue-700 underline decoration-blue-700/40 underline-offset-2 hover:text-blue-900"
+				>
+					{m.compare_link_home()}
+				</a>
+			</p>
+		{/if}
+
 		{#if view.finder}
 			<FinderTable rows={view.finder} wizard={data.wizard} />
 		{/if}
