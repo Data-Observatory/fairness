@@ -495,6 +495,11 @@ describe('access logging', () => {
 	});
 
 	describe('bin/infra.ts context', () => {
+		it('treats an empty value (an unset CI variable) like an unset context', () => {
+			const bin2 = fs.readFileSync(path.join(__dirname, '../bin/infra.ts'), 'utf8');
+			expect(bin2).toMatch(/retentionContext === ''/);
+		});
+
 		const bin = fs.readFileSync(path.join(__dirname, '../bin/infra.ts'), 'utf8');
 
 		it('reads the accessLogs and accessLogRetentionDays contexts', () => {
