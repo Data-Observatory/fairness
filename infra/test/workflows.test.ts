@@ -4,6 +4,8 @@ import { parse as parseYaml } from 'yaml';
 import { describe, expect, it } from 'vitest';
 
 const workflowsDir = path.join(__dirname, '../../.github/workflows');
+// The dummy account ci.yml passes to cdk synth (same exception as no-account-ids.test.ts).
+const DUMMY_ACCOUNT = '111111111111';
 const names = fs.readdirSync(workflowsDir).filter((f) => /\.ya?ml$/.test(f));
 
 type Step = { name?: string; uses?: string; run?: string; with?: Record<string, unknown> };
@@ -27,9 +29,10 @@ describe('all workflows', () => {
 		expect(names).toEqual(expect.arrayContaining(['ci.yml', 'links.yml', 'deploy.yml']));
 	});
 
-	it.each(names)('%s has no 12-digit number', (name) => {
+	it.each(names)('%s has no 12-digit number other than the dummy synth account', (name) => {
 		const { text } = load(name);
-		expect(text.match(/\b[0-9]{12}\b/g)).toBeNull();
+		const found = (text.match(/\b[0-9]{12}\b/g) ?? []).filter((n) => n !== DUMMY_ACCOUNT);
+		expect(found).toEqual([]);
 	});
 
 	it.each(names)('%s has no arn:aws string', (name) => {
@@ -120,6 +123,17 @@ describe('deploy.yml', () => {
 		expect(diff).toBeGreaterThanOrEqual(0);
 		expect(deploy).toBeGreaterThan(diff);
 		expect(script).toContain('./node_modules/.bin/cdk');
+	});
+
+	it('passes the optional logging variables to diff and deploy, so a deploy keeps the logging setting', () => {
+		const script = steps
+			.filter((s) => s.run?.includes('cdk '))
+			.map((s) => s.run)
+			.join('\n');
+		const matches = script.match(
+			/-c accessLogs=\$\{\{ vars\.ACCESS_LOGS \}\} -c accessLogRetentionDays=\$\{\{ vars\.ACCESS_LOG_RETENTION_DAYS \}\}/g
+		);
+		expect(matches).toHaveLength(2);
 	});
 
 	it('does not run an action pinned to nothing: every uses has a version', () => {
