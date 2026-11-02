@@ -1,0 +1,257 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { runInNewContext } from 'node:vm';
+import { describe, expect, it } from 'vitest';
+import { CONSENT_STORAGE_KEY, CONSENT_VERSION, parseConsent, serializeConsent } from './consent';
+import { localIsoDate } from './freshness';
+
+// static/consent-loader.js is plain JavaScript that runs before the app. It is the only code that
+// can load the Google tag, and it does so only for a stored, current "granted" choice. It cannot
+// import consent.ts, so these tests keep the two in step.
+
+const FILE = join(process.cwd(), 'static', 'consent-loader.js');
+const source = readFileSync(FILE, 'utf8');
+const TAG_ID = 'G-X6BJF4NQ71';
+const TAG_URL = `https://www.googletagmanager.com/gtag/js?id=${TAG_ID}`;
+const DENIED = {
+	analytics_storage: 'denied',
+	ad_storage: 'denied',
+	ad_user_data: 'denied',
+	ad_personalization: 'denied'
+};
+const GRANTED = {
+	analytics_storage: 'granted',
+	ad_storage: 'denied',
+	ad_user_data: 'denied',
+	ad_personalization: 'denied'
+};
+
+const daysAgo = (days: number) => {
+	const now = new Date();
+	return localIsoDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() - days));
+};
+const storedValue = (choice: string, date: string, version = 1) =>
+	JSON.stringify({ v: version, choice, date });
+
+type Options = {
+	stored?: string | null;
+	storageThrows?: boolean;
+	hostname?: string;
+	cookies?: string[];
+};
+
+function run({
+	stored = null,
+	storageThrows = false,
+	hostname = 'localhost',
+	cookies = []
+}: Options) {
+	const data = new Map<string, string>();
+	if (stored !== null) data.set(CONSENT_STORAGE_KEY, stored);
+	const appended: { tag: string; src?: string; async?: boolean }[] = [];
+	const classes: string[] = [];
+	const cookieWrites: string[] = [];
+	const localStorage = {
+		getItem: (key: string) => {
+			if (storageThrows) throw new DOMException('blocked', 'SecurityError');
+			return data.get(key) ?? null;
+		},
+		setItem: (key: string, value: string) => {
+			if (storageThrows) throw new DOMException('blocked', 'SecurityError');
+			data.set(key, value);
+		},
+		removeItem: (key: string) => {
+			if (storageThrows) throw new DOMException('blocked', 'SecurityError');
+			data.delete(key);
+		}
+	};
+	const window: Record<string, unknown> = { location: { hostname } };
+	// The getter is installed like a browser does it: reading it may throw.
+	Object.defineProperty(window, 'localStorage', {
+		get: () => {
+			if (storageThrows) throw new DOMException('blocked', 'SecurityError');
+			return localStorage;
+		}
+	});
+	const document = {
+		documentElement: { classList: { add: (name: string) => classes.push(name) } },
+		head: { appendChild: (element: { tag: string; src?: string }) => appended.push(element) },
+		createElement: (tag: string) => ({ tag }),
+		get cookie() {
+			return cookies.map((name) => `${name}=1`).join('; ');
+		},
+		set cookie(value: string) {
+			cookieWrites.push(value);
+		}
+	};
+	runInNewContext(source, { window, document });
+	const dataLayer = (window.dataLayer as ArrayLike<unknown>[]).map((entry) =>
+		Array.from(entry as ArrayLike<unknown>)
+	);
+	return {
+		window,
+		data,
+		appended,
+		classes,
+		cookieWrites,
+		dataLayer,
+		layer: () =>
+			(window.dataLayer as ArrayLike<unknown>[]).map((entry) =>
+				Array.from(entry as ArrayLike<unknown>)
+			),
+		consent: window.fairConsent as {
+			grant(): void;
+			deny(): void;
+			revoke(): void;
+			isLoaded(): boolean;
+		}
+	};
+}
+
+describe('consent-loader.js: agreement with consent.ts', () => {
+	it('uses the storage key of consent.ts', () => {
+		const match = /STORAGE_KEY\s*=\s*'([^']+)'/.exec(source);
+		expect(match?.[1]).toBe(CONSENT_STORAGE_KEY);
+	});
+
+	it('uses the stored format version of consent.ts', () => {
+		const match = /\bVERSION\s*=\s*(\d+)\s*;/.exec(source);
+		expect(Number(match?.[1])).toBe(CONSENT_VERSION);
+	});
+
+	it('writes values that consent.ts reads back', () => {
+		const loader = run({});
+		loader.consent.grant();
+		expect(parseConsent(loader.data.get(CONSENT_STORAGE_KEY))).toBe('granted');
+		const today = new Date();
+		expect(loader.data.get(CONSENT_STORAGE_KEY)).toBe(serializeConsent('granted', today));
+		loader.consent.deny();
+		expect(parseConsent(loader.data.get(CONSENT_STORAGE_KEY))).toBe('denied');
+	});
+
+	it('names the configured tag id and has no inline-script or module syntax', () => {
+		expect(source).toContain(TAG_ID);
+		expect(source).not.toMatch(/^\s*(import|export)\s/m);
+	});
+
+	it('does not use em or en dashes', () => {
+		expect(source).not.toMatch(
+			new RegExp(`[${String.fromCharCode(0x2013)}${String.fromCharCode(0x2014)}]`)
+		);
+	});
+});
+
+describe('consent-loader.js: first paint', () => {
+	it('adds the class js to the root element', () => {
+		expect(run({}).classes).toEqual(['js']);
+		expect(run({ storageThrows: true }).classes).toEqual(['js']);
+	});
+});
+
+describe('consent-loader.js: before a choice', () => {
+	it('sets every consent type to denied and nothing else', () => {
+		const loader = run({});
+		expect(loader.dataLayer).toEqual([['consent', 'default', DENIED]]);
+		expect(loader.appended).toEqual([]);
+		expect(typeof loader.window.gtag).toBe('function');
+		expect(loader.consent.isLoaded()).toBe(false);
+	});
+
+	it.each([
+		['a denied choice', storedValue('denied', daysAgo(1))],
+		['an unknown choice', storedValue('maybe', daysAgo(1))],
+		['another version', storedValue('granted', daysAgo(1), 2)],
+		['malformed JSON', '{"v":1,"choice":"gra'],
+		['a plain word', 'granted'],
+		['a granted choice older than 365 days', storedValue('granted', daysAgo(366))],
+		['a granted choice with an impossible date', storedValue('granted', '2026-02-30')]
+	])('loads no tag for %s', (_label, stored) => {
+		const loader = run({ stored });
+		expect(loader.appended).toEqual([]);
+		expect(loader.dataLayer).toEqual([['consent', 'default', DENIED]]);
+	});
+
+	it('loads no tag and does not throw when storage throws', () => {
+		const loader = run({ storageThrows: true });
+		expect(loader.appended).toEqual([]);
+		expect(loader.dataLayer).toEqual([['consent', 'default', DENIED]]);
+	});
+});
+
+describe('consent-loader.js: after a stored granted choice', () => {
+	it.each([daysAgo(0), daysAgo(365)])('loads the tag once (choice dated %s)', (date) => {
+		const loader = run({ stored: storedValue('granted', date) });
+		expect(loader.appended).toEqual([{ tag: 'script', async: true, src: TAG_URL }]);
+		expect(loader.layer().map((entry) => entry[0])).toEqual(['consent', 'consent', 'js', 'config']);
+		expect(loader.layer()[1]).toEqual(['consent', 'update', GRANTED]);
+		expect(loader.layer()[3]).toEqual(['config', TAG_ID]);
+		expect(loader.consent.isLoaded()).toBe(true);
+	});
+});
+
+describe('consent-loader.js: window.fairConsent', () => {
+	it('grant stores the choice and loads the tag once', () => {
+		const loader = run({});
+		loader.consent.grant();
+		loader.consent.grant();
+		expect(loader.appended).toEqual([{ tag: 'script', async: true, src: TAG_URL }]);
+		expect(loader.layer().filter((entry) => entry[0] === 'config')).toEqual([['config', TAG_ID]]);
+		expect(parseConsent(loader.data.get(CONSENT_STORAGE_KEY))).toBe('granted');
+	});
+
+	it('grant loads the tag for the page view even when storage throws', () => {
+		const loader = run({ storageThrows: true });
+		expect(() => loader.consent.grant()).not.toThrow();
+		expect(loader.appended).toHaveLength(1);
+	});
+
+	it('deny stores the choice, loads nothing and sets consent to denied', () => {
+		const loader = run({});
+		loader.consent.deny();
+		expect(loader.appended).toEqual([]);
+		expect(parseConsent(loader.data.get(CONSENT_STORAGE_KEY))).toBe('denied');
+		expect(loader.layer().at(-1)).toEqual(['consent', 'update', DENIED]);
+		expect(loader.layer().some((entry) => entry[0] === 'config')).toBe(false);
+	});
+
+	it('deny does not throw when storage throws', () => {
+		const loader = run({ storageThrows: true });
+		expect(() => loader.consent.deny()).not.toThrow();
+		expect(loader.appended).toEqual([]);
+	});
+
+	it('deny and revoke delete the _ga cookies for the host and its parent domains only', () => {
+		const loader = run({
+			hostname: 'fair.dataobservatory.net',
+			cookies: ['_ga', '_ga_X6BJF4NQ71', 'theme']
+		});
+		loader.consent.deny();
+		const expire = (name: string, domain: string) =>
+			loader.cookieWrites.some(
+				(write) =>
+					write.startsWith(`${name}=;`) &&
+					/expires=Thu, 01 Jan 1970 00:00:00 GMT/.test(write) &&
+					(domain === '' ? !/domain=/.test(write) : write.includes(`domain=${domain}`))
+			);
+		for (const name of ['_ga', '_ga_X6BJF4NQ71']) {
+			expect(expire(name, ''), `${name} without a domain`).toBe(true);
+			expect(expire(name, 'fair.dataobservatory.net'), `${name} on the host`).toBe(true);
+			expect(expire(name, 'dataobservatory.net'), `${name} on the parent`).toBe(true);
+		}
+		expect(loader.cookieWrites.some((write) => write.startsWith('theme='))).toBe(false);
+		expect(loader.cookieWrites.some((write) => /domain=net(;|$)/.test(write))).toBe(false);
+	});
+
+	it('revoke clears the stored choice, sets consent to denied and deletes the cookies', () => {
+		const loader = run({
+			stored: storedValue('granted', daysAgo(1)),
+			hostname: 'localhost',
+			cookies: ['_ga']
+		});
+		expect(loader.consent.isLoaded()).toBe(true);
+		loader.consent.revoke();
+		expect(loader.data.has(CONSENT_STORAGE_KEY)).toBe(false);
+		expect(loader.layer().at(-1)).toEqual(['consent', 'update', DENIED]);
+		expect(loader.cookieWrites.some((write) => write.startsWith('_ga=;'))).toBe(true);
+	});
+});

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	CONSENT_STORAGE_KEY,
 	CONSENT_VERSION,
+	clearConsent,
 	needsPrompt,
 	parseConsent,
 	parseStoredConsent,
@@ -28,7 +29,8 @@ function memoryStorage(initial: Record<string, string> = {}) {
 	return {
 		data,
 		getItem: (key: string) => data.get(key) ?? null,
-		setItem: (key: string, value: string) => void data.set(key, value)
+		setItem: (key: string, value: string) => void data.set(key, value),
+		removeItem: (key: string) => void data.delete(key)
 	};
 }
 
@@ -192,5 +194,33 @@ describe('writeConsent', () => {
 	it('does not throw when writing fails (SecurityError, quota)', () => {
 		expect(() => writeConsent(throwing('SecurityError'), 'granted', TODAY)).not.toThrow();
 		expect(() => writeConsent(throwing('QuotaExceededError'), 'denied', TODAY)).not.toThrow();
+	});
+});
+
+describe('clearConsent', () => {
+	it('removes the stored choice, so the visitor is asked again', () => {
+		const storage = memoryStorage({ [CONSENT_STORAGE_KEY]: serializeConsent('granted', TODAY) });
+		clearConsent(storage);
+		expect(storage.data.has(CONSENT_STORAGE_KEY)).toBe(false);
+		expect(needsPrompt(readConsent(storage), TODAY)).toBe(true);
+	});
+
+	it('leaves other keys alone', () => {
+		const storage = memoryStorage({ other: 'x', [CONSENT_STORAGE_KEY]: 'garbage' });
+		clearConsent(storage);
+		expect(storage.data.get('other')).toBe('x');
+	});
+
+	it('does nothing and does not throw when the storage is missing or blocked', () => {
+		expect(() => clearConsent(null)).not.toThrow();
+		expect(() => clearConsent(undefined)).not.toThrow();
+		expect(() =>
+			clearConsent({
+				removeItem: () => {
+					throw new DOMException('blocked', 'SecurityError');
+				}
+			})
+		).not.toThrow();
+		expect(() => clearConsent({} as never)).not.toThrow();
 	});
 });
