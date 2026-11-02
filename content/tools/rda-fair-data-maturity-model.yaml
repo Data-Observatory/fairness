@@ -18,7 +18,7 @@ summary:
     Zenodo el 2020-06-25.
 frameworks: [rda_fdmm]
 status: available
-last_verified: 2026-10-25
+last_verified: 2026-11-02
 references:
   - title: FAIR Data Maturity Model. Specification and Guidelines, version 1.0 (Zenodo)
     url: https://doi.org/10.15497/RDA00050
