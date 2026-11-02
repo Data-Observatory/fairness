@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-cookbook
+kind: guide
+section: guides
+name: FAIR Cookbook
+url: https://faircookbook.elixir-europe.org/
+operator:
+  name: FAIRplus project
+  url: https://fairplus-project.eu/
+summary:
+  en: >-
+    An online, open and live resource for the life sciences with recipes that describe how to
+    make and keep data Findable, Accessible, Interoperable and Reusable. It was produced in the
+    FAIRplus project (grant agreement 802750).
+  es: >-
+    Un recurso en línea, abierto y vivo para las ciencias de la vida, con recetas que describen
+    cómo hacer y mantener los datos Findable, Accessible, Interoperable y Reusable. Se produjo en
+    el proyecto FAIRplus (acuerdo de subvención 802750).
+source_code: https://github.com/FAIRplus/the-fair-cookbook
+license: CC-BY-4.0
+status: available
+status_note:
+  en: >-
+    The site root redirects to the home page of the cookbook. The description and the license
+    come from that home page, read on 2026-11-02.
+  es: >-
+    La raíz del sitio redirige a la página de inicio del libro de recetas. La descripción y la
+    licencia provienen de esa página de inicio, leída el 2026-11-02.
+last_verified: 2026-11-02
+references:
+  - title: FAIR Cookbook home page
+    url: https://faircookbook.elixir-europe.org/content/home.html
+  - title: FAIRplus project
+    url: https://fairplus-project.eu/
