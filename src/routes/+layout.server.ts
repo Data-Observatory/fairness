@@ -21,6 +21,10 @@ export const load = () => {
 			contributeUrl: site.contributeUrl
 		},
 		lastUpdated: lastUpdated(content),
-		features: { wizard: site.features.wizard, finderTable: site.features.finderTable }
+		features: {
+			wizard: site.features.wizard,
+			finderTable: site.features.finderTable,
+			compare: site.features.compare
+		}
 	};
 };

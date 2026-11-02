@@ -13,6 +13,7 @@ features:
   finderTable: true
   statusFilter: true
   wizard: true
+  compare: true
 verification:
   staleAfterDays: 180
 style:

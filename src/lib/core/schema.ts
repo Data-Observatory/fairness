@@ -59,7 +59,8 @@ export const siteSchema = z.strictObject({
 		bestFor: z.boolean(),
 		finderTable: z.boolean(),
 		statusFilter: z.boolean(),
-		wizard: z.boolean()
+		wizard: z.boolean(),
+		compare: z.boolean()
 	}),
 	verification: z.strictObject({
 		staleAfterDays: z.number().int().positive()
