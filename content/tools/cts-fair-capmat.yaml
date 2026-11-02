@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: cts-fair-capmat
+kind: framework
+section: frameworks
+name: CoreTrustSeal+FAIRenabling Capability Maturity Model
+url: https://zenodo.org/records/6699520
+operator:
+  name: FAIRsFAIR project, Task 4.1 (led by the UK Data Archive, University of Essex)
+  url: https://fairsfair.eu/node/797
+summary:
+  en: >-
+    A maturity model that aligns the 16 CoreTrustSeal Requirements with the 15 FAIR Data
+    Principles. It is published with a tabular self-assessment template (an Excel spreadsheet) in
+    which a repository assesses the policies and procedures behind its (meta)data services.
+  es: >-
+    Un modelo de madurez que alinea los 16 requisitos de CoreTrustSeal con los 15 principios de
+    datos FAIR. Se publica con una plantilla tabular de autoevaluación (una hoja de cálculo de
+    Excel) en la que un repositorio evalúa las políticas y los procedimientos de sus servicios de
+    (meta)datos.
+best_for:
+  en: Assessing the policies and procedures of a data repository or archive, in a spreadsheet.
+  es: Evaluar las políticas y los procedimientos de un repositorio o archivo de datos, en una hoja de cálculo.
+targets: [repository]
+mode: manual
+inputs: [none]
+license: CC-BY-4.0
+status: available
+status_note:
+  en: >-
+    Checked on 2026-11-02 through the Zenodo record of version 2.0 (published 2022-04-07), which
+    holds the report as PDF and the template as XLSX. The template file was not opened.
+  es: >-
+    Verificado el 2026-11-02 mediante el registro de Zenodo de la versión 2.0 (publicada el
+    2022-04-07), que contiene el informe en PDF y la plantilla en XLSX. No se abrió el archivo de
+    la plantilla.
+last_verified: 2026-11-02
+references:
+  - title: Report on a maturity model towards FAIR data in FAIR repositories (D4.6), version 2.0 (Zenodo)
+    url: https://doi.org/10.5281/zenodo.6699520
+  - title: CoreTrustSeal+FAIRenabling Capability Maturity Model (FAIRsFAIR)
+    url: https://fairsfair.eu/node/797
