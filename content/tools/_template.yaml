@@ -31,9 +31,9 @@ best_for:
 # Required when kind is tool. Ids from content/taxonomy.yaml.
 targets: [dataset] # dataset | ontology | software | repository | any_digital_object | person_knowledge
 mode: automated # automated | manual | hybrid
-inputs: [doi, landing_page_url] # doi | landing_page_url | metadata_url | metadata_file | ontology_uri | portal_record | none
+inputs: [doi, landing_page_url] # doi | landing_page_url | code_repository_url | metadata_url | metadata_file | ontology_uri | portal_record | none
 # Optional. Metric sets the tool implements.
-frameworks: [fairsfair_metrics] # fairsfair_metrics | fair_maturity_indicators | wilkinson_maturity_indicators | rda_fdmm | custom | other
+frameworks: [fairsfair_metrics] # fairsfair_metrics | fair_maturity_indicators | wilkinson_maturity_indicators | rda_fdmm | fair4rs | fair_software_recommendations | custom | other
 # Required when kind is tool. What the visitor gets back.
 output:
   en: A score and a report per principle.
