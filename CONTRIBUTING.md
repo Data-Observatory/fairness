@@ -30,6 +30,26 @@ question without a change to `wizard.yaml`. `npm run validate` runs the cross-ch
 `specs.md`, section 5.7). `features.wizard` in `content/site.yaml` turns the navigation item and
 the home link on or off.
 
+## Changelog
+
+`content/changelog.yaml` is a hand-maintained list of the changes a visitor can see. It feeds the
+page `/changelog` and the "Last updated" line in the footer (the date of the newest entry). It is
+not generated from git. Add an entry, at the top, when a change affects what visitors see: a new
+or changed tool entry, a new section or page, or a change to privacy or consent. Code changes that
+visitors cannot see (refactors, tests, tooling) are not listed.
+
+```yaml
+- date: 2026-11-02 # YYYY-MM-DD, not in the future
+  text:
+    en: A section "Guides and training" was added.
+    es: Se agregó la sección "Guías y formación".
+  tools: [fair-cookbook, rdmkit] # optional: ids of entries in content/tools
+```
+
+Entries are listed newest first (several entries may share a date). Both languages are required,
+every id in `tools` must exist, and the style rules apply to the text. `npm run validate` checks
+all of this. Add the entry in the same pull request as the change.
+
 ## Content rules
 
 See `specs.md`, section 7.

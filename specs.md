@@ -55,6 +55,8 @@ content/                     all editable content, YAML only (section 5)
   sections.yaml
   finder.yaml
   caveats.yaml
+  wizard.yaml
+  changelog.yaml
   tools/<tool-id>.yaml
   tool.schema.json           generated, for editor validation (do not edit by hand)
 messages/en.json, es.json    UI chrome strings (Paraglide), not content
@@ -64,6 +66,7 @@ src/lib/core/                framework-free logic
   filter.ts                  filter and group logic
   style-lint.ts              content style rules (section 9)
   freshness.ts               last_verified staleness
+  changelog.ts               changelog view (grouped by date) and the last updated date
 src/lib/components/          thin Svelte components
 src/routes/                  thin views, prerendered
 scripts/                     check-links.mjs, generate-schema.mjs, remove-unlocalized-pages.mjs
@@ -219,15 +222,28 @@ Cross-checks (tests enforce them): every id in `levels` has a question; no dupli
 
 Matching: OR within a question, AND across questions, as the home filters. A tool with no recorded value for a question never matches an answer to it (for `api` and `self_hostable`, only `true` matches). Tools of kind `framework` and `directory` have no targets, inputs or mode, so they match only when no answered question needs those fields. Results keep the home page order (sections order, then tool order) and are never ranked.
 
+### 5.8 `content/changelog.yaml` ("Changelog")
+
+A hand-maintained list of the changes a visitor can see, newest first. It is not derived from git. Owner decisions D5 and D6: the file is written by hand, and it records user-visible content and features only (new or changed entries, new sections or pages, changes to privacy and consent), not code refactors.
+
+```yaml
+- date: 2026-11-02 # YYYY-MM-DD
+  text: { en: ..., es: ... }
+  tools: [fair-cookbook, rdmkit] # optional: ids of the entries the change refers to
+```
+
+Cross-checks (tests enforce them): the date is a valid ISO date and not in the future; entries are listed newest first (several entries may share a date, and keep their file order on the page); every tool id exists and is not repeated within an entry; both locales are present; the style lint of section 9 applies to the text. The file must have at least one entry. The date of the newest entry is the "Last updated" date shown in the footer.
+
 ## 6. Pages and Navigation
 
-Pill nav as in the reference. Items: Home, Guided finder (only when `features.wizard` is true), About. Locale switch EN / ES. Skip-to-content link. Footer with licenses, repository link, contribute link, privacy statement.
+Pill nav as in the reference. Items: Home, Guided finder (only when `features.wizard` is true), About. Locale switch EN / ES. Skip-to-content link. Footer with a "Last updated" line (the date of the newest changelog entry, linking to `/changelog`), licenses, repository link, contribute link, privacy statement.
 
 | Route (prefixed by `/en` or `/es`) | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `/`                                | Hero (name, tagline). Caveat box. Filter bar. Sections in `sections.yaml` order, each a grid of tool cards (name, summary, chips for mode / targets / status, "best for" line if enabled, "Open" external button, "Details" link). Collapsed sections use native `<details>`. "Which tool fits?" table.                                                                                                                                                                                                                                                                                                                                                                  |
 | `/tools/[id]`                      | Prerendered for every tool. Name, summary, best for, definition list of all factual fields (operator, targets, mode, inputs, frameworks, output, API, source code, self-hostable, license, status and note, last verified with staleness note), references, "Open" button, back link.                                                                                                                                                                                                                                                                                                                                                                                    |
 | `/wizard`                          | Guided finder, prerendered. Level switch (Simple, Advanced). Simple: one question per step (single choice, "No preference" always available), then results. Advanced: every question on one page (multiple choice), results update live. Options with no matching tool are disabled. Results are tool cards in home order plus the caveat box. State in the query string (`level=advanced`, `step=N` or `step=results`, one parameter per question id) so a result can be shared. Without JavaScript the page explains that and links to the finder table on the home page. `features.wizard: false` hides the nav item and the home link (the route stays prerendered). |
+| `/changelog`                       | Entries of `content/changelog.yaml` grouped by date (one `h2` per date, newest first), each with its text and links to the entries it refers to. Prerendered in both locales. Not in the navigation: it is reached from the footer line.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `/about`                           | What FAIR assessment is (short), caveats, how entries are verified, how to suggest a tool (link to CONTRIBUTING), licenses, citation of this site, attribution to the reference project style (neutral).                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 Filters are client-side progressive enhancement: with JavaScript disabled, all tools are visible and the page remains fully usable. Filter state is mirrored in the URL query string (`?mode=automated&target=dataset`) so a filtered view can be shared; it is read on the client only (pages stay prerendered). Within one filter group the selection is OR, across groups AND. An empty result shows a neutral message and a "clear filters" control.
@@ -264,7 +280,7 @@ Not listed: SATIFYD (reported discontinued by the operator; unverified by us). M
 1. Schema (zod) for every file, strict (unknown keys fail).
 2. Localized fields have every locale in `site.yaml` `locales`.
 3. `id` equals file name; ids unique; `section`, taxonomy references, finder tool ids all resolve.
-4. Finder rows only list tools that accept that input.
+4. Finder rows only list tools that accept that input. Changelog dates are not in the future and are in descending order, and changelog tool ids resolve (section 5.8).
 5. URLs are `https://`; DOIs are normalized to `https://doi.org/...`.
 6. `last_verified` is a valid past or present ISO date.
 7. Style lint (`style-lint.ts`), run over every string in content and in `messages/*.json`: no character in `forbiddenCharacters`; no emoji (Unicode Extended_Pictographic) and no ASCII emoticons (`:)`, `:-)`, `;)`, `:D`, `:(`); no forbidden term from `style.forbiddenTerms` for that locale (whole word match); Spanish text has no voseo and no informal second person. Voseo: `\bvos\b` plus a whole-word list in `site.yaml` (`style.voseoWords`, seeded with tenés, podés, querés, sabés, sos, hacé, mirá, abrí, elegí, seleccioná, usá, fijate). Informal tuteo: `style.informalWords` (tú, tienes, puedes, puedas, quieres, necesitas; imperative forms such as abre or selecciona are not listed because they equal the third person and would flag neutral descriptions) also fails the build, because the register must be formal (usted).
@@ -287,6 +303,7 @@ Follow the reference tokens: white background, `text-zinc-800`, `blue-600` accen
 - Status colours (always with text label): available zinc/blue, limited amber, unverified zinc, discontinued red-tinted.
 - Responsive: single column below 640 px, two columns at `md`, three at `xl`. Filter bar collapses into a `<details>` on small screens.
 - Print styles as in the reference (cards in one column, nav hidden).
+- Footer: a first link "Last updated: YYYY-MM-DD" (Spanish "Última actualización") to the changelog, on every page.
 - `prefers-reduced-motion` honoured. Dark mode is out of scope (the reference has none).
 
 ## 12. Accessibility
