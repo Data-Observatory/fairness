@@ -40,12 +40,16 @@ status: available
 status_note:
   en: >-
     Checked on 2026-11-02 from the README, the PyPI listing (version 0.14.2, released 2022-09-01)
-    and the GitHub repository (not archived, last push 2025-05-07). The command was not run. It
-    covers github.com and gitlab.com, not self-hosted GitLab instances.
+    and the GitHub repository (not archived, last push 2025-05-07). Version 0.14.2 was installed in
+    an isolated environment and run on 2026-11-02 against a public GitHub repository: it returned
+    a per-recommendation result and a compliance summary. It covers github.com and gitlab.com, not
+    self-hosted GitLab instances.
   es: >-
     Verificado el 2026-11-02 a partir del README, de la ficha en PyPI (versión 0.14.2, publicada el
-    2022-09-01) y del repositorio de GitHub (no archivado, último push el 2025-05-07). El comando
-    no se ejecutó. Cubre github.com y gitlab.com, no las instancias de GitLab autoalojadas.
+    2022-09-01) y del repositorio de GitHub (no archivado, último push el 2025-05-07). La versión
+    0.14.2 se instaló en un entorno aislado y se ejecutó el 2026-11-02 sobre un repositorio público
+    de GitHub: devolvió un resultado por recomendación y un resumen de cumplimiento. Cubre
+    github.com y gitlab.com, no las instancias de GitLab autoalojadas.
 last_verified: 2026-11-02
 references:
   - title: howfairis README (GitHub)
