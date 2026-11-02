@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: the-turing-way
+kind: guide
+section: guides
+name: The Turing Way
+url: https://book.the-turing-way.org/
+operator:
+  name: The Turing Way community
+  url: https://github.com/the-turing-way/the-turing-way
+summary:
+  en: >-
+    A handbook to reproducible, ethical and collaborative data science, written in the open by a
+    community with support from The Alan Turing Institute. Its guide for reproducible research
+    has a chapter on the FAIR Principles and Practices within its research data management
+    chapters.
+  es: >-
+    Un manual de ciencia de datos reproducible, ética y colaborativa, escrito de forma abierta por
+    una comunidad con el apoyo de The Alan Turing Institute. Su guía de investigación reproducible
+    incluye un capítulo sobre los principios y prácticas FAIR dentro de sus capítulos de gestión
+    de datos de investigación.
+source_code: https://github.com/the-turing-way/the-turing-way
+license: CC-BY-4.0
+status: available
+status_note:
+  en: >-
+    General data science handbook: FAIR is one topic among many. The description and the license
+    come from the home page and the FAIR chapter, read on 2026-11-02.
+  es: >-
+    Manual general de ciencia de datos: FAIR es un tema entre muchos. La descripción y la licencia
+    provienen de la página de inicio y del capítulo sobre FAIR, leídas el 2026-11-02.
+last_verified: 2026-11-02
+references:
+  - title: The FAIR Principles (chapter of The Turing Way)
+    url: https://book.the-turing-way.org/reproducible-research/rdm/rdm-fair/
