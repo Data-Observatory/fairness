@@ -370,12 +370,12 @@ Static checks in CI: `svelte-check`, `eslint`, `prettier --check`, `vitest run`,
 ## 18. Open Items (owner)
 
 - Repository: `https://github.com/Data-Observatory/fairness` (public). The site links to it from the footer, About page and contribution links.
-- Spanish review of all text. Wording chosen by the implementation that deserves a look: "Autoalojable" (self-hostable), "Caso de uso" (label of the `best_for` line), "Ficha técnica" (detail facts title), "Dato de partida" (finder input column).
+- Spanish review of all text. Wording chosen by the implementation that deserves a look: "Autoalojable" (self-hostable), "Caso de uso" (label of the `best_for` line), "Ficha técnica" (detail facts title), "Entrada" (finder input column).
 - Guided wizard: decided 2026-10-26 (route `/wizard`, nav item, link from the home finder section, simple and advanced levels, section 5.7).
 - Weekly link-check workflow: has run once on GitHub and passed.
 - Re-verification: entries carry `last_verified` and are flagged after `verification.staleAfterDays` (180). A maintainer re-checks them; the weekly link check reports broken links.
 - Hardening backlog (no known blocker): CloudFront and S3 access logging, and removing `'unsafe-inline'` from `script-src` in the CloudFront header after a deploy check (see section 19).
-- Deploy workflow (GitHub Actions) and the AWS account decisions for it: deferred. Deploys are manual for now.
+- Deploy workflow (GitHub Actions): `.github/workflows/deploy.yml` exists with two jobs (`diff`, then `deploy` behind the `production` environment) but is inert until the owner sets `DEPLOY_ENABLED` and completes the setup in `infra/README.md`. Deploys are manual for now.
 
 ## 19. Deviations from the original plan and deferred items
 
@@ -402,5 +402,5 @@ Deferred (not implemented, no known blocker):
 - Filter group and fact labels live in `src/lib/core/labels.ts`, not in Paraglide messages.
 - Filter options with zero matching tools can still be selected.
 - License names (MIT, CC-BY-4.0) and the link to the Repository Crisis Scorecards project are in messages, not in `site.yaml`.
-- CloudFront and S3 access logging are not configured.
+- CloudFront and S3 access logging exist as an option, off by default (`-c accessLogs=true`, see `infra/README.md`); the privacy statement must be updated before it is turned on.
 - The two verification runs of external tools described in the git history left public records on third-party services (FAIR Evaluator evaluation "Availability check 2026-10-25", plus one DOI assessment each on F-UJI and FAIR Champion).
