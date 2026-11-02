@@ -40,7 +40,7 @@ source_code: https://github.com/markwilkinson/FAIR-Champion
 self_hostable: true
 license: MIT
 status: available
-last_verified: 2026-10-25
+last_verified: 2026-11-02
 references:
   - title: FAIR Champion README (GitHub)
     url: https://github.com/markwilkinson/FAIR-Champion
