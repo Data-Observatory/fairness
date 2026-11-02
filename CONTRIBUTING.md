@@ -39,6 +39,10 @@ question without a change to `wizard.yaml`. `npm run validate` runs the cross-ch
 `specs.md`, section 5.7). `features.wizard` in `content/site.yaml` turns the navigation item and
 the home link on or off.
 
+`features.compare` turns the links to the comparison page (`/compare`, tools only) on or off. The
+page compares the facts recorded in each tool file, so a fact that is missing in a file shows as
+"Not recorded" there. See `specs.md`, section 6.
+
 ## Changelog
 
 `content/changelog.yaml` is a hand-maintained list of the changes a visitor can see. It feeds the

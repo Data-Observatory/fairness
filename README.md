@@ -78,6 +78,13 @@ simple level is a subset of the advanced one, and only `api` and `self_hostable`
 `features.wizard` in `content/site.yaml` shows or hides the navigation item and the link from the
 home page; the route stays prerendered either way. See `specs.md`, section 5.7.
 
+## Comparison
+
+The page `/compare` shows two or three tools (entries of kind `tool`) side by side. It reads the
+facts recorded in `content/tools/*.yaml`; there is no extra content file. The selection is kept in
+the query string (`?tools=a,b,c`). `features.compare` in `content/site.yaml` shows or hides the
+links from the home page and from the tool pages. See `specs.md`, section 6.
+
 ## Contributing
 
 See `CONTRIBUTING.md` for how to add or update a tool.
