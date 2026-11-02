@@ -393,6 +393,18 @@ describe('real content: wizard', () => {
 	});
 });
 
+describe('real content: Spanish audit fixes', () => {
+	it('names the concept "objeto evaluado" in the wizard target help', () => {
+		const target = content().wizard.questions.find((item) => item.id === 'target');
+		expect(target?.help?.es).toContain('objeto evaluado');
+		expect(target?.help?.es).not.toContain('objetivo');
+	});
+
+	it('uses "Entrada" as the finder input column heading', () => {
+		expect(es.finder_col_input).toBe('Entrada');
+	});
+});
+
 describe('real content: changelog', () => {
 	it('lists entries newest first and none in the future', () => {
 		const dates = content().changelog.map((entry) => entry.date);
