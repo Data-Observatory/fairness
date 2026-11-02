@@ -8,14 +8,28 @@ const workflowsDir = path.join(__dirname, '../../.github/workflows');
 const DUMMY_ACCOUNT = '111111111111';
 const names = fs.readdirSync(workflowsDir).filter((f) => /\.ya?ml$/.test(f));
 
-type Step = { name?: string; uses?: string; run?: string; with?: Record<string, unknown> };
+type Step = {
+	name?: string;
+	uses?: string;
+	run?: string;
+	with?: Record<string, unknown>;
+	env?: Record<string, string>;
+	'working-directory'?: string;
+};
 type Workflow = {
 	name?: string;
 	on: Record<string, any>;
 	permissions?: Record<string, string>;
+	concurrency?: { group?: string; 'cancel-in-progress'?: boolean };
 	jobs: Record<
 		string,
-		{ if?: string; environment?: unknown; permissions?: Record<string, string>; steps: Step[] }
+		{
+			if?: string;
+			needs?: string | string[];
+			environment?: unknown;
+			permissions?: Record<string, string>;
+			steps: Step[];
+		}
 	>;
 };
 
@@ -46,102 +60,173 @@ describe('all workflows', () => {
 
 describe('deploy.yml', () => {
 	const { text, wf } = load('deploy.yml');
-	const job = Object.values(wf.jobs)[0];
-	const steps = job.steps;
+	const diff = wf.jobs.diff;
+	const deploy = wf.jobs.deploy;
+	const AWS_ACTION = 'aws-actions/configure-aws-credentials@';
+	const runIndex = (steps: Step[], cmd: string, dir?: string) =>
+		steps.findIndex((s) => s.run?.trim() === cmd && s['working-directory'] === dir);
+	const awsIndex = (steps: Step[]) => steps.findIndex((s) => s.uses?.startsWith(AWS_ACTION));
+	const allSteps = [...(diff?.steps ?? []), ...(deploy?.steps ?? [])];
 
-	it('has a single job', () => {
-		expect(Object.keys(wf.jobs)).toHaveLength(1);
+	it('has two jobs: diff, then deploy', () => {
+		expect(Object.keys(wf.jobs).sort()).toEqual(['deploy', 'diff']);
+		expect(deploy.needs).toBe('diff');
+		expect(diff.needs).toBeUndefined();
 	});
 
-	it('is triggered only by workflow_run (Link check, main) and workflow_dispatch, never push', () => {
+	it('is triggered only by workflow_run (CI, main) and workflow_dispatch, never push', () => {
 		expect(Object.keys(wf.on).sort()).toEqual(['workflow_dispatch', 'workflow_run']);
 		expect(wf.on.workflow_run).toEqual({
-			workflows: ['Link check'],
+			workflows: ['CI'],
 			types: ['completed'],
 			branches: ['main']
 		});
 	});
 
 	it('waits for a workflow that exists, by its real name', () => {
-		const links = load('links.yml').wf;
-		expect(links.name).toBe('Link check');
+		expect(load('ci.yml').wf.name).toBe('CI');
 	});
 
-	it('is inert unless the DEPLOY_ENABLED variable is true', () => {
+	it('does not overlap with itself and never cancels a running deploy', () => {
+		expect(wf.concurrency?.group).toBeTruthy();
+		expect(wf.concurrency?.['cancel-in-progress']).toBe(false);
+	});
+
+	it.each(['diff', 'deploy'])('%s is inert unless DEPLOY_ENABLED is true', (name) => {
+		const job = wf.jobs[name];
 		expect(job.if).toContain("vars.DEPLOY_ENABLED == 'true'");
 		expect(job.if).toContain("github.event_name == 'workflow_dispatch'");
 		expect(job.if).toContain("github.event.workflow_run.conclusion == 'success'");
 	});
 
-	it('uses the production environment', () => {
-		expect(job.environment).toBe('production');
+	it('runs the diff in an environment without approval and the deploy in production', () => {
+		expect(diff.environment).toBe('production-diff');
+		expect(deploy.environment).toBe('production');
 	});
 
-	it('asks for the OIDC token and read-only contents, nothing else', () => {
-		expect(job.permissions ?? wf.permissions).toEqual({ 'id-token': 'write', contents: 'read' });
-	});
+	it.each(['diff', 'deploy'])(
+		'%s asks for the OIDC token and read-only contents, nothing else',
+		(name) => {
+			const job = wf.jobs[name];
+			expect(job.permissions ?? wf.permissions).toEqual({
+				'id-token': 'write',
+				contents: 'read'
+			});
+		}
+	);
 
-	it('assumes the role from a secret and takes the region from a variable', () => {
-		const step = steps.find((s) => s.uses?.startsWith('aws-actions/configure-aws-credentials@'));
-		expect(step).toBeDefined();
-		expect(step!.with).toEqual({
-			'role-to-assume': '${{ secrets.AWS_DEPLOY_ROLE_ARN }}',
-			'aws-region': '${{ vars.AWS_REGION }}'
-		});
-	});
+	it.each(['diff', 'deploy'])(
+		'%s checks out the commit that passed CI (default ref for a manual run)',
+		(name) => {
+			const checkout = wf.jobs[name].steps.find((s) => s.uses?.startsWith('actions/checkout@'));
+			expect(checkout).toBeDefined();
+			expect(checkout!.with?.ref).toBe('${{ github.event.workflow_run.head_sha }}');
+		}
+	);
 
-	it('runs the checks and the build before it touches AWS', () => {
-		const runs = steps.map((s) => s.run?.trim());
-		const uses = steps.map((s) => s.uses ?? '');
+	it.each(['diff', 'deploy'])(
+		'%s assumes the role from a secret and takes the region from a variable',
+		(name) => {
+			const step = wf.jobs[name].steps.find((s) => s.uses?.startsWith(AWS_ACTION));
+			expect(step).toBeDefined();
+			expect(step!.with).toEqual({
+				'role-to-assume': '${{ secrets.AWS_DEPLOY_ROLE_ARN }}',
+				'aws-region': '${{ vars.AWS_REGION }}'
+			});
+		}
+	);
+
+	it('diff runs the checks, the build and the infra gates before it touches AWS', () => {
 		const order = [
-			'npm ci',
-			'npm run check',
-			'npm run lint',
-			'npm run validate',
-			'npx vitest run',
-			'npm run build'
-		].map((cmd) => runs.indexOf(cmd));
+			runIndex(diff.steps, 'npm ci'),
+			runIndex(diff.steps, 'npm run check'),
+			runIndex(diff.steps, 'npm run lint'),
+			runIndex(diff.steps, 'npm run validate'),
+			runIndex(diff.steps, 'npx vitest run'),
+			runIndex(diff.steps, 'npm run build'),
+			runIndex(diff.steps, 'npm run check:base-path'),
+			runIndex(diff.steps, 'npm ci', 'infra'),
+			runIndex(diff.steps, 'npx tsc --noEmit', 'infra'),
+			runIndex(diff.steps, 'npx vitest run', 'infra')
+		];
 		expect(order.every((i) => i >= 0)).toBe(true);
 		expect(order).toEqual([...order].sort((a, b) => a - b));
-		const aws = uses.findIndex((u) => u.startsWith('aws-actions/configure-aws-credentials@'));
-		expect(aws).toBeGreaterThan(order[order.length - 1]);
+		expect(awsIndex(diff.steps)).toBeGreaterThan(order[order.length - 1]);
 	});
 
-	it('uses Node 22', () => {
-		const node = steps.find((s) => s.uses?.startsWith('actions/setup-node@'));
-		expect(String(node?.with?.['node-version'])).toMatch(/^22/);
+	it.each(['diff', 'deploy'])(
+		'%s installs the infra packages before the AWS credentials exist',
+		(name) => {
+			const steps = wf.jobs[name].steps;
+			const install = runIndex(steps, 'npm ci', 'infra');
+			expect(install).toBeGreaterThanOrEqual(0);
+			expect(awsIndex(steps)).toBeGreaterThan(install);
+		}
+	);
+
+	it('uses Node 22 in both jobs', () => {
+		for (const job of [diff, deploy]) {
+			const node = job.steps.find((s) => s.uses?.startsWith('actions/setup-node@'));
+			expect(String(node?.with?.['node-version'])).toMatch(/^22/);
+		}
 	});
 
-	it('runs cdk diff, then cdk deploy without a prompt, both with the domain from a variable', () => {
-		const infra = steps.filter((s) => s.run?.includes('cdk '));
-		const script = infra.map((s) => s.run).join('\n');
-		expect(script).toContain('npm ci');
-		const diff = script.indexOf('cdk diff -c domainName=${{ vars.SITE_DOMAIN }}');
-		const deploy = script.indexOf(
-			'cdk deploy --require-approval never -c domainName=${{ vars.SITE_DOMAIN }}'
-		);
-		expect(diff).toBeGreaterThanOrEqual(0);
-		expect(deploy).toBeGreaterThan(diff);
-		expect(script).toContain('./node_modules/.bin/cdk');
+	it('diff runs cdk diff with the domain and logging options and never deploys', () => {
+		const script = diff.steps.map((s) => s.run ?? '').join('\n');
+		expect(script).toMatch(/\.\/node_modules\/\.bin\/cdk diff /);
+		expect(script).not.toMatch(/cdk\s+deploy/);
+		expect(script).toContain('-c domainName="$SITE_DOMAIN"');
+		expect(script).toContain('-c accessLogs="$ACCESS_LOGS"');
+		expect(script).toContain('-c accessLogRetentionDays="$ACCESS_LOG_RETENTION_DAYS"');
 	});
 
-	it('passes the optional logging variables to diff and deploy, so a deploy keeps the logging setting', () => {
-		const script = steps
-			.filter((s) => s.run?.includes('cdk '))
-			.map((s) => s.run)
-			.join('\n');
-		const matches = script.match(
-			/-c accessLogs=\$\{\{ vars\.ACCESS_LOGS \}\} -c accessLogRetentionDays=\$\{\{ vars\.ACCESS_LOG_RETENTION_DAYS \}\}/g
-		);
-		expect(matches).toHaveLength(2);
+	it('diff publishes the cdk diff output in the job summary', () => {
+		const step = diff.steps.find((s) => s.run?.includes('cdk diff'));
+		expect(step?.run).toContain('$GITHUB_STEP_SUMMARY');
+		expect(step?.run).toContain('--no-color');
+	});
+
+	it('diff uploads the reviewed build as an artifact and deploy downloads that artifact', () => {
+		const upload = diff.steps.find((s) => s.uses?.startsWith('actions/upload-artifact@'));
+		const download = deploy.steps.find((s) => s.uses?.startsWith('actions/download-artifact@'));
+		expect(upload?.with?.path).toBe('build');
+		expect(download?.with?.path).toBe('build');
+		expect(upload?.with?.name).toBeTruthy();
+		expect(download?.with?.name).toBe(upload?.with?.name);
+		const deployIndex = deploy.steps.findIndex((s) => s.run?.includes('cdk deploy'));
+		expect(deploy.steps.indexOf(download!)).toBeLessThan(deployIndex);
+	});
+
+	it('deploy does not rebuild the site and runs cdk deploy without a prompt', () => {
+		const script = deploy.steps.map((s) => s.run ?? '').join('\n');
+		expect(script).not.toContain('npm run build');
+		expect(script).not.toMatch(/cdk\s+diff/);
+		expect(script).toContain('./node_modules/.bin/cdk deploy --require-approval never');
+		expect(script).toContain('-c domainName="$SITE_DOMAIN"');
+		expect(script).toContain('-c accessLogs="$ACCESS_LOGS"');
+		expect(script).toContain('-c accessLogRetentionDays="$ACCESS_LOG_RETENTION_DAYS"');
+	});
+
+	it('passes the variables to run steps through env, never by inline interpolation', () => {
+		for (const step of allSteps.filter((s) => s.run)) {
+			expect(step.run, step.name ?? step.run).not.toContain('${{');
+		}
+		for (const job of [diff, deploy]) {
+			const step = job.steps.find((s) => s.run?.includes('cdk '));
+			expect(step?.env).toEqual({
+				SITE_DOMAIN: '${{ vars.SITE_DOMAIN }}',
+				ACCESS_LOGS: '${{ vars.ACCESS_LOGS }}',
+				ACCESS_LOG_RETENTION_DAYS: '${{ vars.ACCESS_LOG_RETENTION_DAYS }}'
+			});
+		}
 	});
 
 	it('does not run an action pinned to nothing: every uses has a version', () => {
-		for (const s of steps.filter((x) => x.uses)) expect(s.uses).toMatch(/@[0-9a-zA-Z._-]+$/);
+		for (const s of allSteps.filter((x) => x.uses)) expect(s.uses).toMatch(/@[0-9a-zA-Z._-]+$/);
 	});
 
 	it('pins third-party actions by 40-character commit SHA', () => {
-		for (const s of steps.filter((x) => x.uses)) expect(s.uses).toMatch(/@[0-9a-f]{40}(\s|$)/);
+		for (const s of allSteps.filter((x) => x.uses)) expect(s.uses).toMatch(/@[0-9a-f]{40}(\s|$)/);
 	});
 
 	it('does not echo secrets or print credentials', () => {
