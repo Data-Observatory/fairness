@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: software-observatory
+kind: tool
+section: other-objects
+name: Software Observatory (OpenEBench)
+url: https://openebench.bsc.es/observatory
+operator:
+  name: OpenEBench (authors Eva Martín del Pico, Josep Lluís Gelpí and Salvador Capella-Gutiérrez)
+  url: https://openebench.bsc.es/
+summary:
+  en: >-
+    The Software Observatory is a web portal hosted on OpenEBench that gathers software metadata
+    from several sources and scores Life Sciences research software against FAIR indicators for
+    research software. Users can view the data for the whole landscape, for communities or for
+    individual entries. Its FAIRsoft Evaluator component guides developers through assessing their
+    software.
+  es: >-
+    El Software Observatory es un portal web alojado en OpenEBench que reúne metadatos de software
+    de varias fuentes y evalúa el software de investigación de ciencias de la vida con indicadores
+    FAIR para software de investigación. Se pueden ver los datos del conjunto completo, de
+    comunidades o de entradas individuales. Su componente FAIRsoft Evaluator guía a los
+    desarrolladores en la evaluación de su software.
+best_for:
+  en: Looking up the FAIR indicators of a Life Sciences research software entry that is registered in OpenEBench.
+  es: Consultar los indicadores FAIR de una entrada de software de investigación de ciencias de la vida registrada en OpenEBench.
+targets: [software]
+mode: automated
+inputs: [portal_record]
+output:
+  en: >-
+    Scores for FAIR indicators of individual software entries, aggregated views by community and for
+    the whole landscape, and guidance for improving metadata quality and practices.
+  es: >-
+    Puntuaciones de indicadores FAIR de entradas de software individuales, vistas agregadas por
+    comunidad y para todo el conjunto, y orientación para mejorar la calidad de los metadatos y las
+    prácticas.
+status: unverified
+status_note:
+  en: >-
+    On 2026-11-02 https://openebench.bsc.es/observatory answered with HTTP 200 and an Anubis bot
+    check page, so the portal content could not be read. The summary comes from the arXiv paper of
+    2025-10-07. The mode, the input and the output are taken from that paper and are not confirmed
+    on the portal.
+  es: >-
+    El 2026-11-02 https://openebench.bsc.es/observatory respondió con HTTP 200 y una página de
+    comprobación de bots de Anubis, por lo que no se pudo leer el contenido del portal. El resumen
+    proviene del artículo de arXiv del 2025-10-07. El modo, la entrada y la salida se toman de ese
+    artículo y no están confirmados en el portal.
+last_verified: 2026-11-02
+references:
+  - title: 'The Software Observatory: aggregating and analysing software metadata for trend computation and FAIR assessment (arXiv, 2025)'
+    url: https://arxiv.org/abs/2510.05705
+  - title: FAIRsoft, a practical implementation of FAIR principles for research software (Bioinformatics, 2024)
+    url: https://doi.org/10.1093/bioinformatics/btae464
