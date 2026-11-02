@@ -42,11 +42,13 @@ status: available
 status_note:
   en: >-
     On 2026-10-25 the GitHub repository loaded. The instance at https://fair.csic.es showed a
-    maintenance notice (in Spanish) instead of the evaluator.
+    maintenance notice (in Spanish) instead of the evaluator. On 2026-11-02 the repository loaded again
+    and the instance at https://fair.csic.es still showed the same maintenance notice.
   es: >-
     El 2026-10-25 el repositorio de GitHub se cargó. La instancia de https://fair.csic.es mostró un
-    aviso de mantenimiento (en español) en lugar del evaluador.
-last_verified: 2026-10-25
+    aviso de mantenimiento (en español) en lugar del evaluador. El 2026-11-02 el repositorio se cargó de nuevo
+    y la instancia de https://fair.csic.es siguió mostrando el mismo aviso de mantenimiento.
+last_verified: 2026-11-02
 references:
   - title: 'FAIR EVA: Bringing institutional multidisciplinary repositories into the FAIR picture (Scientific Data, 2023)'
     url: https://doi.org/10.1038/s41597-023-02652-8
