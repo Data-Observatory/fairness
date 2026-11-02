@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: rfair
+kind: tool
+section: other-objects
+name: rfair
+url: https://cran.r-project.org/package=rfair
+operator:
+  name: Ahmad Sofi-Mahmudi (package maintainer)
+  url: https://choxos.github.io/rfair/
+summary:
+  en: >-
+    rfair is an R package that scores research data objects against the FAIRsFAIR metrics and
+    research software against the FRSM (FAIR for Research Software) metrics, which operationalize
+    the FAIR4RS Principles. It takes a persistent identifier, a URL or a code repository and runs
+    the whole assessment in R, without an external assessment server.
+  es: >-
+    rfair es un paquete de R que evalúa objetos de datos de investigación con las métricas de
+    FAIRsFAIR y software de investigación con las métricas FRSM (FAIR for Research Software), que
+    operacionalizan los principios FAIR4RS. Recibe un identificador persistente, una URL o un
+    repositorio de código y ejecuta toda la evaluación en R, sin un servidor de evaluación externo.
+best_for:
+  en: Assessing a research software repository or a data object from within an R session.
+  es: Evaluar un repositorio de software de investigación o un objeto de datos desde una sesión de R.
+targets: [software, dataset]
+mode: automated
+inputs: [doi, landing_page_url, code_repository_url]
+frameworks: [fairsfair_metrics, fair4rs]
+output:
+  en: >-
+    A FAIR assessment result computed in R, with scores for the Findable, Accessible,
+    Interoperable and Reusable categories.
+  es: >-
+    Un resultado de evaluación FAIR calculado en R, con puntuaciones para las categorías
+    localizable, accesible, interoperable y reutilizable.
+source_code: https://github.com/choxos/rfair
+self_hostable: true
+license: GPL-3
+status: available
+status_note:
+  en: >-
+    Checked on 2026-11-02 from the CRAN listing (version 0.2.0, published 2026-09-23), the README
+    and the GitHub repository (not archived, last push 2026-09-23). The package was not run. The
+    README marks its lifecycle as experimental.
+  es: >-
+    Verificado el 2026-11-02 a partir de la ficha en CRAN (versión 0.2.0, publicada el 2026-09-23),
+    del README y del repositorio de GitHub (no archivado, último push el 2026-09-23). El paquete no
+    se ejecutó. El README indica que su ciclo de vida es experimental.
+last_verified: 2026-11-02
+references:
+  - title: rfair on CRAN
+    url: https://cran.r-project.org/package=rfair
+  - title: rfair README (CRAN)
+    url: https://cran.r-project.org/web/packages/rfair/readme/README.html
+  - title: rfair documentation site
+    url: https://choxos.github.io/rfair/
