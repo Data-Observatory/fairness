@@ -161,6 +161,21 @@ describe('filterTools: framework and directory entries', () => {
 		expect(ids(filterTools(all, { status: ['available'] }))).toEqual(['alpha', 'a-framework']);
 	});
 
+	it('a guide entry never matches a target, mode or input selection but matches on status', () => {
+		const guide = tool({ id: 'a-guide', kind: 'guide', section: 'guides' });
+		const withGuide = [...all, guide];
+		expect(
+			ids(filterTools(withGuide, { target: ['dataset', 'ontology', 'software'] }))
+		).not.toContain('a-guide');
+		expect(ids(filterTools(withGuide, { mode: ['automated', 'manual', 'hybrid'] }))).not.toContain(
+			'a-guide'
+		);
+		expect(ids(filterTools(withGuide, { input: ['doi', 'metadata_file'] }))).not.toContain(
+			'a-guide'
+		);
+		expect(ids(filterTools(withGuide, { status: ['available'] }))).toContain('a-guide');
+	});
+
 	it('they are kept when only empty groups are given', () => {
 		expect(ids(filterTools(all, { target: [] }))).toEqual(ids(all));
 	});

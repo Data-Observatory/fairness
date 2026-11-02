@@ -248,6 +248,29 @@ describe('toolSchema', () => {
 		expect(toolSchema.safeParse(tool).success).toBe(true);
 	});
 
+	it('kind guide may omit the tool-only fields and keeps the other optional fields', () => {
+		const tool = clone(doc('content/tools/fairsfair-metrics.yaml'));
+		tool.kind = 'guide';
+		for (const key of toolOnly) expect(tool).not.toHaveProperty(key);
+		expect(toolSchema.safeParse(tool).success).toBe(true);
+		tool.license = 'CC-BY-4.0';
+		tool.best_for = {
+			en: 'Learning about data management.',
+			es: 'Aprender sobre gestión de datos.'
+		};
+		expect(toolSchema.safeParse(tool).success).toBe(true);
+	});
+
+	it.each(toolOnly)('kind guide rejects %s (a guide is learning material, not a tool)', (key) => {
+		const source = clone(doc('content/tools/f-uji.yaml'));
+		const tool = clone(doc('content/tools/fairsfair-metrics.yaml'));
+		tool.kind = 'guide';
+		tool[key] = source[key];
+		const result = toolSchema.safeParse(tool);
+		expect(result.success).toBe(false);
+		expect(paths(result)).toContain(key);
+	});
+
 	it('rejects an unknown kind', () => {
 		const tool = clone(doc('content/tools/f-uji.yaml'));
 		tool.kind = 'service';

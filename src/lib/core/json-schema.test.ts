@@ -28,6 +28,16 @@ describe('generated tool JSON schema', () => {
 		expect([...rule!.then.required].sort()).toEqual(['inputs', 'mode', 'output', 'targets']);
 	});
 
+	it('lists guide among the kinds and forbids the tool-only fields on a guide', () => {
+		expect(schema().properties.kind.enum).toContain('guide');
+		const rules: Json[] = schema().allOf;
+		const rule = rules.find((entry) => entry.if?.properties?.kind?.const === 'guide');
+		expect(rule).toBeDefined();
+		expect(rule!.if.required).toContain('kind');
+		const forbidden = (rule!.then.not.anyOf as Json[]).map((item) => item.required[0]);
+		expect(forbidden.sort()).toEqual(['inputs', 'mode', 'output', 'targets']);
+	});
+
 	it('keeps targets, mode, inputs and output out of the unconditional required list', () => {
 		const required: string[] = schema().required;
 		for (const key of ['targets', 'mode', 'inputs', 'output']) expect(required).not.toContain(key);
