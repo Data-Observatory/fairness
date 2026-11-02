@@ -21,6 +21,12 @@ test.describe('no console errors and no failed requests', () => {
 	for (const url of PAGES) {
 		test(`${url} loads cleanly`, async ({ page }) => {
 			const problems: string[] = [];
+			// The Google tag is stubbed so test runs send no hits to Google.
+			await page.route(
+				(target) =>
+					/(googletagmanager|google-analytics|analytics\.google)\.com$/.test(target.hostname),
+				(route) => route.fulfill({ status: 200, contentType: 'text/javascript', body: '' })
+			);
 			page.on('console', (message) => {
 				if (message.type() === 'error') problems.push(`console: ${message.text()}`);
 			});

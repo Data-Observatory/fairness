@@ -110,7 +110,7 @@ test.describe('privacy statement', () => {
 			page
 				.locator('main')
 				.getByText(
-					'This site collects no data and sets no cookies. Links lead to third-party tools, which have their own privacy policies.',
+					'This site uses Google Analytics to measure visits, which sets cookies and sends usage data to Google. Links lead to third-party tools, which have their own privacy policies.',
 					{ exact: true }
 				)
 		).toBeVisible();

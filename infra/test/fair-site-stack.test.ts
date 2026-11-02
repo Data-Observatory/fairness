@@ -14,14 +14,16 @@ const DOMAIN = 'fair.example.test';
 //   (a per-page hash cannot be set in a static response headers policy);
 // - inline style attributes and the inline <style> block of 404.html -> 'unsafe-inline';
 // - same-origin module imports, CSS, fonts (/_app/immutable/assets/*.woff2) and __data.json fetches.
-// The site makes no third-party requests, so no external host appears anywhere.
+// The only third-party requests are the Google tag (gtag.js) and its measurement hits
+// (owner decision 2026-11-02): script from googletagmanager.com, hits to google-analytics.com,
+// analytics.google.com and googletagmanager.com. No other external host appears.
 const EXPECTED_CSP = [
 	"default-src 'self'",
-	"script-src 'self' 'unsafe-inline'",
+	"script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
 	"style-src 'self' 'unsafe-inline'",
-	"img-src 'self' data:",
+	"img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com",
 	"font-src 'self'",
-	"connect-src 'self'",
+	"connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
 	"object-src 'none'",
 	"base-uri 'self'",
 	"form-action 'self'",
@@ -245,12 +247,19 @@ describe('security response headers', () => {
 		});
 	});
 
-	it('has default-src self and no third-party host in the CSP', () => {
+	it('has default-src self and only the Google tag hosts in the CSP', () => {
 		const csp: string = policyConfig().security.ContentSecurityPolicy.ContentSecurityPolicy;
 		expect(csp).toContain("default-src 'self'");
-		expect(csp).not.toMatch(/https?:/);
-		expect(csp).not.toMatch(/\*/);
+		const hosts = [...csp.matchAll(/https?:\/\/[^\s;]+/g)].map((m) => m[0]);
+		expect(hosts.length).toBeGreaterThan(0);
+		for (const host of hosts) {
+			expect(host).toMatch(
+				/^https:\/\/((\*|www)\.)?(googletagmanager\.com|google-analytics\.com|analytics\.google\.com)$/
+			);
+		}
+		expect(csp).not.toMatch(/(^|\s)\*(\s|;|$)/);
 		expect(csp).not.toContain("'unsafe-eval'");
+		expect(csp).not.toContain('default-src *');
 	});
 });
 
