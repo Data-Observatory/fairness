@@ -290,17 +290,27 @@ for (const locale of LOCALES) {
 		});
 
 		test('a disabled option cannot be chosen', async ({ page }) => {
-			const [firstId] = levels().simple;
-			const empty = optionIds(firstId).find(
-				(option) => openOptions({}, firstId).indexOf(option) < 0
+			// With no other answers, an option is disabled when no tool has it. The first question
+			// may have none (every target is covered by a tool), so use the first question that does.
+			const simple = levels().simple;
+			const index = simple.findIndex((questionId) =>
+				optionIds(questionId).some((option) => openOptions({}, questionId).indexOf(option) < 0)
 			);
-			expect(empty, 'real content needs a first-question option no tool has').toBeDefined();
+			expect(index, 'real content needs a simple-level option that no tool has').toBeGreaterThan(
+				-1
+			);
+			const questionId = simple[index];
+			const empty = optionIds(questionId).find(
+				(option) => openOptions({}, questionId).indexOf(option) < 0
+			)!;
 			await page.goto(wizardUrl(locale));
-			await expect(radio(page, firstId, empty!)).toBeDisabled();
-			await radio(page, firstId, empty!).click({ force: true });
-			await expect(radio(page, firstId, empty!)).not.toBeChecked();
+			for (let step = 0; step < index; step++) await next(page);
+			await expect(questionBox(page, questionId)).toBeVisible();
+			await expect(radio(page, questionId, empty)).toBeDisabled();
+			await radio(page, questionId, empty).click({ force: true });
+			await expect(radio(page, questionId, empty)).not.toBeChecked();
 			await expect(noPreference(page)).toBeChecked();
-			await expectQuery(page, { [firstId]: null });
+			await expectQuery(page, { [questionId]: null });
 		});
 
 		test('can be completed with the keyboard alone', async ({ page }) => {
