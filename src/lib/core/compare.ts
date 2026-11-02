@@ -1,37 +1,20 @@
 import type { Content } from './content.ts';
+import { COMPARE_MAX, type CompareView } from './compare-state.ts';
 import { FACT_LABELS, type Locale } from './labels.ts';
 import type { Tool } from './schema.ts';
-import { buildToolView, type FactItem } from './view.ts';
+import { buildToolView } from './view.ts';
 
-/** Default maximum number of tools in one comparison. */
-export const COMPARE_MAX = 3;
-
-const PARAM = 'tools';
-
-/**
- * Reads the `tools` parameter of a query string (with or without the leading `?`). Returns the
- * ids that are in `knownIds`, in query order, without duplicates, at most `max` of them. Unknown
- * ids are ignored before the cap is applied.
- */
-export function parseCompareQuery(
-	search: string,
-	knownIds: Iterable<string>,
-	max: number = COMPARE_MAX
-): string[] {
-	const known = new Set(knownIds);
-	const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
-	const wanted = params
-		.getAll(PARAM)
-		.flatMap((raw) => raw.split(','))
-		.map((id) => id.trim())
-		.filter((id) => id !== '' && known.has(id));
-	return [...new Set(wanted)].slice(0, Math.max(0, max));
-}
-
-/** Serializes ids as `tools=a,b,c` (literal commas, no leading `?`). Empty list gives ''. */
-export function compareQuery(ids: readonly string[]): string {
-	return ids.length === 0 ? '' : `${PARAM}=${ids.map(encodeURIComponent).join(',')}`;
-}
+// The selection helpers and the view types live in compare-state.ts, which has no runtime
+// imports so the browser can load it without the content pipeline. They are re-exported here.
+export {
+	COMPARE_MAX,
+	compareQuery,
+	isCompareOptionDisabled,
+	parseCompareQuery,
+	selectCompareView,
+	toggleCompareId
+} from './compare-state.ts';
+export type { CompareCell, CompareColumn, CompareRow, CompareView } from './compare-state.ts';
 
 export type ComparableEntry = { id: string; name: string; url: string };
 
@@ -47,18 +30,6 @@ export function comparableEntries(content: Content): ComparableEntry[] {
 		.filter((tool) => tool.kind === 'tool')
 		.map((tool) => ({ id: tool.id, name: tool.name, url: tool.url }));
 }
-
-export type CompareColumn = {
-	id: string;
-	name: string;
-	url: string;
-	host: string;
-	status: { id: string; label: string };
-};
-
-export type CompareCell = { toolId: string; missing: boolean; items: FactItem[] };
-export type CompareRow = { key: string; label: string; cells: CompareCell[] };
-export type CompareView = { columns: CompareColumn[]; rows: CompareRow[] };
 
 const FACT_ORDER: readonly string[] = Object.keys(FACT_LABELS.en);
 
@@ -98,4 +69,35 @@ export function buildCompareView(
 		})
 	}));
 	return { columns, rows };
+}
+
+export type ComparePage = {
+	/** Sections that hold at least one tool, with their tools, in home order. */
+	sections: { id: string; title: string; tools: { id: string; name: string }[] }[];
+	/** One column for every comparable tool; the page selects the columns it shows. */
+	view: CompareView;
+	caveats: string[];
+	max: number;
+};
+
+/** Everything the comparison page needs, for one locale. */
+export function buildComparePage(content: Content, locale: Locale, today: Date): ComparePage {
+	const entries = comparableEntries(content);
+	const sections = content.sections.flatMap((section) => {
+		const tools = homeOrder(content)
+			.filter((tool) => tool.section === section.id && tool.kind === 'tool')
+			.map((tool) => ({ id: tool.id, name: tool.name }));
+		return tools.length === 0 ? [] : [{ id: section.id, title: section.title[locale], tools }];
+	});
+	return {
+		sections,
+		view: buildCompareView(
+			content,
+			entries.map((entry) => entry.id),
+			locale,
+			today
+		),
+		caveats: content.caveats.map((item) => item.text[locale]),
+		max: COMPARE_MAX
+	};
 }
