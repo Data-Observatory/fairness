@@ -71,7 +71,7 @@ and `check:base-path` clean. Infra was not changed.
 
 Shipped: guides section (FAIR Cookbook, RDMkit, The Turing Way), consent-based loading of the Google tag with banner and footer control, hash-based script CSP meta, changelog page and "Last updated" footer line, report link and issue template on detail pages, framework and implementing-tool cross-links, compare page (`features.compare`), Spanish wording fixes ("Entrada", "objeto evaluado"), deploy workflow (inert, two jobs, runs after `CI` on main), access logging as an off-by-default option. Review fixes: tag cookies scoped to the host and parent-domain cookies of other properties kept on Reject, deploy diff before approval, infra packages installed before AWS credentials, variables passed through `env`.
 
-Verification before the review fixes: 861 unit tests, 88 infra tests, 1400 end-to-end tests (Chromium and Firefox), `check`, `lint`, `validate`, `build` and `check:base-path` clean.
+Verification before the review fixes: 861 unit tests, 88 infra tests, 1400 end-to-end tests (Chromium and Firefox), `check`, `lint`, `validate`, `build` and `check:base-path` clean. After the review fixes: 868 unit tests, 99 infra tests, 1412 end-to-end tests, same gates clean.
 
 Deployment: the live site currently runs the interim commit with the Google tag and no banner (the CSP update was deployed on 2026-11-02). The consent version is published by the next deploy, run by the lead.
 
