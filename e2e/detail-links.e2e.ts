@@ -60,6 +60,22 @@ for (const locale of LOCALES) {
 			await expect(page.locator('main form, form[action*="github"]')).toHaveCount(0);
 		});
 
+		test('the report and compare links use neutral labels that fit every kind of entry', async ({
+			page
+		}) => {
+			const report =
+				locale === 'en'
+					? 'Report a broken or changed entry'
+					: 'Informar de un recurso que no funciona o ha cambiado';
+			const compare =
+				locale === 'en' ? 'Compare with other tools' : 'Comparar con otras herramientas';
+			await page.goto(`/${locale}/tools/f-uji`);
+			await expect(page.locator('[data-testid=report-tool]')).toContainText(report);
+			await expect(page.locator('[data-testid=compare-link]')).toContainText(compare);
+			await page.goto(`/${locale}/tools/${framework.id}`);
+			await expect(page.locator('[data-testid=report-tool]')).toContainText(report);
+		});
+
 		test(`${withBoth.id} lists the framework entries it implements, linked to their pages`, async ({
 			page,
 			request
