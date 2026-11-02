@@ -1,0 +1,58 @@
+name: Deploy
+
+# Inert until the repository variable DEPLOY_ENABLED is set to 'true'. The owner setup is in
+# infra/README.md ("Deploy workflow: owner setup"). No account id or ARN is stored here:
+# the role comes from a secret, the region, the domain and the logging options from variables.
+# Third-party actions are pinned by commit SHA (checked against each action's repository):
+#   actions/checkout v4.3.1, actions/setup-node v4.4.0, aws-actions/configure-aws-credentials v6.3.0
+
+on:
+  workflow_run:
+    workflows: ['Link check']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: vars.DEPLOY_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          # The scripts need Node 22.6 or later for --experimental-strip-types.
+          node-version: 22.x
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run check
+
+      - run: npm run lint
+
+      - run: npm run validate
+
+      - run: npx vitest run
+
+      - run: npm run build
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Review the changes
+        working-directory: infra
+        run: |
+          npm ci
+          ./node_modules/.bin/cdk diff -c domainName=${{ vars.SITE_DOMAIN }} -c accessLogs=${{ vars.ACCESS_LOGS }} -c accessLogRetentionDays=${{ vars.ACCESS_LOG_RETENTION_DAYS }}
+
+      - name: Deploy
+        working-directory: infra
+        run: ./node_modules/.bin/cdk deploy --require-approval never -c domainName=${{ vars.SITE_DOMAIN }} -c accessLogs=${{ vars.ACCESS_LOGS }} -c accessLogRetentionDays=${{ vars.ACCESS_LOG_RETENTION_DAYS }}

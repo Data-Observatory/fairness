@@ -9,7 +9,8 @@ const domainName: string = app.node.tryGetContext('domainName') ?? 'fair.dataobs
 // Context values given with -c arrive as strings ("true", "30").
 const accessLogs = String(app.node.tryGetContext('accessLogs') ?? 'false') === 'true';
 const retentionContext = app.node.tryGetContext('accessLogRetentionDays');
-const accessLogRetentionDays = retentionContext === undefined ? 90 : Number(retentionContext);
+const accessLogRetentionDays =
+	retentionContext === undefined || retentionContext === '' ? 90 : Number(retentionContext);
 if (!Number.isInteger(accessLogRetentionDays) || accessLogRetentionDays < 1) {
 	throw new Error('accessLogRetentionDays must be a positive integer');
 }
