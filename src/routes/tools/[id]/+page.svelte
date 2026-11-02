@@ -153,6 +153,12 @@
 		</p>
 	{/if}
 
+	<p class="mt-2 text-sm print:hidden">
+		<ExternalLink href={tool.reportUrl} data-testid="report-tool" class={linkClass}>
+			{m.detail_report_link()}
+		</ExternalLink>
+	</p>
+
 	{#if tool.references.length > 0}
 		<h2 class="mt-10 font-heading text-xl font-semibold text-zinc-900">
 			{m.detail_references_title()}
