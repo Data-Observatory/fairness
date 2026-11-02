@@ -374,6 +374,136 @@ describe('outputs', () => {
 	});
 });
 
+describe('access logging', () => {
+	function synth(props: { accessLogs?: boolean; accessLogRetentionDays?: number }): Template {
+		const app = new App();
+		const stack = new FairSiteStack(app, 'LogStack', {
+			domainName: DOMAIN,
+			env: { account: '111111111111', region: 'us-east-1' },
+			...props
+		});
+		return Template.fromStack(stack);
+	}
+
+	function logBucketId(t: Template): string {
+		const buckets = t.findResources('AWS::S3::Bucket');
+		const ids = Object.keys(buckets).filter(
+			(id) => buckets[id].Properties.OwnershipControls !== undefined
+		);
+		expect(ids, 'expected exactly one bucket with OwnershipControls (the log bucket)').toHaveLength(
+			1
+		);
+		return ids[0];
+	}
+
+	describe('default (off)', () => {
+		it('adds no logging to the distribution, no log bucket and no site bucket logging', () => {
+			const t = synth({});
+			t.resourceCountIs('AWS::S3::Bucket', 1);
+			const dist = Object.values(t.findResources('AWS::CloudFront::Distribution'))[0];
+			expect(dist.Properties.DistributionConfig.Logging).toBeUndefined();
+			const bucket = Object.values(t.findResources('AWS::S3::Bucket'))[0];
+			expect(bucket.Properties.LoggingConfiguration).toBeUndefined();
+		});
+
+		it('synthesizes the same template as an explicit accessLogs: false', () => {
+			expect(synth({ accessLogs: false }).toJSON()).toEqual(synth({}).toJSON());
+		});
+	});
+
+	describe('accessLogs: true', () => {
+		const t = synth({ accessLogs: true });
+
+		it('creates a second bucket for the logs', () => {
+			t.resourceCountIs('AWS::S3::Bucket', 2);
+		});
+
+		it('log bucket blocks all public access, encrypts, uses ObjectWriter ownership, is retained', () => {
+			const id = logBucketId(t);
+			const bucket = t.findResources('AWS::S3::Bucket')[id];
+			expect(bucket.Properties.PublicAccessBlockConfiguration).toEqual({
+				BlockPublicAcls: true,
+				BlockPublicPolicy: true,
+				IgnorePublicAcls: true,
+				RestrictPublicBuckets: true
+			});
+			expect(bucket.Properties.OwnershipControls).toEqual({
+				Rules: [{ ObjectOwnership: 'ObjectWriter' }]
+			});
+			expect(
+				bucket.Properties.BucketEncryption.ServerSideEncryptionConfiguration[0]
+					.ServerSideEncryptionByDefault.SSEAlgorithm
+			).toBe('AES256');
+			expect(bucket.DeletionPolicy).toBe('Retain');
+			expect(bucket.UpdateReplacePolicy).toBe('Retain');
+		});
+
+		it('log bucket denies non-TLS access', () => {
+			const id = logBucketId(t);
+			const policies = Object.values(t.findResources('AWS::S3::BucketPolicy')).filter(
+				(p) => p.Properties.Bucket?.Ref === id
+			);
+			expect(policies).toHaveLength(1);
+			expect(JSON.stringify(policies[0].Properties.PolicyDocument)).toContain(
+				'aws:SecureTransport'
+			);
+		});
+
+		it('log bucket expires objects after 90 days by default', () => {
+			const bucket = t.findResources('AWS::S3::Bucket')[logBucketId(t)];
+			expect(bucket.Properties.LifecycleConfiguration.Rules).toEqual([
+				expect.objectContaining({ Status: 'Enabled', ExpirationInDays: 90 })
+			]);
+		});
+
+		it('log bucket expiry follows accessLogRetentionDays', () => {
+			const custom = synth({ accessLogs: true, accessLogRetentionDays: 30 });
+			const bucket = custom.findResources('AWS::S3::Bucket')[logBucketId(custom)];
+			expect(bucket.Properties.LifecycleConfiguration.Rules[0].ExpirationInDays).toBe(30);
+		});
+
+		it('enables CloudFront logging to the log bucket with the cloudfront/ prefix', () => {
+			const id = logBucketId(t);
+			t.hasResourceProperties('AWS::CloudFront::Distribution', {
+				DistributionConfig: Match.objectLike({
+					Logging: {
+						Bucket: { 'Fn::GetAtt': [id, 'RegionalDomainName'] },
+						Prefix: 'cloudfront/'
+					}
+				})
+			});
+		});
+
+		it('enables S3 server access logs on the site bucket with the s3/ prefix', () => {
+			const id = logBucketId(t);
+			const buckets = t.findResources('AWS::S3::Bucket');
+			const site = Object.entries(buckets).find(([key]) => key !== id)![1];
+			expect(site.Properties.LoggingConfiguration).toEqual({
+				DestinationBucketName: { Ref: id },
+				LogFilePrefix: 's3/'
+			});
+		});
+
+		it('keeps the site bucket private and the CSP unchanged', () => {
+			const policies = t.findResources('AWS::CloudFront::ResponseHeadersPolicy');
+			const config = Object.values(policies)[0].Properties.ResponseHeadersPolicyConfig;
+			expect(config.SecurityHeadersConfig.ContentSecurityPolicy.ContentSecurityPolicy).toBe(
+				EXPECTED_CSP
+			);
+			t.resourceCountIs('Custom::CDKBucketDeployment', 2);
+		});
+	});
+
+	describe('bin/infra.ts context', () => {
+		const bin = fs.readFileSync(path.join(__dirname, '../bin/infra.ts'), 'utf8');
+
+		it('reads the accessLogs and accessLogRetentionDays contexts', () => {
+			expect(bin).toMatch(/tryGetContext\(\s*['"]accessLogs['"]\s*\)/);
+			expect(bin).toMatch(/tryGetContext\(\s*['"]accessLogRetentionDays['"]\s*\)/);
+		});
+	});
+});
+
 describe('bin/infra.ts', () => {
 	const bin = fs.readFileSync(path.join(__dirname, '../bin/infra.ts'), 'utf8');
 
