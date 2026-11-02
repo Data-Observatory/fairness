@@ -24,3 +24,9 @@
     en: Other catalogues of FAIR tools and services.
     es: Otros catálogos de herramientas y servicios FAIR.
   collapsed: false
+- id: guides
+  title: { en: Guides and training, es: Guías y formación }
+  intro:
+    en: Learning material about FAIR and research data management. These are not assessment tools: they do not score or check a resource.
+    es: Material de aprendizaje sobre FAIR y gestión de datos de investigación. No son herramientas de evaluación: no puntúan ni comprueban ningún recurso.
+  collapsed: true
