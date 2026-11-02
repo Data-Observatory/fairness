@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../tool.schema.json
 id: cts-fair-capmat
-kind: framework
-section: frameworks
+kind: tool
+section: other-objects
 name: CoreTrustSeal+FAIRenabling Capability Maturity Model
 url: https://zenodo.org/records/6699520
 operator:
@@ -23,6 +23,9 @@ best_for:
 targets: [repository]
 mode: manual
 inputs: [none]
+output:
+  en: A spreadsheet completed by the repository with its own self-assessment. The template is not an online service.
+  es: Una hoja de cálculo completada por el repositorio con su propia autoevaluación. La plantilla no es un servicio en línea.
 license: CC-BY-4.0
 status: available
 status_note:
