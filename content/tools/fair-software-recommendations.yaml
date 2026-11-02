@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-software-recommendations
+kind: framework
+section: frameworks
+name: fair-software.eu recommendations
+url: https://fair-software.eu/
+operator:
+  name: Netherlands eScience Center and DANS
+  url: https://fair-software.eu/colophon/
+summary:
+  en: >-
+    Five recommendations for research software, named repository, license, registry, citation and
+    checklist on the site. The website is a collaboration of the Netherlands eScience Center and
+    DANS.
+  es: >-
+    Cinco recomendaciones para software de investigación, llamadas repository, license, registry,
+    citation y checklist en el sitio. El sitio web es una colaboración del Netherlands eScience
+    Center y DANS.
+frameworks: [fair_software_recommendations]
+status: available
+last_verified: 2026-11-02
+references:
+  - title: About fair-software.eu
+    url: https://fair-software.eu/about/
+  - title: howfairis, a command-line tool that checks the recommendations (GitHub)
+    url: https://github.com/fair-software/howfairis
