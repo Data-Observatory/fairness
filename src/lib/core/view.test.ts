@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getContent, loadContent, type Content } from './content';
 import { filterTools } from './filter';
 import { loadFixtureFiles, mutate } from './__fixtures__/helpers';
+import { buildReportIssueUrl } from './report-link';
 import { buildHomeView, buildToolView } from './view';
 
 // The view model is plain data for the Svelte components: no Svelte, no DOM, no fetching.
@@ -438,6 +439,99 @@ describe('buildToolView', () => {
 
 	it('throws for an unknown tool id, naming it', () => {
 		expect(() => buildToolView(fixture(), 'no-such-tool', 'en', today)).toThrow(/no-such-tool/);
+	});
+});
+
+describe('buildToolView cross-links and report link', () => {
+	const today = after('2025-01-15', 30);
+	const linked = () =>
+		fixture((files) => {
+			const withFramework = mutate(files, 'content/tools/fairsfair-metrics.yaml', (doc) => {
+				doc.frameworks = ['fairsfair_metrics'];
+			});
+			return withFramework;
+		});
+
+	it('lists the framework entries a tool implements as id and name', () => {
+		const view = buildToolView(linked(), 'f-uji', 'en', today);
+		expect(view.implements).toEqual([
+			{ id: 'fairsfair-metrics', name: expect.any(String) as string }
+		]);
+		expect(view.implementedBy).toEqual([]);
+	});
+
+	it('lists the tools that implement a framework entry', () => {
+		const content = linked();
+		const view = buildToolView(content, 'fairsfair-metrics', 'es', today);
+		expect(view.implementedBy).toEqual([{ id: 'f-uji', name: 'F-UJI' }]);
+		expect(view.implements).toEqual([]);
+	});
+
+	it('gives empty lists when no framework id is shared', () => {
+		const view = buildToolView(fixture(), 'f-uji', 'en', today);
+		expect(view.implements).toEqual([]);
+		expect(view.implementedBy).toEqual([]);
+	});
+
+	it('builds the report URL from the repository in site.yaml and the entry', () => {
+		const content = fixture();
+		const view = buildToolView(content, 'f-uji', 'en', today);
+		expect(view.reportUrl).toBe(
+			buildReportIssueUrl(content.site.repository, {
+				id: 'f-uji',
+				name: 'F-UJI',
+				url: 'https://example.org/f-uji'
+			})
+		);
+		expect(view.reportUrl).toContain('tool=f-uji');
+	});
+
+	it('gives the same report URL in both locales', () => {
+		const content = fixture();
+		expect(buildToolView(content, 'f-uji', 'es', today).reportUrl).toBe(
+			buildToolView(content, 'f-uji', 'en', today).reportUrl
+		);
+	});
+});
+
+describe('cross-links on the real content', () => {
+	const content = getContent();
+	const today = new Date(2026, 9, 25);
+	const ids = (list: { id: string }[]) => list.map((item) => item.id).sort();
+
+	it('links f-uji to the FAIRsFAIR framework entries it tags', () => {
+		for (const locale of ['en', 'es'] as const) {
+			const view = buildToolView(content, 'f-uji', locale, today);
+			expect(ids(view.implements)).toEqual(
+				['fair-impact-metrics', 'fairsfair-data-object-metrics'].sort()
+			);
+			expect(view.implementedBy).toEqual([]);
+		}
+	});
+
+	it('links the RDA FDMM entry to FAIR EVA and back', () => {
+		const framework = buildToolView(content, 'rda-fair-data-maturity-model', 'en', today);
+		expect(framework.implementedBy).toEqual([{ id: 'fair-eva', name: 'FAIR EVA' }]);
+		const tool = buildToolView(content, 'fair-eva', 'en', today);
+		expect(ids(tool.implements)).toContain('rda-fair-data-maturity-model');
+	});
+
+	it('creates no link for the framework id custom', () => {
+		const view = buildToolView(content, 'fair-checker', 'en', today);
+		expect(view.implements).toEqual([]);
+		expect(view.implementedBy).toEqual([]);
+	});
+
+	it('names only existing entries and builds a report URL for every entry', () => {
+		const known = new Set(content.tools.map((tool) => tool.id));
+		for (const tool of content.tools) {
+			const view = buildToolView(content, tool.id, 'en', today);
+			for (const link of [...view.implements, ...view.implementedBy]) {
+				expect(known.has(link.id), `${tool.id} -> ${link.id}`).toBe(true);
+				expect(link.name.length).toBeGreaterThan(0);
+			}
+			expect(view.reportUrl.startsWith(`${content.site.repository}/issues/new?`)).toBe(true);
+		}
 	});
 });
 
