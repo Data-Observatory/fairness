@@ -30,10 +30,19 @@ const REQUIRED_TOOL_IDS = [
 	'ofaire',
 	'foops',
 	'fairassist',
-	'fair-impact-catalogue'
+	'fair-impact-catalogue',
+	'howfairis',
+	'rsfc',
+	'rfair',
+	'fair-software-checklist',
+	'software-observatory',
+	'fair4rs',
+	'fair-software-recommendations',
+	'cts-fair-capmat',
+	'fairsharing'
 ];
 const SECTION_IDS = ['datasets', 'other-objects', 'frameworks', 'directories'];
-const FINDER_INPUTS = ['doi', 'landing_page_url', 'metadata_file', 'none'];
+const FINDER_INPUTS = ['doi', 'landing_page_url', 'code_repository_url', 'metadata_file', 'none'];
 const MAX_AGE_DAYS = 30;
 
 function urlsOf(item: Tool): { path: string; value: string }[] {
@@ -234,6 +243,42 @@ describe('real content: specific entries', () => {
 
 	it('f-uji lists doi among its inputs', () => {
 		expect(tool('f-uji').inputs).toContain('doi');
+	});
+
+	it('gives every tool that targets software the input code_repository_url or portal_record or none', () => {
+		const software = content().tools.filter(
+			(item) => item.kind === 'tool' && item.targets?.includes('software')
+		);
+		expect(software.length).toBeGreaterThan(0);
+		for (const item of software) {
+			expect(
+				item.inputs?.some((input) =>
+					['code_repository_url', 'portal_record', 'none'].includes(input)
+				),
+				`${item.id} inputs`
+			).toBe(true);
+		}
+	});
+
+	it('gives every tool that checks a code repository the input code_repository_url', () => {
+		for (const id of ['howfairis', 'rsfc', 'rfair']) {
+			expect(tool(id).inputs, id).toContain('code_repository_url');
+			expect(tool(id).targets, id).toContain('software');
+		}
+	});
+
+	it('lists howfairis in the code_repository_url finder row and links the new frameworks', () => {
+		const row = content().finder.rows.find((item) => item.input === 'code_repository_url');
+		expect(row?.tools).toContain('howfairis');
+		expect(tool('howfairis').frameworks).toContain('fair_software_recommendations');
+		expect(tool('fair4rs').kind).toBe('framework');
+		expect(tool('fair-software-recommendations').kind).toBe('framework');
+	});
+
+	it('lists fairsharing as a directory and the repository self-assessment as a framework', () => {
+		expect(tool('fairsharing').kind).toBe('directory');
+		expect(tool('fairsharing').section).toBe('directories');
+		expect(tool('cts-fair-capmat').targets).toContain('repository');
 	});
 });
 
