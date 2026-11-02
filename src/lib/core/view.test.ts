@@ -455,9 +455,10 @@ describe('real content', () => {
 				'datasets',
 				'other-objects',
 				'frameworks',
-				'directories'
+				'directories',
+				'guides'
 			]);
-			expect(view.sections.map((s) => s.collapsed)).toEqual([false, true, false, false]);
+			expect(view.sections.map((s) => s.collapsed)).toEqual([false, true, false, false, true]);
 			for (const c of allCards(view)) {
 				expect(c.url.startsWith('https://')).toBe(true);
 				expect(c.host.length).toBeGreaterThan(0);
