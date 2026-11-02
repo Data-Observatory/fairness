@@ -8,7 +8,7 @@ questions:
       es: ¿Qué desea evaluar?
     help:
       en: Select the type of object. Frameworks and directories do not record a target, so they are not matched when this question is answered.
-      es: Seleccione el tipo de objeto. Los marcos de referencia y los directorios no registran un objetivo, por lo que no se incluyen cuando se responde esta pregunta.
+      es: Seleccione el tipo de objeto. Los marcos de referencia y los directorios no registran un objeto evaluado, por lo que no se incluyen cuando se responde esta pregunta.
   - id: input
     question:
       en: What can you provide to start the assessment?
