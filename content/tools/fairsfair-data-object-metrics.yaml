@@ -17,7 +17,7 @@ summary:
     métricas de FAIRsFAIR de 2020.
 frameworks: [fairsfair_metrics]
 status: available
-last_verified: 2026-10-25
+last_verified: 2026-11-02
 references:
   - title: FAIRsFAIR Data Object Assessment Metrics, version 0.8 (Zenodo)
     url: https://doi.org/10.5281/zenodo.15045911
