@@ -1,4 +1,5 @@
 import { getContent } from '$lib/core/content';
+import { lastUpdated } from '$lib/core/changelog';
 import { buildHomeView } from '$lib/core/view';
 import { getLocale } from '$lib/paraglide/runtime';
 
@@ -19,6 +20,7 @@ export const load = () => {
 			repository: site.repository,
 			contributeUrl: site.contributeUrl
 		},
+		lastUpdated: lastUpdated(content),
 		features: { wizard: site.features.wizard, finderTable: site.features.finderTable }
 	};
 };

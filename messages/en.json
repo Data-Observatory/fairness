@@ -94,7 +94,12 @@
 	"not_found_body": "This page does not exist, or the link is out of date.",
 	"not_found_back": "Back to all resources",
 
+	"changelog_title": "Changelog",
+	"changelog_intro": "Changes to the entries, sections, pages and privacy settings of this site, from the most recent date to the oldest. Code changes that do not affect visitors are not listed.",
+	"changelog_entries": "Entries:",
+
 	"footer_license": "Code licensed under {codeLicense}. Content licensed under {contentLicense}.",
+	"footer_last_updated": "Last updated: {date}",
 	"footer_repository": "Source repository",
 	"footer_contribute": "Contribute",
 	"privacy_statement": "Google Analytics is used only if you accept it. If you do, it sets cookies and sends usage data to Google to measure visits. Your choice is stored in this browser and can be changed at any time. Links lead to third-party tools, which have their own privacy policies.",

@@ -151,6 +151,15 @@
 		<div class="mx-auto max-w-5xl px-6">
 			<ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
 				<li>
+					<a
+						href={localized(resolve('/changelog'))}
+						data-testid="last-updated"
+						class="text-blue-300 underline decoration-blue-300/40 underline-offset-2 hover:text-blue-200"
+					>
+						{m.footer_last_updated({ date: data.lastUpdated })}
+					</a>
+				</li>
+				<li>
 					<ExternalLink
 						href={data.site.repository}
 						class="text-blue-300 underline decoration-blue-300/40 underline-offset-2 hover:text-blue-200"

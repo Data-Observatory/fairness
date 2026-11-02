@@ -94,7 +94,12 @@
 	"not_found_body": "Esta página no existe o el enlace está desactualizado.",
 	"not_found_back": "Volver a todos los recursos",
 
+	"changelog_title": "Registro de cambios",
+	"changelog_intro": "Cambios en las fichas, secciones, páginas y ajustes de privacidad de este sitio, desde la fecha más reciente hasta la más antigua. No se listan los cambios de código que no afectan a quienes visitan el sitio.",
+	"changelog_entries": "Fichas:",
+
 	"footer_license": "Código con licencia {codeLicense}. Contenido con licencia {contentLicense}.",
+	"footer_last_updated": "Última actualización: {date}",
 	"footer_repository": "Repositorio de código fuente",
 	"footer_contribute": "Contribuir",
 	"privacy_statement": "Google Analytics solo se utiliza si usted lo acepta. En ese caso, utiliza cookies y envía datos de uso a Google para medir las visitas. Su elección se guarda en este navegador y puede cambiarse en cualquier momento. Los enlaces conducen a herramientas de terceros, que tienen sus propias políticas de privacidad.",
