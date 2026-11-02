@@ -1,15 +1,7 @@
 import { z } from 'zod';
+import { isIsoDate } from './iso-date.ts';
 
-/** Returns true when `value` is an ISO calendar date (YYYY-MM-DD) that exists. */
-export function isIsoDate(value: string): boolean {
-	const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-	if (!match) return false;
-	const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
-	const date = new Date(Date.UTC(year, month - 1, day));
-	return (
-		date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
-	);
-}
+export { isIsoDate };
 
 /** A non-empty string with at least one non-whitespace character (whitespace-only is rejected). */
 const text = z.string().regex(/\S/, { message: 'must not be empty or whitespace only' });

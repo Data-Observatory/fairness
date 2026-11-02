@@ -1,4 +1,4 @@
-import { isIsoDate } from './schema.ts';
+import { isIsoDate } from './iso-date.ts';
 
 const MS_PER_DAY = 86_400_000;
 

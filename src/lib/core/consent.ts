@@ -1,5 +1,5 @@
 import { daysSince, localIsoDate } from './freshness.ts';
-import { isIsoDate } from './schema.ts';
+import { isIsoDate } from './iso-date.ts';
 
 /** localStorage key that holds the visitor's analytics choice. */
 export const CONSENT_STORAGE_KEY = 'fair-consent';
