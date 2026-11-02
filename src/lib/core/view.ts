@@ -1,7 +1,9 @@
 import type { Content } from './content.ts';
 import { FILTER_GROUPS, filterTools } from './filter.ts';
+import { implementedBy, implementsFrameworks } from './framework-links.ts';
 import { daysSince, isStale } from './freshness.ts';
 import { FILTER_GROUP_LABELS, FACT_LABELS, type Locale } from './labels.ts';
+import { buildReportIssueUrl } from './report-link.ts';
 import { TAXONOMY_GROUPS, type Localized, type Tool, type ToolKind } from './schema.ts';
 
 export type { Locale } from './labels.ts';
@@ -76,6 +78,12 @@ export type ToolView = ToolCard & {
 	api?: { available: boolean; url?: string };
 	selfHostable?: boolean;
 	references: { title: string; url: string; host: string }[];
+	/** Framework entries this tool shares a framework id with, in home order. */
+	implements: { id: string; name: string }[];
+	/** Tools that share a framework id with this framework entry, in home order. */
+	implementedBy: { id: string; name: string }[];
+	/** Link to the prefilled "report a tool" issue form. Opening it sends nothing by itself. */
+	reportUrl: string;
 };
 
 const text = (value: Localized, locale: Locale): string => value[locale];
@@ -275,6 +283,9 @@ export function buildToolView(content: Content, id: string, locale: Locale, toda
 		facts: factsOf(tool, locale, label),
 		api: tool.api,
 		selfHostable: tool.self_hostable,
-		references: (tool.references ?? []).map((ref) => ({ ...ref, host: hostOf(ref.url) }))
+		references: (tool.references ?? []).map((ref) => ({ ...ref, host: hostOf(ref.url) })),
+		implements: implementsFrameworks(content, id).map(({ id, name }) => ({ id, name })),
+		implementedBy: implementedBy(content, id).map(({ id, name }) => ({ id, name })),
+		reportUrl: buildReportIssueUrl(content.site.repository, tool)
 	};
 }

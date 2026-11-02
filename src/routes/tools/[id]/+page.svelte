@@ -15,6 +15,11 @@
 	const plainChips = $derived(tool.chips.filter((chip) => chip.kind !== 'status'));
 	const labels = $derived(FACT_LABELS[getLocale()]);
 
+	const crossLinks = $derived([
+		{ key: 'implements', title: m.detail_implements_title(), items: tool.implements },
+		{ key: 'implemented-by', title: m.detail_implemented_by_title(), items: tool.implementedBy }
+	]);
+
 	const linkClass = 'text-blue-700 underline underline-offset-2 break-words hover:text-blue-800';
 	const isExternal = (item: FactItem) => item.href !== undefined && /^https?:\/\//.test(item.href);
 </script>
@@ -122,6 +127,21 @@
 			<dd class="text-zinc-700">{tool.selfHostable ? m.detail_yes() : m.detail_no()}</dd>
 		{/if}
 	</dl>
+
+	{#each crossLinks as group (group.key)}
+		{#if group.items.length > 0}
+			<h2 class="mt-10 font-heading text-xl font-semibold text-zinc-900">{group.title}</h2>
+			<ul data-testid={group.key} class="mt-4 space-y-1 text-sm">
+				{#each group.items as item (item.id)}
+					<li class="break-words">
+						<a href={localized(resolve('/tools/[id]', { id: item.id }))} class={linkClass}>
+							{item.name}
+						</a>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	{/each}
 
 	<p data-testid="last-verified" class="mt-6 text-sm text-zinc-700">
 		<span class="font-medium text-zinc-900">{m.detail_last_verified()}</span>
