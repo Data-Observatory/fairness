@@ -4,6 +4,22 @@
 # (files in content/tools) the change refers to.
 - date: 2026-11-02
   text:
+    en: A page "Compare tools" was added at /compare. It shows the recorded facts of two or three tools side by side, and the home page and the tool pages link to it.
+    es: Se agregó la página "Comparar herramientas" en /compare. Muestra lado a lado los datos registrados de dos o tres herramientas, y la página de inicio y las páginas de las herramientas enlazan a ella.
+- date: 2026-11-02
+  text:
+    en: Tool pages have a link to report a tool that is broken or has changed.
+    es: Las páginas de las herramientas incluyen un enlace para informar de una herramienta rota o modificada.
+- date: 2026-11-02
+  text:
+    en: Framework pages now link to the tools that implement them, and tool pages link back to the frameworks they implement.
+    es: Las páginas de los marcos de referencia ahora enlazan a las herramientas que los implementan, y las páginas de las herramientas enlazan a los marcos de referencia que implementan.
+- date: 2026-11-02
+  text:
+    en: A changelog page was added, with a "Last updated" line in the footer that shows the date of the newest entry.
+    es: Se agregó la página de registro de cambios, con la línea "Última actualización" en el pie de página, que muestra la fecha de la entrada más reciente.
+- date: 2026-11-02
+  text:
     en: A section "Guides and training" was added, with three guides about FAIR and research data management.
     es: Se agregó la sección "Guías y formación", con tres guías sobre FAIR y gestión de datos de investigación.
   tools: [fair-cookbook, rdmkit, the-turing-way]
