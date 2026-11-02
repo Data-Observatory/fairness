@@ -149,6 +149,8 @@ Ordered list of home page sections. Each tool belongs to exactly one section thr
   collapsed: false
 - id: directories # other catalogues of FAIR tools
   collapsed: false
+- id: guides # learning material about FAIR and data management, not assessment tools
+  collapsed: true
 ```
 
 ### 5.4 `content/tools/<tool-id>.yaml`
@@ -158,7 +160,7 @@ File name equals `id`. Fields:
 | Field           | Required  | Notes                                                                                                                              |
 | --------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `id`            | yes       | kebab-case, equals file name                                                                                                       |
-| `kind`          | yes       | `tool`, `framework`, `directory`                                                                                                   |
+| `kind`          | yes       | `tool`, `framework`, `directory`, `guide`                                                                                          |
 | `section`       | yes       | id from `sections.yaml`                                                                                                            |
 | `name`          | yes       | plain string (product names are not translated)                                                                                    |
 | `url`           | yes       | `https://` link opened by the "Open" button                                                                                        |
@@ -179,7 +181,7 @@ File name equals `id`. Fields:
 | `last_verified` | yes       | ISO date the maintainer last opened the resource and confirmed the entries                                                         |
 | `references`    | no        | list of `{ title, url }` (papers, docs)                                                                                            |
 
-`kind: framework` and `kind: directory` may omit `targets`, `mode`, `inputs`, `output`.
+`kind: framework` and `kind: directory` may omit `targets`, `mode`, `inputs`, `output`. `kind: guide` (learning material such as handbooks and training resources, section `guides`) has none of them: the schema rejects them on a guide, so a guide never matches a target, mode or input filter or a wizard answer on those questions. It matches the status filter and its other optional fields work as on any entry.
 
 ### 5.5 `content/finder.yaml` ("Which tool fits?")
 
@@ -357,6 +359,7 @@ Static checks in CI: `svelte-check`, `eslint`, `prettier --check`, `vitest run`,
 Deviations (decided during implementation):
 
 - The on-page label of `best_for` is "Use case" (Spanish "Caso de uso"), not "Best for", because the style lint forbids the word "best" in UI text. To use the literal label, remove "best" from `style.forbiddenTerms` in `content/site.yaml` and change the message `card_use_case` in `messages/`.
+- Guides: the owner decided (D4) to list learning resources in a collapsed section `guides` ("Guides and training") with entries of `kind: guide`, although the site describes assessment resources. The section intro states that these are learning material, not assessment tools. A guide is hidden while a target, mode or input filter is active, is not compared, and appears in wizard results only when no answered question needs those fields.
 - Locales are hardcoded to `en` and `es` in the schemas for v1 (a third locale needs a schema change).
 - `zod-to-json-schema` was replaced by zod 4's built-in `z.toJSONSchema`; the validate and schema scripts use `node --experimental-strip-types` (Node 22.6 or later).
 - Unknown filter ids in the URL query are ignored. Sections with matching tools open automatically while a filter is active, and all sections open for printing.

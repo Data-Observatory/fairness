@@ -10,9 +10,10 @@
 
 # kebab-case, equal to the file name without .yaml
 id: example-tool
-# tool | framework | directory (framework and directory may omit targets, mode, inputs, output)
+# tool | framework | directory | guide (framework and directory may omit targets, mode, inputs,
+# output; guide must omit them: it is learning material, not an assessment tool)
 kind: tool
-# id from content/sections.yaml: datasets | other-objects | frameworks | directories
+# id from content/sections.yaml: datasets | other-objects | frameworks | directories | guides
 section: datasets
 # Product name, not translated
 name: Example Tool

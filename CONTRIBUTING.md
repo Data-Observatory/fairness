@@ -11,6 +11,9 @@ files under `content/`; no code changes are needed to add a tool.
 2. Fill the fields. The field guide is `specs.md`, section 5.4, and the machine-readable
    description is `content/tool.schema.json` (editors that support the YAML language
    server use it through the `$schema` comment on the first line of the template).
+   For learning material about FAIR or data management (handbooks, training resources),
+   use `kind: guide` and `section: guides`, and leave out `targets`, `mode`, `inputs` and
+   `output`: guides are not assessment tools.
 3. Run `npm run validate`. It checks the schema, the cross-references and the style rules.
 4. Run `npm run links -- --only <id>`. It requests the URLs of that file only (HEAD, with
    GET as fallback) and prints a Markdown report.
