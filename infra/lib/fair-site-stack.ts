@@ -10,7 +10,16 @@ import { Construct } from 'constructs';
 export interface FairSiteStackProps extends StackProps {
 	/** Public domain the site is served under, e.g. "fair.dataobservatory.net". */
 	domainName: string;
+	/**
+	 * Write CloudFront standard logs and S3 server access logs to a separate log bucket.
+	 * Default false: the synthesized template is then identical to a stack without this option.
+	 */
+	accessLogs?: boolean;
+	/** Days after which log objects expire. Default 90. Used only when accessLogs is true. */
+	accessLogRetentionDays?: number;
 }
+
+const DEFAULT_ACCESS_LOG_RETENTION_DAYS = 90;
 
 // The built pages need one inline bootstrap script and inline styles, plus same-origin
 // modules, CSS, fonts and data fetches. The only third-party requests are the Google tag
@@ -49,11 +58,32 @@ export class FairSiteStack extends Stack {
 	constructor(scope: Construct, id: string, props: FairSiteStackProps) {
 		super(scope, id, props);
 
+		// Optional access logs. The logs contain visitor IP addresses; see infra/README.md.
+		let logBucket: s3.Bucket | undefined;
+		if (props.accessLogs) {
+			logBucket = new s3.Bucket(this, 'AccessLogBucket', {
+				blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+				enforceSSL: true,
+				encryption: s3.BucketEncryption.S3_MANAGED,
+				// CloudFront standard logging delivers through bucket ACLs, which need ObjectWriter.
+				objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+				lifecycleRules: [
+					{
+						expiration: Duration.days(
+							props.accessLogRetentionDays ?? DEFAULT_ACCESS_LOG_RETENTION_DAYS
+						)
+					}
+				],
+				removalPolicy: RemovalPolicy.RETAIN
+			});
+		}
+
 		const bucket = new s3.Bucket(this, 'SiteBucket', {
 			blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
 			enforceSSL: true,
 			encryption: s3.BucketEncryption.S3_MANAGED,
-			removalPolicy: RemovalPolicy.RETAIN
+			removalPolicy: RemovalPolicy.RETAIN,
+			...(logBucket && { serverAccessLogsBucket: logBucket, serverAccessLogsPrefix: 's3/' })
 		});
 
 		const certificate = new acm.Certificate(this, 'Certificate', {
@@ -97,6 +127,7 @@ export class FairSiteStack extends Stack {
 			certificate,
 			defaultRootObject: 'index.html',
 			httpVersion: cloudfront.HttpVersion.HTTP2_AND_3,
+			...(logBucket && { enableLogging: true, logBucket, logFilePrefix: 'cloudfront/' }),
 			minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
 			defaultBehavior: {
 				origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
