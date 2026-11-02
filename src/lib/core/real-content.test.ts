@@ -321,6 +321,10 @@ describe('real content: site.yaml', () => {
 		expect(site.features.bestFor).toBe(true);
 	});
 
+	it('enables the comparison page', () => {
+		expect(content().site.features.compare).toBe(true);
+	});
+
 	it('has a positive integer staleAfterDays', () => {
 		const days = content().site.verification.staleAfterDays;
 		expect(Number.isInteger(days)).toBe(true);

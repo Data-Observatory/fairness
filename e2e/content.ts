@@ -55,13 +55,27 @@ export const loadSite = () =>
 		shortName?: { en: string; es: string };
 		repository: string;
 		contributeUrl: string;
-		features: { bestFor: boolean; finderTable: boolean; statusFilter: boolean; wizard: boolean };
+		features: {
+			bestFor: boolean;
+			finderTable: boolean;
+			statusFilter: boolean;
+			wizard: boolean;
+			compare: boolean;
+		};
 	};
 
 export type ChangelogEntry = { date: string; text: Localized; tools?: string[] };
 
 /** content/changelog.yaml, newest first. The yaml package keeps ISO dates as strings. */
 export const loadChangelog = () => read('changelog.yaml') as ChangelogEntry[];
+
+/** Entries of kind tool in home order (sections in order, then the order of the tool files). */
+export function loadComparable(): Tool[] {
+	const tools = loadTools();
+	return loadSections().flatMap((item) =>
+		tools.filter((tool) => tool.section === item.id && tool.kind === 'tool')
+	);
+}
 
 export const loadSections = () => read('sections.yaml') as { id: string; collapsed?: boolean }[];
 

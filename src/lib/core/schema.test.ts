@@ -60,6 +60,26 @@ describe('siteSchema', () => {
 		expect(paths(result)).toContain(key);
 	});
 
+	it('requires features.compare and accepts true or false', () => {
+		const site = clone(doc('content/site.yaml'));
+		expect(site.features.compare).toBe(true);
+		expect(siteSchema.safeParse(site).success).toBe(true);
+		site.features.compare = false;
+		expect(siteSchema.safeParse(site).success).toBe(true);
+		delete site.features.compare;
+		const result = siteSchema.safeParse(site);
+		expect(result.success).toBe(false);
+		expect(paths(result)).toContain('features.compare');
+	});
+
+	it('rejects a features.compare that is not a boolean', () => {
+		const site = clone(doc('content/site.yaml'));
+		site.features.compare = 'yes';
+		const result = siteSchema.safeParse(site);
+		expect(result.success).toBe(false);
+		expect(paths(result)).toContain('features.compare');
+	});
+
 	it('contactEmail is optional', () => {
 		const site = clone(doc('content/site.yaml'));
 		delete site.contactEmail;
