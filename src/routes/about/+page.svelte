@@ -1,6 +1,8 @@
 <script lang="ts">
 	import CaveatBox from '$lib/components/CaveatBox.svelte';
+	import ConsentChange from '$lib/components/ConsentChange.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
+	import { consentState } from '$lib/consent.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -68,6 +70,9 @@
 	<section aria-labelledby="about-privacy">
 		<h2 id="about-privacy" class={h2}>{m.about_privacy_title()}</h2>
 		<p class="mt-3">{m.privacy_statement()}</p>
+		{#if consentState.ready}
+			<p class="mt-3"><ConsentChange class={linkClass} /></p>
+		{/if}
 	</section>
 
 	<section aria-labelledby="about-origin">

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import './layout.css';
+	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { base, resolve } from '$app/paths';
@@ -10,9 +11,15 @@
 	import { localized } from '$lib/i18n';
 	import { currentQuery } from '$lib/query-state.svelte';
 	import * as m from '$lib/paraglide/messages';
+	import { consentState, initConsent } from '$lib/consent.svelte';
+	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
+	import ConsentChange from '$lib/components/ConsentChange.svelte';
 	import ExternalLink from '$lib/components/ExternalLink.svelte';
 
 	let { children, data } = $props();
+
+	// The banner and the change controls exist only in the browser (see consent.svelte.ts).
+	onMount(initConsent);
 
 	const navLinks = $derived([
 		{ href: localized(resolve('/')), label: m.nav_home(), routeId: '/' },
@@ -85,6 +92,7 @@
 </a>
 
 <div class="flex min-h-screen flex-col bg-white">
+	<ConsentBanner />
 	<header class="sticky top-0 z-40 flex w-full justify-center py-6 print:hidden">
 		<nav
 			class="flex h-14 items-center gap-1 rounded-full bg-white p-1 shadow-sm ring-1 ring-zinc-200"
@@ -158,6 +166,13 @@
 						{m.footer_contribute()}
 					</ExternalLink>
 				</li>
+				{#if consentState.ready}
+					<li>
+						<ConsentChange
+							class="text-blue-300 underline decoration-blue-300/40 underline-offset-2 hover:text-blue-200"
+						/>
+					</li>
+				{/if}
 			</ul>
 			<p class="mt-4 text-sm">{m.privacy_statement()}</p>
 			<p class="mt-2 text-xs text-zinc-300">

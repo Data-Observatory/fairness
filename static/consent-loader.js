@@ -31,7 +31,7 @@
 	function storage() {
 		try {
 			return window.localStorage;
-		} catch (error) {
+		} catch {
 			return null;
 		}
 	}
@@ -56,7 +56,7 @@
 			var today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
 			var age = (today - Date.UTC(year, month, day)) / 86400000;
 			return age > MAX_AGE_DAYS ? null : value.choice;
-		} catch (error) {
+		} catch {
 			return null;
 		}
 	}
@@ -73,7 +73,7 @@
 				STORAGE_KEY,
 				JSON.stringify({ v: VERSION, choice: choice, date: date })
 			);
-		} catch (error) {
+		} catch {
 			// Blocked storage: the choice then only lasts for this page view.
 		}
 	}
@@ -113,7 +113,7 @@
 						(domain ? '; domain=' + domain : '');
 				});
 			});
-		} catch (error) {
+		} catch {
 			// Nothing to delete when cookies are not available.
 		}
 	}
@@ -136,7 +136,7 @@
 		revoke: function () {
 			try {
 				storage().removeItem(STORAGE_KEY);
-			} catch (error) {
+			} catch {
 				// Blocked storage: there is nothing stored to remove.
 			}
 			stop();
