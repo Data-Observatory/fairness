@@ -184,7 +184,7 @@ describe('consent-loader.js: after a stored granted choice', () => {
 		expect(loader.appended).toEqual([{ tag: 'script', async: true, src: TAG_URL }]);
 		expect(loader.layer().map((entry) => entry[0])).toEqual(['consent', 'consent', 'js', 'config']);
 		expect(loader.layer()[1]).toEqual(['consent', 'update', GRANTED]);
-		expect(loader.layer()[3]).toEqual(['config', TAG_ID]);
+		expect(loader.layer()[3]).toEqual(['config', TAG_ID, { cookie_domain: 'localhost' }]);
 		expect(loader.consent.isLoaded()).toBe(true);
 	});
 });
@@ -195,7 +195,9 @@ describe('consent-loader.js: window.fairConsent', () => {
 		loader.consent.grant();
 		loader.consent.grant();
 		expect(loader.appended).toEqual([{ tag: 'script', async: true, src: TAG_URL }]);
-		expect(loader.layer().filter((entry) => entry[0] === 'config')).toEqual([['config', TAG_ID]]);
+		expect(loader.layer().filter((entry) => entry[0] === 'config')).toEqual([
+			['config', TAG_ID, { cookie_domain: 'localhost' }]
+		]);
 		expect(parseConsent(loader.data.get(CONSENT_STORAGE_KEY))).toBe('granted');
 	});
 
@@ -220,26 +222,74 @@ describe('consent-loader.js: window.fairConsent', () => {
 		expect(loader.appended).toEqual([]);
 	});
 
-	it('deny and revoke delete the _ga cookies for the host and its parent domains only', () => {
-		const loader = run({
-			hostname: 'fair.dataobservatory.net',
-			cookies: ['_ga', '_ga_X6BJF4NQ71', 'theme']
-		});
-		loader.consent.deny();
-		const expire = (name: string, domain: string) =>
-			loader.cookieWrites.some(
-				(write) =>
-					write.startsWith(`${name}=;`) &&
-					/expires=Thu, 01 Jan 1970 00:00:00 GMT/.test(write) &&
-					(domain === '' ? !/domain=/.test(write) : write.includes(`domain=${domain}`))
+	it('scopes the tag cookies to the exact host, not the parent domain', () => {
+		const loader = run({ hostname: 'fair.dataobservatory.net' });
+		loader.consent.grant();
+		expect(loader.layer().find((entry) => entry[0] === 'config')).toEqual([
+			'config',
+			TAG_ID,
+			{ cookie_domain: 'fair.dataobservatory.net' }
+		]);
+	});
+
+	describe('cookie deletion on deny', () => {
+		const expiry = /expires=Thu, 01 Jan 1970 00:00:00 GMT/;
+		const domainOf = (write: string) => /domain=([^;]+)/.exec(write)?.[1] ?? '';
+		const forName = (writes: string[], name: string) =>
+			writes.filter((write) => write.startsWith(`${name}=;`) && expiry.test(write));
+
+		it('deletes this property cookie on the host and on parent domains', () => {
+			const loader = run({
+				hostname: 'fair.dataobservatory.net',
+				cookies: ['_ga_X6BJF4NQ71', 'theme']
+			});
+			loader.consent.deny();
+			const domains = forName(loader.cookieWrites, '_ga_X6BJF4NQ71').map(domainOf);
+			expect(domains).toEqual(
+				expect.arrayContaining(['', 'fair.dataobservatory.net', 'dataobservatory.net'])
 			);
-		for (const name of ['_ga', '_ga_X6BJF4NQ71']) {
-			expect(expire(name, ''), `${name} without a domain`).toBe(true);
-			expect(expire(name, 'fair.dataobservatory.net'), `${name} on the host`).toBe(true);
-			expect(expire(name, 'dataobservatory.net'), `${name} on the parent`).toBe(true);
-		}
-		expect(loader.cookieWrites.some((write) => write.startsWith('theme='))).toBe(false);
-		expect(loader.cookieWrites.some((write) => /domain=net(;|$)/.test(write))).toBe(false);
+			expect(loader.cookieWrites.some((write) => write.startsWith('theme='))).toBe(false);
+			expect(loader.cookieWrites.some((write) => /domain=net(;|$)/.test(write))).toBe(false);
+		});
+
+		it.each(['_ga', '_gid', '_gat', '_gat_gtag_G_X6BJF4NQ71'])(
+			'deletes %s only without a domain and on the exact host, never on a parent domain',
+			(name) => {
+				const loader = run({ hostname: 'fair.dataobservatory.net', cookies: [name] });
+				loader.consent.deny();
+				const domains = forName(loader.cookieWrites, name).map(domainOf);
+				expect(domains.sort()).toEqual(['', 'fair.dataobservatory.net']);
+			}
+		);
+
+		it('never writes another property cookie or a shared cookie on a parent domain', () => {
+			const loader = run({
+				hostname: 'fair.dataobservatory.net',
+				cookies: ['_ga_ZCRKY3JWGH', '_ga', '_gid']
+			});
+			loader.consent.deny();
+			const onParent = loader.cookieWrites.filter((write) => {
+				const domain = domainOf(write);
+				return domain !== '' && domain !== 'fair.dataobservatory.net';
+			});
+			expect(onParent).toEqual([]);
+			expect(loader.cookieWrites.some((write) => write.startsWith('_ga_ZCRKY3JWGH='))).toBe(false);
+		});
+
+		it('revoke deletes the same cookies', () => {
+			const loader = run({
+				hostname: 'fair.dataobservatory.net',
+				cookies: ['_ga', '_ga_X6BJF4NQ71']
+			});
+			loader.consent.revoke();
+			expect(forName(loader.cookieWrites, '_ga').map(domainOf).sort()).toEqual([
+				'',
+				'fair.dataobservatory.net'
+			]);
+			expect(forName(loader.cookieWrites, '_ga_X6BJF4NQ71').map(domainOf)).toEqual(
+				expect.arrayContaining(['dataobservatory.net'])
+			);
+		});
 	});
 
 	it('revoke clears the stored choice, sets consent to denied and deletes the cookies', () => {

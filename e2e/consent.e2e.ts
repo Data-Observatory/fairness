@@ -218,6 +218,21 @@ test.describe('Reject', () => {
 });
 
 test.describe('Accept', () => {
+	// Requirement change: the tag keeps its cookies on the exact host, so the _ga client id is not
+	// shared with the parent domain (dataobservatory.net runs its own property there).
+	test('configures the tag with the exact host as cookie domain', async ({ page }) => {
+		await watchGoogle(page);
+		await open(page, '/en');
+		await accept(page).click();
+		await expect(banner(page)).toHaveCount(0);
+		const config = await page.evaluate(() =>
+			(window as unknown as { dataLayer: ArrayLike<unknown>[] }).dataLayer
+				.map((entry) => Array.from(entry))
+				.find((entry) => entry[0] === 'config')
+		);
+		expect(config).toEqual(['config', 'G-X6BJF4NQ71', { cookie_domain: 'localhost' }]);
+	});
+
 	for (const url of ['/en', '/es', '/en/about', '/es/tools/f-uji', '/en/wizard']) {
 		test(`${url} loads gtag.js once for the configured id, also after a reload`, async ({
 			page
