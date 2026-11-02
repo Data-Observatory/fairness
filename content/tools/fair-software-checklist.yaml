@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: fair-software-checklist
+kind: tool
+section: other-objects
+name: FAIR software checklist
+url: https://fairsoftwarechecklist.net/
+operator:
+  name: Netherlands eScience Center and Australian Research Data Commons (ARDC)
+  url: https://ardc.edu.au/resource/fair-software-checklist/
+summary:
+  en: >-
+    The FAIR software checklist is an online questionnaire of 15 multiple-choice questions, grouped
+    under findable, accessible, interoperable and reusable, for authors of research software. The
+    questions are inspired by the ARDC FAIR Data Self-Assessment Tool and by the outcomes of the
+    FAIR4RS Working Group.
+  es: >-
+    La FAIR software checklist es un cuestionario en línea de 15 preguntas de opción múltiple,
+    agrupadas en localizable, accesible, interoperable y reutilizable, dirigido a autores de
+    software de investigación. Las preguntas se inspiran en la ARDC FAIR Data Self-Assessment Tool
+    y en los resultados del grupo de trabajo FAIR4RS.
+best_for:
+  en: Reviewing a research software project by answering questions about it, without entering a repository address.
+  es: Revisar un proyecto de software de investigación respondiendo preguntas sobre él, sin indicar la dirección de un repositorio.
+targets: [software]
+mode: manual
+inputs: [none]
+frameworks: [fair4rs]
+output:
+  en: >-
+    Progress bars for the four categories that update with each answer, and a badge for the README
+    that links back to the checklist page with the answers encoded in its address.
+  es: >-
+    Barras de progreso para las cuatro categorías que se actualizan con cada respuesta, y una
+    insignia para el README que enlaza de vuelta a la página de la lista con las respuestas
+    codificadas en su dirección.
+source_code: https://github.com/ardc-fair-checklist/ardc-fair-checklist.github.io
+status: available
+status_note:
+  en: >-
+    On 2026-11-02 the home page redirected in the browser to version v0.2 of the checklist, whose
+    15 questions were read. The ARDC page states that the checklist is based on the FAIR4RS
+    Principles.
+  es: >-
+    El 2026-11-02 la página de inicio redirigió en el navegador a la versión v0.2 de la lista, cuyas
+    15 preguntas se leyeron. La página de ARDC indica que la lista se basa en los principios FAIR4RS.
+last_verified: 2026-11-02
+references:
+  - title: FAIR Software Checklist (ARDC)
+    url: https://ardc.edu.au/resource/fair-software-checklist/
+  - title: FAIR software checklist, version v0.2
+    url: https://fairsoftwarechecklist.net/v0.2/
