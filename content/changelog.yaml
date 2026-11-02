@@ -52,7 +52,7 @@
 - date: 2026-10-25
   text:
     en: First release, in English and Spanish. It lists FAIR assessment tools, frameworks and directories in sections, with filters by assessed object, mode, input, framework and status, and a table "Which tool fits?" by the input at hand.
-    es: Primera publicación, en inglés y español. Lista herramientas, marcos de referencia y directorios de evaluación FAIR en secciones, con filtros por objeto evaluado, modo, entrada, marco y estado, y una tabla "¿Qué herramienta se ajusta a su caso?" según el dato de partida.
+    es: Primera publicación, en inglés y español. Lista herramientas, marcos de referencia y directorios de evaluación FAIR en secciones, con filtros por objeto evaluado, modo, entrada, marco y estado, y una tabla "¿Qué herramienta se ajusta a su caso?" según la entrada disponible.
   tools:
     - f-uji
     - fair-enough
