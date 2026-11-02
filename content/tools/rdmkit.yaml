@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: rdmkit
+kind: guide
+section: guides
+name: RDMkit
+url: https://rdmkit.elixir-europe.org/
+operator:
+  name: ELIXIR
+  url: https://rdmkit.elixir-europe.org/about
+summary:
+  en: >-
+    The Research Data Management toolkit for the life sciences. It offers guidelines that help
+    make data FAIR, organized by data life cycle stage, role, domain and task, with catalogues of
+    tools, resources and training resources.
+  es: >-
+    El kit de herramientas de gestión de datos de investigación para las ciencias de la vida.
+    Ofrece pautas que ayudan a hacer los datos FAIR, organizadas por etapa del ciclo de vida de
+    los datos, rol, ámbito y tarea, con catálogos de herramientas, recursos y recursos de
+    formación.
+source_code: https://github.com/elixir-europe/rdmkit
+license: CC-BY-4.0
+status: available
+status_note:
+  en: >-
+    The description and the license come from the home page, read on 2026-11-02. The page states
+    that the content is licensed under CC BY 4.0 except where otherwise noted.
+  es: >-
+    La descripción y la licencia provienen de la página de inicio, leída el 2026-11-02. La página
+    indica que el contenido tiene licencia CC BY 4.0 salvo que se indique otra cosa.
+last_verified: 2026-11-02
+references:
+  - title: About RDMkit
+    url: https://rdmkit.elixir-europe.org/about
