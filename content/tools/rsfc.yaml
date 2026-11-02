@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=../tool.schema.json
+id: rsfc
+kind: tool
+section: other-objects
+name: RSFC
+url: https://github.com/oeg-upm/rsfc
+operator:
+  name: Ontology Engineering Group (OEG-UPM), authors Daniel Garijo and Andrés Montero
+  url: https://oeg.fi.upm.es/
+summary:
+  en: >-
+    RSFC (Research Software FAIRness Checks) is a command-line tool that evaluates a GitHub or
+    GitLab repository with tests for research software quality indicators taken from the EVERSE
+    indicators repository. It can also run on a local clone, with a different subset of tests.
+    The project describes no hosted web service.
+  es: >-
+    RSFC (Research Software FAIRness Checks) es una herramienta de línea de comandos que evalúa un
+    repositorio de GitHub o GitLab con pruebas de indicadores de calidad de software de
+    investigación tomados del repositorio de indicadores de EVERSE. También puede ejecutarse sobre
+    un clon local, con un subconjunto distinto de pruebas. El proyecto no describe un servicio web
+    alojado.
+best_for:
+  en: Running tests on a GitHub or GitLab repository from the command line or from a GitHub Action.
+  es: Ejecutar pruebas sobre un repositorio de GitHub o GitLab desde la línea de comandos o desde una GitHub Action.
+targets: [software]
+mode: automated
+inputs: [code_repository_url]
+frameworks: [other]
+output:
+  en: >-
+    A table of test results in the console, a coverage percentage (the rounded average share of
+    tests passed), optional JSON-LD in the OSTrails FTR format and a coverage badge for the README.
+  es: >-
+    Una tabla de resultados de las pruebas en la consola, un porcentaje de cobertura (el promedio
+    redondeado de pruebas superadas), JSON-LD opcional en el formato FTR de OSTrails y una insignia
+    de cobertura para el README.
+source_code: https://github.com/oeg-upm/rsfc
+self_hostable: true
+license: MIT
+status: available
+status_note:
+  en: >-
+    Checked on 2026-11-02 from the README, the PyPI listing (version 0.1.9, released 2026-08-21)
+    and the GitHub repository (not archived, last push 2026-10-05). The command was not run. The
+    README does not name the FAIR4RS Principles as the basis of the tests.
+  es: >-
+    Verificado el 2026-11-02 a partir del README, de la ficha en PyPI (versión 0.1.9, publicada el
+    2026-08-21) y del repositorio de GitHub (no archivado, último push el 2026-10-05). El comando
+    no se ejecutó. El README no menciona los principios FAIR4RS como base de las pruebas.
+last_verified: 2026-11-02
+references:
+  - title: RSFC README (GitHub)
+    url: https://github.com/oeg-upm/rsfc
+  - title: RSFC on PyPI
+    url: https://pypi.org/project/rsfc/
+  - title: EVERSE research software quality indicators (GitHub)
+    url: https://github.com/EVERSE-ResearchSoftware/indicators
