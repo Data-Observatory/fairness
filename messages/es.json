@@ -26,7 +26,7 @@
 
 	"finder_title": "¿Qué herramienta se ajusta a su caso?",
 	"finder_intro": "Busque la fila que corresponde a lo que usted tiene. Las herramientas indicadas aceptan esa entrada.",
-	"finder_col_input": "Dato de partida",
+	"finder_col_input": "Entrada",
 	"finder_col_tools": "Herramientas que la aceptan",
 
 	"finder_wizard_link": "Si lo prefiere, responda unas preguntas: abra el buscador guiado",
