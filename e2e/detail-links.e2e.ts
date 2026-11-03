@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { LOCALES, loadSite, loadTools, type Tool } from './content';
 import { expectExternalLink, expectNoA11yViolations, expectRealPage } from './helpers';
 

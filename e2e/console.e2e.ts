@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { expectRealPage } from './helpers';
 
 // Review defect: /favicon.ico answered 404 and logged a console error on every page.

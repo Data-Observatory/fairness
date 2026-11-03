@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { LOCALES, loadTools } from './content';
 import { cardFor, expandAllSections, expectExternalLink } from './helpers';
 

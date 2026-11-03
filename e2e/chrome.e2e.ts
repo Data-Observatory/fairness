@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { LOCALES, loadSections, loadSite } from './content';
 import { checkbox, expectExternalLink, expectRealPage, section } from './helpers';
 
@@ -118,7 +119,7 @@ test.describe('privacy statement', () => {
 			page
 				.locator('main')
 				.getByText(
-					'Google Analytics is used only if you accept it. If you do, it sets cookies and sends usage data to Google to measure visits. Your choice is stored in this browser and can be changed at any time. Links lead to third-party tools, which have their own privacy policies.',
+					'Google Analytics is on by default. It sets cookies and sends usage data to Google to measure visits. You can turn it off at any time with the analytics settings control, and your choice is stored in this browser. Links lead to third-party tools, which have their own privacy policies.',
 					{ exact: true }
 				)
 		).toBeVisible();

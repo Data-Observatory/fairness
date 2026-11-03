@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { LOCALES, loadSite } from './content';
 import { comparableIds, compareUrl, picker, table, tid } from './compare-helpers';
 

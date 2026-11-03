@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { loadTaxonomy, loadTools } from './content';
 import { checkbox, expectFilterResultsVisible, resultCount, wholeNumber } from './helpers';
 

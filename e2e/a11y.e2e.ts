@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from './base';
 import { expandAllSections, expectNoA11yViolations, expectRealPage } from './helpers';
 
 const PAGES = [

@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { LOCALES, loadSite } from './content';
 
 // Every page head carries a canonical link and hreflang alternates for both locales plus

@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { LOCALES } from './content';
 import { tid, wizardUrl } from './wizard-helpers';
 

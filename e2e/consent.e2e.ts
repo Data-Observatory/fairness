@@ -1,10 +1,12 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
+import { test } from './base';
 import { expectNoA11yViolations, expectRealPage } from './helpers';
 
-// Owner decisions 2026-11-02 (D7): the Google tag loads only after the visitor accepts. Accept and
-// Reject have equal weight, the question is asked again after 365 days, and the choice can be
-// changed from the footer and from the About page. Google hosts are stubbed so test runs send no
-// hits to Google; the requests are still observed.
+// Owner decision 2026-11-03 (replaces D7 of 2026-11-02): the audience is in South America, so the
+// Google tag loads by default and a notice tells the visitor, who can turn analytics off at any
+// time. The two buttons have equal weight, the notice is shown again after 365 days and the choice
+// can be changed from the footer and from the About page. Google hosts are stubbed so test runs
+// send no hits to Google; the requests are still observed.
 
 const GOOGLE_HOST =
 	/^(www|region\d+)?\.?(googletagmanager|google-analytics|analytics\.google)\.com$/;
@@ -27,14 +29,20 @@ const PAGES = [
 	'/es/wizard?target=dataset&input=doi&step=results'
 ];
 
+const DISABLE_FLAG = 'ga-disable-G-X6BJF4NQ71';
+
 const TEXT = {
-	en: { accept: 'Accept analytics', reject: 'Reject', change: 'Change cookie choice' },
-	es: { accept: 'Aceptar analítica', reject: 'Rechazar', change: 'Cambiar la elección de cookies' }
+	en: { keep: 'Keep analytics on', disable: 'Turn off analytics', change: 'Analytics settings' },
+	es: {
+		keep: 'Mantener la analítica',
+		disable: 'Desactivar la analítica',
+		change: 'Ajustes de analítica'
+	}
 } as const;
 
 const banner = (page: Page) => page.getByTestId('consent-banner');
-const accept = (page: Page) => page.getByTestId('consent-accept');
-const reject = (page: Page) => page.getByTestId('consent-reject');
+const keepOn = (page: Page) => page.getByTestId('consent-keep');
+const turnOff = (page: Page) => page.getByTestId('consent-disable');
 // Rendered only after hydration, so its presence also shows that the page is interactive.
 const footerChange = (page: Page) => page.locator('footer').getByTestId('consent-change');
 
@@ -99,33 +107,48 @@ const cookieNames = (page: Page) =>
 			.map((pair) => pair.split('=')[0])
 	);
 
-test.describe('before a choice', () => {
+const tagRequests = (google: string[]) =>
+	google.filter((item) => item.startsWith('https://www.googletagmanager.com/gtag/js'));
+const disableFlag = (page: Page) =>
+	page.evaluate((name) => (window as unknown as Record<string, unknown>)[name], DISABLE_FLAG);
+
+test.describe('first visit', () => {
 	for (const url of PAGES) {
-		test(`${url} shows the banner and sends no Google request`, async ({ page }) => {
+		test(`${url} shows the notice and loads the tag once, without a stored choice`, async ({
+			page
+		}) => {
 			const google = await watchGoogle(page);
 			await open(page, url);
 			await expect(banner(page)).toBeVisible();
-			await expect(accept(page)).toBeVisible();
-			await expect(reject(page)).toBeVisible();
-			await page.waitForLoadState('networkidle');
-			expect(google).toEqual([]);
-			expect(await page.locator('script[src*="googletagmanager"]').count()).toBe(0);
+			await expect(keepOn(page)).toBeVisible();
+			await expect(turnOff(page)).toBeVisible();
+			await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
+			expect(await disableFlag(page)).not.toBe(true);
 			expect(await stored(page)).toBeNull();
 		});
 	}
 
 	for (const locale of ['en', 'es'] as const) {
-		test(`/${locale} banner buttons have the expected names`, async ({ page }) => {
+		test(`/${locale} notice buttons have the expected names`, async ({ page }) => {
 			await open(page, `/${locale}`);
-			await expect(banner(page).getByRole('button', { name: TEXT[locale].accept })).toBeVisible();
-			await expect(banner(page).getByRole('button', { name: TEXT[locale].reject })).toBeVisible();
+			await expect(banner(page).getByRole('button', { name: TEXT[locale].keep })).toBeVisible();
+			await expect(banner(page).getByRole('button', { name: TEXT[locale].disable })).toBeVisible();
 		});
 	}
 
-	test('Accept and Reject have the same size and style', async ({ page }) => {
+	test('the notice names Google Analytics and says it can be turned off', async ({ page }) => {
+		await open(page, '/en');
+		await expect(banner(page)).toContainText('Google Analytics');
+		await expect(banner(page)).toContainText('turn it off');
+		await open(page, '/es');
+		await expect(banner(page)).toContainText('Google Analytics');
+		await expect(banner(page)).toContainText('desactivarla');
+	});
+
+	test('the two buttons have the same size and style', async ({ page }) => {
 		await open(page, '/en');
 		await expect(banner(page)).toBeVisible();
-		const style = (button: ReturnType<typeof accept>) =>
+		const style = (button: ReturnType<typeof keepOn>) =>
 			button.evaluate((element) => {
 				const css = getComputedStyle(element);
 				const box = element.getBoundingClientRect();
@@ -137,10 +160,10 @@ test.describe('before a choice', () => {
 					height: Math.round(box.height)
 				};
 			});
-		expect(await style(reject(page))).toEqual(await style(accept(page)));
+		expect(await style(turnOff(page))).toEqual(await style(keepOn(page)));
 	});
 
-	test('the banner is in the normal flow, right after the skip link, and is not fixed', async ({
+	test('the notice is in the normal flow, right after the skip link, and is not fixed', async ({
 		page
 	}) => {
 		await open(page, '/en');
@@ -157,7 +180,7 @@ test.describe('before a choice', () => {
 		expect(order.slice(0, 3)).toEqual(['A', 'consent-banner', 'HEADER']);
 	});
 
-	test('the page does not scroll sideways at 375 px with the banner shown', async ({ page }) => {
+	test('the page does not scroll sideways at 375 px with the notice shown', async ({ page }) => {
 		await page.setViewportSize({ width: 375, height: 812 });
 		for (const url of ['/en', '/es', '/en/about', '/en/wizard', '/es/tools/f-uji']) {
 			await open(page, url);
@@ -186,45 +209,10 @@ test.describe('before a choice', () => {
 			expect(html, url).not.toContain('G-X6BJF4NQ71');
 		}
 	});
-});
 
-test.describe('Reject', () => {
-	for (const url of PAGES) {
-		test(`${url} keeps Google silent after Reject and after a reload`, async ({ page }) => {
-			const google = await watchGoogle(page);
-			await open(page, url);
-			await reject(page).click();
-			await expect(banner(page)).toHaveCount(0);
-			await page.waitForLoadState('networkidle');
-			expect(google).toEqual([]);
-			expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ v: 1, choice: 'denied' });
-
-			await page.reload();
-			await expect(footerChange(page)).toBeVisible();
-			await page.waitForLoadState('networkidle');
-			await expect(banner(page)).toHaveCount(0);
-			expect(google).toEqual([]);
-		});
-	}
-
-	test('deletes _ga cookies and keeps other cookies', async ({ page }) => {
-		await watchGoogle(page);
-		await open(page, '/en');
-		await setCookies(page);
-		await reject(page).click();
-		await expect(banner(page)).toHaveCount(0);
-		expect(await cookieNames(page)).toEqual(['theme']);
-	});
-});
-
-test.describe('Accept', () => {
-	// Requirement change: the tag keeps its cookies on the exact host, so the _ga client id is not
-	// shared with the parent domain (dataobservatory.net runs its own property there).
 	test('configures the tag with the exact host as cookie domain', async ({ page }) => {
 		await watchGoogle(page);
 		await open(page, '/en');
-		await accept(page).click();
-		await expect(banner(page)).toHaveCount(0);
 		const config = await page.evaluate(() =>
 			(window as unknown as { dataLayer: ArrayLike<unknown>[] }).dataLayer
 				.map((entry) => Array.from(entry))
@@ -232,18 +220,52 @@ test.describe('Accept', () => {
 		);
 		expect(config).toEqual(['config', 'G-X6BJF4NQ71', { cookie_domain: 'localhost' }]);
 	});
+});
 
-	for (const url of ['/en', '/es', '/en/about', '/es/tools/f-uji', '/en/wizard']) {
-		test(`${url} loads gtag.js once for the configured id, also after a reload`, async ({
+test.describe('Turn off analytics', () => {
+	for (const url of PAGES) {
+		test(`${url} stores the choice, disables the tag and keeps Google silent after a reload`, async ({
 			page
 		}) => {
 			const google = await watchGoogle(page);
 			await open(page, url);
-			expect(google).toEqual([]);
-			await accept(page).click();
+			await turnOff(page).click();
 			await expect(banner(page)).toHaveCount(0);
-			await expect.poll(() => google.filter((item) => item.startsWith(TAG_URL))).toEqual([TAG_URL]);
+			expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ v: 1, choice: 'denied' });
+			expect(await disableFlag(page)).toBe(true);
+
+			google.length = 0;
+			await page.reload();
+			await expect(footerChange(page)).toBeVisible();
+			await page.waitForLoadState('networkidle');
+			await expect(banner(page)).toHaveCount(0);
+			expect(google).toEqual([]);
+			expect(await page.locator('script[src*="googletagmanager"]').count()).toBe(0);
+			expect(await disableFlag(page)).toBe(true);
+		});
+	}
+
+	test('deletes _ga cookies and keeps other cookies', async ({ page }) => {
+		await watchGoogle(page);
+		await open(page, '/en');
+		await setCookies(page);
+		await turnOff(page).click();
+		await expect(banner(page)).toHaveCount(0);
+		expect(await cookieNames(page)).toEqual(['theme']);
+	});
+});
+
+test.describe('Keep analytics on', () => {
+	for (const url of ['/en', '/es', '/en/about', '/es/tools/f-uji', '/en/wizard']) {
+		test(`${url} stores the choice and loads gtag.js once, also after a reload`, async ({
+			page
+		}) => {
+			const google = await watchGoogle(page);
+			await open(page, url);
+			await keepOn(page).click();
+			await expect(banner(page)).toHaveCount(0);
 			expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ v: 1, choice: 'granted' });
+			await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 			expect(await page.evaluate(() => typeof (window as { gtag?: unknown }).gtag)).toBe(
 				'function'
 			);
@@ -253,21 +275,19 @@ test.describe('Accept', () => {
 			await expect(footerChange(page)).toBeVisible();
 			await page.waitForLoadState('networkidle');
 			await expect(banner(page)).toHaveCount(0);
-			expect(
-				google.filter((item) => item.startsWith('https://www.googletagmanager.com/gtag/js'))
-			).toEqual([TAG_URL]);
+			expect(tagRequests(google)).toEqual([TAG_URL]);
 		});
 	}
 
 	test('navigating inside the site does not load the tag again', async ({ page }) => {
 		const google = await watchGoogle(page);
 		await open(page, '/en');
-		await accept(page).click();
+		await keepOn(page).click();
 		await expect.poll(() => google.length).toBeGreaterThan(0);
 		await page.getByRole('link', { name: 'About', exact: true }).first().click();
 		await expect(page).toHaveURL(/\/en\/about\/?$/);
 		await page.waitForLoadState('networkidle');
-		expect(google.filter((item) => item.startsWith(TAG_URL))).toEqual([TAG_URL]);
+		expect(tagRequests(google)).toEqual([TAG_URL]);
 		await expect(banner(page)).toHaveCount(0);
 	});
 
@@ -277,51 +297,54 @@ test.describe('Accept', () => {
 		await page.goto('/en');
 		await expect(footerChange(page)).toBeVisible();
 		await expect(banner(page)).toHaveCount(0);
-		await expect.poll(() => google.filter((item) => item.startsWith(TAG_URL))).toEqual([TAG_URL]);
+		await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 	});
 });
 
 test.describe('expired or unknown stored choices', () => {
-	test('a granted choice older than 365 days asks again and loads nothing', async ({ page }) => {
+	test('a denied choice older than 365 days shows the notice again and loads the tag', async ({
+		page
+	}) => {
+		const google = await watchGoogle(page);
+		await seed(page, 'denied', 366);
+		await page.goto('/es');
+		await expect(banner(page)).toBeVisible();
+		await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
+	});
+
+	test('a granted choice older than 365 days shows the notice again and loads the tag', async ({
+		page
+	}) => {
 		const google = await watchGoogle(page);
 		await seed(page, 'granted', 366);
 		await page.goto('/en');
 		await expect(banner(page)).toBeVisible();
-		await page.waitForLoadState('networkidle');
-		expect(google).toEqual([]);
+		await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 	});
 
-	test('a denied choice older than 365 days asks again', async ({ page }) => {
-		await watchGoogle(page);
-		await seed(page, 'denied', 366);
-		await page.goto('/es');
-		await expect(banner(page)).toBeVisible();
-	});
-
-	test('a stored value in another version asks again and loads nothing', async ({ page }) => {
+	test('a stored value in another version shows the notice and loads the tag', async ({ page }) => {
 		const google = await watchGoogle(page);
-		await seed(page, 'granted', 1, 2);
+		await seed(page, 'denied', 1, 2);
 		await page.goto('/en');
 		await expect(banner(page)).toBeVisible();
-		await page.waitForLoadState('networkidle');
-		expect(google).toEqual([]);
+		await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 	});
 
-	test('a malformed stored value asks again and loads nothing', async ({ page }) => {
+	test('a malformed stored value shows the notice and loads the tag', async ({ page }) => {
 		const google = await watchGoogle(page);
-		await page.addInitScript((key) => window.localStorage.setItem(key, 'granted'), KEY);
+		await page.addInitScript((key) => window.localStorage.setItem(key, 'denied'), KEY);
 		await page.goto('/en');
 		await expect(banner(page)).toBeVisible();
-		await page.waitForLoadState('networkidle');
-		expect(google).toEqual([]);
+		await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 	});
 
-	test('a denied choice made today keeps the banner away', async ({ page }) => {
+	test('a denied choice made today keeps the notice away and Google silent', async ({ page }) => {
 		const google = await watchGoogle(page);
 		await seed(page, 'denied', 0);
 		await page.goto('/en');
 		await expect(footerChange(page)).toBeVisible();
 		await expect(banner(page)).toHaveCount(0);
+		await page.waitForLoadState('networkidle');
 		expect(google).toEqual([]);
 	});
 });
@@ -338,97 +361,97 @@ test.describe('storage that throws', () => {
 		});
 	});
 
-	test('the page works, the banner shows and nothing is sent to Google', async ({ page }) => {
+	test('the page works, the notice shows and the tag loads', async ({ page }) => {
 		const google = await watchGoogle(page);
 		const errors: string[] = [];
 		page.on('pageerror', (error) => errors.push(error.message));
 		await open(page, '/en');
 		await expect(banner(page)).toBeVisible();
-		await page.waitForLoadState('networkidle');
-		expect(google).toEqual([]);
+		await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 		expect(errors).toEqual([]);
 	});
 
-	test('Reject hides the banner without an error', async ({ page }) => {
-		const google = await watchGoogle(page);
+	test('Turn off analytics hides the notice and disables the tag without an error', async ({
+		page
+	}) => {
+		await watchGoogle(page);
 		const errors: string[] = [];
 		page.on('pageerror', (error) => errors.push(error.message));
 		await open(page, '/es/about');
-		await reject(page).click();
+		await turnOff(page).click();
 		await expect(banner(page)).toHaveCount(0);
-		await page.waitForLoadState('networkidle');
-		expect(google).toEqual([]);
+		expect(await disableFlag(page)).toBe(true);
 		expect(errors).toEqual([]);
 	});
 
-	test('Accept loads the tag for this page view only, without an error', async ({ page }) => {
+	test('Keep analytics on hides the notice without an error', async ({ page }) => {
 		const google = await watchGoogle(page);
 		const errors: string[] = [];
 		page.on('pageerror', (error) => errors.push(error.message));
 		await open(page, '/en');
-		await accept(page).click();
+		await keepOn(page).click();
 		await expect(banner(page)).toHaveCount(0);
-		await expect.poll(() => google.filter((item) => item.startsWith(TAG_URL))).toEqual([TAG_URL]);
+		await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 		expect(errors).toEqual([]);
 	});
 });
 
 test.describe('keyboard', () => {
-	test('Tab reaches Accept and Reject, in that order, after the skip link', async ({ page }) => {
+	test('Tab reaches Keep and Turn off, in that order, after the skip link', async ({ page }) => {
 		await watchGoogle(page);
 		await open(page, '/en');
 		await expect(banner(page)).toBeVisible();
 		await page.keyboard.press('Tab');
 		await expect(page.locator(':focus')).toHaveAttribute('href', '#main-content');
 		await page.keyboard.press('Tab');
-		await expect(accept(page)).toBeFocused();
+		await expect(keepOn(page)).toBeFocused();
 		await page.keyboard.press('Tab');
-		await expect(reject(page)).toBeFocused();
+		await expect(turnOff(page)).toBeFocused();
 	});
 
-	test('Enter on Reject records the choice and moves focus to the main content', async ({
+	test('Enter on Turn off records the choice and moves focus to the main content', async ({
 		page
 	}) => {
-		const google = await watchGoogle(page);
+		await watchGoogle(page);
 		await open(page, '/en');
 		await expect(banner(page)).toBeVisible();
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
-		await expect(reject(page)).toBeFocused();
+		await expect(turnOff(page)).toBeFocused();
 		await page.keyboard.press('Enter');
 		await expect(banner(page)).toHaveCount(0);
 		await expect(page.locator('main#main-content')).toBeFocused();
 		expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ choice: 'denied' });
-		expect(google).toEqual([]);
+		expect(await disableFlag(page)).toBe(true);
 	});
 
-	test('Enter on Accept loads the tag and moves focus to the main content', async ({ page }) => {
-		const google = await watchGoogle(page);
+	test('Enter on Keep records the choice and moves focus to the main content', async ({ page }) => {
+		await watchGoogle(page);
 		await open(page, '/es');
 		await expect(banner(page)).toBeVisible();
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
-		await expect(accept(page)).toBeFocused();
+		await expect(keepOn(page)).toBeFocused();
 		await page.keyboard.press('Enter');
 		await expect(banner(page)).toHaveCount(0);
 		await expect(page.locator('main#main-content')).toBeFocused();
-		await expect.poll(() => google.filter((item) => item.startsWith(TAG_URL))).toEqual([TAG_URL]);
+		expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ choice: 'granted' });
 	});
 
-	test('focus stays where it is when it was outside the banner', async ({ page }) => {
+	test('focus stays where it is when it was outside the notice', async ({ page }) => {
 		await watchGoogle(page);
 		await open(page, '/en');
 		await expect(banner(page)).toBeVisible();
 		const link = page.locator('header nav a').first();
 		await link.focus();
 		await expect(link).toBeFocused();
-		await reject(page).dispatchEvent('click');
+		await turnOff(page).dispatchEvent('click');
 		await expect(banner(page)).toHaveCount(0);
 		await expect(link).toBeFocused();
 	});
 
-	test('the banner does not take focus when the page loads', async ({ page }) => {
+	test('the notice does not take focus when the page loads', async ({ page }) => {
 		await open(page, '/en');
 		await expect(banner(page)).toBeVisible();
 		expect(
@@ -441,49 +464,60 @@ test.describe('keyboard', () => {
 
 test.describe('change the choice', () => {
 	for (const locale of ['en', 'es'] as const) {
-		test(`/${locale}/about: the control brings the banner back after Reject`, async ({ page }) => {
+		test(`/${locale}/about: the control brings the notice back and keeps the stored choice`, async ({
+			page
+		}) => {
 			const google = await watchGoogle(page);
 			await open(page, `/${locale}/about`);
-			await reject(page).click();
+			await turnOff(page).click();
 			await expect(banner(page)).toHaveCount(0);
 			const control = page.locator('main').getByTestId('consent-change');
 			await expect(control).toHaveText(TEXT[locale].change);
 			await control.click();
 			await expect(banner(page)).toBeVisible();
-			expect(await stored(page)).toBeNull();
-			await accept(page).click();
-			await expect.poll(() => google.filter((item) => item.startsWith(TAG_URL))).toEqual([TAG_URL]);
+			expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ choice: 'denied' });
+			google.length = 0;
+			await keepOn(page).click();
+			await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
+			expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ choice: 'granted' });
+			expect(await disableFlag(page)).toBe(false);
 		});
 
-		test(`/${locale}: the footer control brings the banner back`, async ({ page }) => {
+		test(`/${locale}: the footer control brings the notice back`, async ({ page }) => {
 			await watchGoogle(page);
 			await open(page, `/${locale}`);
-			await reject(page).click();
+			await turnOff(page).click();
 			await expect(banner(page)).toHaveCount(0);
 			await expect(footerChange(page)).toHaveText(TEXT[locale].change);
 			await footerChange(page).click();
 			await expect(banner(page)).toBeVisible();
-			expect(await stored(page)).toBeNull();
+			await expect(banner(page)).toBeFocused();
 		});
 	}
 
-	test('after Accept the control reloads, asks again, clears _ga cookies and loads nothing', async ({
+	test('after Keep the control shows the notice without a reload, then Turn off clears _ga cookies', async ({
 		page
 	}) => {
 		const google = await watchGoogle(page);
 		await open(page, '/en');
-		await accept(page).click();
-		await expect.poll(() => google.filter((item) => item.startsWith(TAG_URL))).toEqual([TAG_URL]);
+		await keepOn(page).click();
+		await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 		await setCookies(page);
+		await page.evaluate(() => {
+			(window as unknown as { marker: boolean }).marker = true;
+		});
 
-		google.length = 0;
 		await footerChange(page).click();
 		await expect(banner(page)).toBeVisible();
-		await page.waitForLoadState('networkidle');
-		expect(await stored(page)).toBeNull();
+		expect(await page.evaluate(() => (window as unknown as { marker?: boolean }).marker)).toBe(
+			true
+		);
+		expect(await cookieNames(page)).toEqual(expect.arrayContaining(['_ga', 'theme']));
+
+		await turnOff(page).click();
+		await expect(banner(page)).toHaveCount(0);
 		expect(await cookieNames(page)).toEqual(['theme']);
-		expect(google).toEqual([]);
-		expect(await page.locator('script[src*="googletagmanager"]').count()).toBe(0);
+		expect(await disableFlag(page)).toBe(true);
 	});
 
 	test('the control is not in the HTML without JavaScript', async ({ request }) => {
@@ -497,7 +531,7 @@ test.describe('change the choice', () => {
 
 test.describe('accessibility', () => {
 	for (const url of ['/en', '/es', '/en/about', '/es/about']) {
-		test(`${url} has no violations with the banner shown`, async ({ page }) => {
+		test(`${url} has no violations with the notice shown`, async ({ page }) => {
 			await watchGoogle(page);
 			await open(page, url);
 			await expect(banner(page)).toBeVisible();
@@ -506,11 +540,11 @@ test.describe('accessibility', () => {
 	}
 
 	for (const url of ['/en', '/es', '/en/about', '/es/about']) {
-		for (const choice of ['accept', 'reject'] as const) {
+		for (const choice of ['keep', 'turn off'] as const) {
 			test(`${url} has no violations after ${choice}`, async ({ page }) => {
 				await watchGoogle(page);
 				await open(page, url);
-				await (choice === 'accept' ? accept(page) : reject(page)).click();
+				await (choice === 'keep' ? keepOn(page) : turnOff(page)).click();
 				await expect(banner(page)).toHaveCount(0);
 				await expect(footerChange(page)).toBeVisible();
 				await expectNoA11yViolations(page);
@@ -523,7 +557,9 @@ test.describe('JavaScript disabled', () => {
 	test.use({ javaScriptEnabled: false });
 
 	for (const url of ['/en', '/es', '/en/about', '/es/tools/f-uji']) {
-		test(`${url} has no banner and sends no Google request`, async ({ page }) => {
+		test(`${url} has no notice, no change control and sends no Google request`, async ({
+			page
+		}) => {
 			const google = await watchGoogle(page);
 			await page.goto(url);
 			await expect(page.locator('h1')).toBeVisible();

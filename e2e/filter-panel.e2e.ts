@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { checkbox } from './helpers';
 
 // Review defect: on mobile a shared filtered URL loaded with the filter panel closed, so the

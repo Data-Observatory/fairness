@@ -1,4 +1,5 @@
-import { expect, test, type Response } from '@playwright/test';
+import { expect, type Response } from '@playwright/test';
+import { test } from './base';
 
 // Review defect: the whole content pipeline (yaml parser, zod, raw YAML) shipped to the client
 // so the page could filter. The client needs only the view data.

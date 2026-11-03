@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
+import { test } from './base';
 import { expectRealPage } from './helpers';
 
 // A per-page, hash-based script policy emitted by SvelteKit (`kit.csp`) as a <meta> element in the
@@ -81,7 +82,7 @@ test.describe('hash-based script policy in the page head', () => {
 
 test.describe('the consent flow under the policy', () => {
 	for (const url of ['/en', '/es/about', '/en/tools/f-uji']) {
-		test(`${url}: Accept loads the tag with no policy violation`, async ({ page }) => {
+		test(`${url}: the tag loads by default with no policy violation`, async ({ page }) => {
 			const violations: string[] = [];
 			const errors: string[] = [];
 			const google: string[] = [];
@@ -105,8 +106,6 @@ test.describe('the consent flow under the policy', () => {
 			);
 
 			await open(page, url);
-			await page.getByTestId('consent-accept').click();
-			await expect(page.getByTestId('consent-banner')).toHaveCount(0);
 			await expect.poll(() => google.filter((item) => item.startsWith(TAG_URL))).toEqual([TAG_URL]);
 			await page.waitForLoadState('networkidle');
 

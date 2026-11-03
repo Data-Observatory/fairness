@@ -1,9 +1,11 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { expandAllSections, expectRealPage } from './helpers';
 
-// Owner requirement: no Google request before consent. The Google tag is the only third-party
-// request and it loads only after the visitor accepts (see consent.e2e.ts). Its hosts are still
-// stubbed here so a regression cannot send hits to Google from a test run.
+// Owner decision 2026-11-03: analytics are on by default and the visitor can turn them off (see
+// consent.e2e.ts). The Google tag is the only third-party request: it loads by default and not at
+// all after a stored denied choice. Its hosts are stubbed here so a test run sends no hits to
+// Google.
 const GOOGLE_HOST =
 	/^(www|region\d+)?\.?(googletagmanager|google-analytics|analytics\.google)\.com$/;
 
@@ -29,15 +31,17 @@ const PAGES = [
 	'/es/wizard?target=dataset&input=doi&step=results'
 ];
 
-test.describe('no third-party request before a consent choice', () => {
+test.describe('no third-party request other than the Google tag', () => {
 	for (const url of PAGES) {
-		test(`${url} only requests its own origin before a choice`, async ({ page, baseURL }) => {
+		test(`${url} only requests its own origin and the Google hosts`, async ({ page, baseURL }) => {
 			const origin = new URL(baseURL!).origin;
 			const foreign: string[] = [];
 			page.on('request', (request) => {
 				const target = request.url();
 				if (target.startsWith('data:') || target.startsWith('blob:')) return;
-				if (new URL(target).origin !== origin) foreign.push(target);
+				if (new URL(target).origin === origin) return;
+				if (GOOGLE_HOST.test(new URL(target).hostname)) return;
+				foreign.push(target);
 			});
 			await page.route(
 				(target) => GOOGLE_HOST.test(target.hostname),
@@ -59,9 +63,9 @@ test.describe('no third-party request before a consent choice', () => {
 	}
 });
 
-test.describe('Google tag before consent', () => {
+test.describe('Google tag by default', () => {
 	for (const url of ['/en', '/es', '/en/about', '/en/tools/f-uji', '/en/wizard']) {
-		test(`${url} sends no Google request before a choice`, async ({ page }) => {
+		test(`${url} requests the Google tag once without a stored choice`, async ({ page }) => {
 			const googleRequests: string[] = [];
 			page.on('request', (request) => {
 				if (GOOGLE_HOST.test(new URL(request.url()).hostname)) googleRequests.push(request.url());
@@ -72,8 +76,10 @@ test.describe('Google tag before consent', () => {
 			);
 			await page.goto(url);
 			await page.waitForLoadState('networkidle');
-			expect(googleRequests).toEqual([]);
-			expect(await page.locator('script[src*="googletagmanager"]').count()).toBe(0);
+			expect(
+				googleRequests.filter((item) => item.startsWith('https://www.googletagmanager.com/gtag/js'))
+			).toEqual(['https://www.googletagmanager.com/gtag/js?id=G-X6BJF4NQ71']);
+			expect(await page.locator('script[src*="googletagmanager"]').count()).toBe(1);
 		});
 	}
 });

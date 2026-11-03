@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from './base';
 import { LOCALES, loadTools, type Tool } from './content';
 
 // Review defects: the detail page showed only the host of the destination, and the facts list

@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from './base';
 import { expectNoA11yViolations, expectRealPage } from './helpers';
 
 test.describe('axe: root redirect', () => {
