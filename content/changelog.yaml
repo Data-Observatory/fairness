@@ -2,6 +2,10 @@
 # privacy and consent. Not for code refactors. Newest first; several entries may share a date.
 # Add the date as YYYY-MM-DD, the text in both languages, and optionally the ids of the entries
 # (files in content/tools) the change refers to.
+- date: 2026-11-03
+  text:
+    en: Analytics are now on by default. A notice at the top of each page says so, and analytics can be turned off at any time from the notice or from the footer.
+    es: La analítica ahora está activada de forma predeterminada. Un aviso al comienzo de cada página lo indica, y puede desactivarse en cualquier momento desde el aviso o desde el pie de página.
 - date: 2026-11-02
   text:
     en: A page "Compare tools" was added at /compare. It shows the recorded facts of two or three tools side by side, and the home page and the tool pages link to it.
