@@ -476,11 +476,17 @@ test.describe('change the choice', () => {
 			await control.click();
 			await expect(banner(page)).toBeVisible();
 			expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ choice: 'denied' });
-			google.length = 0;
+			// The tag was loaded at page load and only disabled, so Keep lifts the flag and needs no
+			// second request in this page view; the next page view loads it again.
 			await keepOn(page).click();
-			await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
+			await expect(banner(page)).toHaveCount(0);
 			expect(JSON.parse((await stored(page)) ?? 'null')).toMatchObject({ choice: 'granted' });
 			expect(await disableFlag(page)).toBe(false);
+			expect(tagRequests(google)).toEqual([TAG_URL]);
+			google.length = 0;
+			await page.reload();
+			await expect(footerChange(page)).toBeVisible();
+			await expect.poll(() => tagRequests(google)).toEqual([TAG_URL]);
 		});
 
 		test(`/${locale}: the footer control brings the notice back`, async ({ page }) => {

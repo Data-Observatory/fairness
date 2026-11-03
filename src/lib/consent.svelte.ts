@@ -1,13 +1,7 @@
-import {
-	clearConsent,
-	needsPrompt,
-	readConsent,
-	writeConsent,
-	type ConsentChoice
-} from '$lib/core/consent';
+import { needsPrompt, readConsent, writeConsent, type ConsentChoice } from '$lib/core/consent';
 
 /** What static/consent-loader.js exposes on window. Missing when that script did not run. */
-type ConsentLoader = { grant(): void; deny(): void; revoke(): void; isLoaded(): boolean };
+type ConsentLoader = { grant(): void; deny(): void; isLoaded(): boolean };
 
 /**
  * `ready` becomes true after mount: the banner and the change controls exist only in the browser,
@@ -37,7 +31,7 @@ export function initConsent(): void {
 	consentState.ready = true;
 }
 
-/** Records the choice (the loader also loads or stops the tag) and hides the banner. */
+/** Records the choice (the loader also loads or disables the tag) and hides the notice. */
 export function choose(choice: ConsentChoice): void {
 	const api = loader();
 	if (api) {
@@ -50,17 +44,9 @@ export function choose(choice: ConsentChoice): void {
 }
 
 /**
- * Forgets the stored choice and asks again. When the tag was loaded in this page view the page
- * reloads, so the tag stops; the banner then shows after the reload.
+ * Shows the notice again so the visitor can change the choice. The stored choice stays until a new
+ * one is made, so asking does not turn analytics on or off by itself.
  */
 export function changeChoice(): void {
-	const api = loader();
-	const tagLoaded = api?.isLoaded() ?? false;
-	if (api) api.revoke();
-	else clearConsent(storage());
-	if (tagLoaded) {
-		window.location.reload();
-		return;
-	}
 	consentState.prompt = true;
 }

@@ -64,15 +64,6 @@ export function readConsent(storage: StorageLike | null | undefined): StoredCons
 	}
 }
 
-/** Removes the stored choice, so the visitor is asked again. Does nothing when storage is missing or blocked. */
-export function clearConsent(storage: Pick<Storage, 'removeItem'> | null | undefined): void {
-	try {
-		storage?.removeItem(CONSENT_STORAGE_KEY);
-	} catch {
-		// Blocked storage: there is nothing stored to remove.
-	}
-}
-
 /** Stores the choice. Does nothing when storage is missing or blocked. */
 export function writeConsent(
 	storage: StorageLike | null | undefined,

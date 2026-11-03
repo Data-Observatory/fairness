@@ -39,6 +39,7 @@ type Options = {
 	stored?: string | null;
 	storageThrows?: boolean;
 	hostname?: string;
+	pathname?: string;
 	cookies?: string[];
 };
 
@@ -46,6 +47,7 @@ function run({
 	stored = null,
 	storageThrows = false,
 	hostname = 'localhost',
+	pathname = '/en',
 	cookies = []
 }: Options) {
 	const data = new Map<string, string>();
@@ -67,7 +69,7 @@ function run({
 			data.delete(key);
 		}
 	};
-	const window: Record<string, unknown> = { location: { hostname } };
+	const window: Record<string, unknown> = { location: { hostname, pathname } };
 	// The getter is installed like a browser does it: reading it may throw.
 	Object.defineProperty(window, 'localStorage', {
 		get: () => {
@@ -178,6 +180,23 @@ describe('consent-loader.js: before a choice', () => {
 		const loader = run({ storageThrows: true });
 		expect(loader.appended).toEqual([{ tag: 'script', async: true, src: TAG_URL }]);
 		expect(loader.dataLayer[0]).toEqual(['consent', 'default', GRANTED]);
+	});
+});
+
+describe('consent-loader.js: the bare root redirect page', () => {
+	it.each(['/', '/index.html'])(
+		'%s loads no tag on its own, so the redirect does not count a second page view',
+		(pathname) => {
+			const loader = run({ pathname });
+			expect(loader.appended).toEqual([]);
+			expect(loader.dataLayer).toEqual([['consent', 'default', GRANTED]]);
+			expect(loader.consent.isLoaded()).toBe(false);
+		}
+	);
+
+	it('a locale page loads the tag', () => {
+		expect(run({ pathname: '/es' }).appended).toHaveLength(1);
+		expect(run({ pathname: '/en/' }).appended).toHaveLength(1);
 	});
 });
 

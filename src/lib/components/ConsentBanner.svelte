@@ -5,7 +5,7 @@
 
 	let banner: HTMLElement | undefined = $state();
 
-	// Same classes on both buttons: Accept and Reject have the same weight.
+	// Same classes on both buttons: keeping analytics on and turning it off have the same weight.
 	const buttonClass =
 		'rounded-full border border-zinc-400 bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100';
 
@@ -36,19 +36,19 @@
 			<div class="flex shrink-0 gap-3">
 				<button
 					type="button"
-					data-testid="consent-accept"
+					data-testid="consent-keep"
 					class={buttonClass}
 					onclick={() => decide('granted')}
 				>
-					{m.consent_accept()}
+					{m.consent_keep()}
 				</button>
 				<button
 					type="button"
-					data-testid="consent-reject"
+					data-testid="consent-disable"
 					class={buttonClass}
 					onclick={() => decide('denied')}
 				>
-					{m.consent_reject()}
+					{m.consent_disable()}
 				</button>
 			</div>
 		</div>
