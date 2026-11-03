@@ -301,9 +301,9 @@ test.describe('compare: accessibility and layout', () => {
 	});
 });
 
-test.describe('compare: no request to another origin', () => {
+test.describe('compare: no request to another origin except the Google tag', () => {
 	for (const locale of LOCALES) {
-		test(`/${locale}/compare with a selection only requests its own origin`, async ({
+		test(`/${locale}/compare with a selection only requests its own origin and the Google tag`, async ({
 			page,
 			baseURL
 		}) => {
@@ -312,7 +312,15 @@ test.describe('compare: no request to another origin', () => {
 			page.on('request', (request) => {
 				const target = request.url();
 				if (target.startsWith('data:') || target.startsWith('blob:')) return;
-				if (new URL(target).origin !== origin) foreign.push(target);
+				if (new URL(target).origin === origin) return;
+				// The Google tag is on by default (owner decision 2026-11-03); the base fixture stubs it.
+				if (
+					/(googletagmanager|google-analytics|analytics\.google)\.com$/.test(
+						new URL(target).hostname
+					)
+				)
+					return;
+				foreign.push(target);
 			});
 			await openCompare(page, locale);
 			for (const id of [a, b, c]) await toolBox(page, id).check();
