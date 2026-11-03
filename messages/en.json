@@ -124,10 +124,10 @@
 	"footer_last_updated": "Last updated: {date}",
 	"footer_repository": "Source repository",
 	"footer_contribute": "Contribute",
-	"privacy_statement": "Google Analytics is used only if you accept it. If you do, it sets cookies and sends usage data to Google to measure visits. Your choice is stored in this browser and can be changed at any time. Links lead to third-party tools, which have their own privacy policies.",
-	"consent_title": "Cookie notice",
-	"consent_text": "This site can use Google Analytics to measure visits. It sets cookies and sends usage data to Google only if you accept.",
-	"consent_accept": "Accept analytics",
-	"consent_reject": "Reject",
-	"consent_change": "Change cookie choice"
+	"privacy_statement": "Google Analytics is on by default. It sets cookies and sends usage data to Google to measure visits. You can turn it off at any time with the analytics settings control, and your choice is stored in this browser. Links lead to third-party tools, which have their own privacy policies.",
+	"consent_title": "Analytics notice",
+	"consent_text": "This site uses Google Analytics to measure visits. It sets cookies and sends usage data to Google. You can turn it off at any time.",
+	"consent_keep": "Keep analytics on",
+	"consent_disable": "Turn off analytics",
+	"consent_change": "Analytics settings"
 }

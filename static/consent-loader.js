@@ -1,7 +1,9 @@
 // Runs synchronously in the head of every page, before first paint. It is plain JavaScript (no
-// module) and the only code that can load the Google tag: the tag is requested only after the
-// visitor accepted, never before and never after Reject. The stored format matches
-// src/lib/core/consent.ts: {"v":1,"choice":"granted"|"denied","date":"YYYY-MM-DD"}.
+// module) and the only code that can load the Google tag. Analytics are on by default (owner
+// decision 2026-11-03, audience in South America): the tag loads unless the visitor stored a
+// current "denied" choice, and the notice in the page lets the visitor turn it off at any time.
+// The stored format matches src/lib/core/consent.ts:
+// {"v":1,"choice":"granted"|"denied","date":"YYYY-MM-DD"}.
 (function () {
 	var STORAGE_KEY = 'fair-consent';
 	var VERSION = 1;
@@ -9,6 +11,8 @@
 	var TAG_ID = 'G-X6BJF4NQ71';
 	// The cookie of this property. The tag names it _ga_ followed by the id without the prefix.
 	var PROPERTY_COOKIE = '_ga_' + TAG_ID.replace('G-', '');
+	// Documented Google switch: when true on window, the tag collects and sends nothing.
+	var DISABLE_FLAG = 'ga-disable-' + TAG_ID;
 	var loaded = false;
 
 	// Read by the stylesheet to hide the no-JavaScript blocks.
@@ -28,8 +32,6 @@
 			ad_personalization: 'denied'
 		};
 	}
-	gtag('consent', 'default', consentState('denied'));
-
 	function storage() {
 		try {
 			return window.localStorage;
@@ -83,7 +85,6 @@
 	function load() {
 		if (loaded) return;
 		loaded = true;
-		gtag('consent', 'update', consentState('granted'));
 		var script = document.createElement('script');
 		script.async = true;
 		script.src = 'https://www.googletagmanager.com/gtag/js?id=' + TAG_ID;
@@ -130,26 +131,22 @@
 	}
 
 	function stop() {
+		window[DISABLE_FLAG] = true;
 		gtag('consent', 'update', consentState('denied'));
 		deleteCookies();
 	}
 
 	window.fairConsent = {
+		// Keeps analytics on. After a denied choice in this page view it also loads the tag.
 		grant: function () {
 			store('granted');
+			window[DISABLE_FLAG] = false;
+			if (!loaded) gtag('consent', 'update', consentState('granted'));
 			load();
 		},
+		// Turns analytics off: stored for later visits, and the tag stops sending in this page view.
 		deny: function () {
 			store('denied');
-			stop();
-		},
-		// Withdraws the stored choice so the visitor is asked again.
-		revoke: function () {
-			try {
-				storage().removeItem(STORAGE_KEY);
-			} catch {
-				// Blocked storage: there is nothing stored to remove.
-			}
 			stop();
 		},
 		isLoaded: function () {
@@ -157,5 +154,15 @@
 		}
 	};
 
-	if (storedChoice() === 'granted') load();
+	// The bare root page only redirects to /en or /es. The tag stays off there so the redirect does
+	// not count a second page view for the same visit.
+	var isRedirectPage = /^\/(index\.html)?$/.test(window.location.pathname);
+
+	if (storedChoice() === 'denied') {
+		gtag('consent', 'default', consentState('denied'));
+		window[DISABLE_FLAG] = true;
+	} else {
+		gtag('consent', 'default', consentState('granted'));
+		if (!isRedirectPage) load();
+	}
 })();

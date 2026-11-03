@@ -124,10 +124,10 @@
 	"footer_last_updated": "Última actualización: {date}",
 	"footer_repository": "Repositorio de código fuente",
 	"footer_contribute": "Contribuir",
-	"privacy_statement": "Google Analytics solo se utiliza si usted lo acepta. En ese caso, utiliza cookies y envía datos de uso a Google para medir las visitas. Su elección se guarda en este navegador y puede cambiarse en cualquier momento. Los enlaces conducen a herramientas de terceros, que tienen sus propias políticas de privacidad.",
-	"consent_title": "Aviso de cookies",
-	"consent_text": "Este sitio puede utilizar Google Analytics para medir las visitas. Solo utiliza cookies y envía datos de uso a Google si usted lo acepta.",
-	"consent_accept": "Aceptar analítica",
-	"consent_reject": "Rechazar",
-	"consent_change": "Cambiar la elección de cookies"
+	"privacy_statement": "Google Analytics está activado de forma predeterminada. Utiliza cookies y envía datos de uso a Google para medir las visitas. Usted puede desactivarlo en cualquier momento con el control de ajustes de analítica, y su elección se guarda en este navegador. Los enlaces conducen a herramientas de terceros, que tienen sus propias políticas de privacidad.",
+	"consent_title": "Aviso de analítica",
+	"consent_text": "Este sitio utiliza Google Analytics para medir las visitas. Utiliza cookies y envía datos de uso a Google. Usted puede desactivarla en cualquier momento.",
+	"consent_keep": "Mantener la analítica",
+	"consent_disable": "Desactivar la analítica",
+	"consent_change": "Ajustes de analítica"
 }

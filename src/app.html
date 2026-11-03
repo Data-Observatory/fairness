@@ -9,7 +9,7 @@
 		<link rel="icon" type="image/svg+xml" href="%sveltekit.assets%/favicon.svg" />
 
 		<meta name="text-scale" content="scale" />
-		<!-- Sets the js class and defines the consent API. Loads the Google tag only after the visitor accepts. -->
+		<!-- Sets the js class and defines the consent API. Loads the Google tag unless the visitor turned analytics off. -->
 		<script src="%sveltekit.assets%/consent-loader.js"></script>
 		%sveltekit.head%
 	</head>
