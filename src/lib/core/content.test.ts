@@ -819,6 +819,37 @@ describe('loadContent: metrics', () => {
 		expect(tool?.metrics?.github?.stars).toBe(1);
 	});
 
+	// The refresh job runs in UTC and dates its numbers with the UTC day, so a machine whose local
+	// day is still the day before (for example UTC-3 in the evening) must accept that date.
+	it('a metrics date on the UTC day is not in the future when the local day is earlier', () => {
+		const now = new Date(Date.UTC(2026, 10, 25, 2, 9));
+		const files = mutate(
+			withMetrics((m) => {
+				m.checked = '2026-11-25';
+				m.github.last_push = '2026-11-25';
+			}),
+			FUJI,
+			(tool) => {
+				tool.source_code = 'https://github.com/example-org/f-uji';
+			}
+		);
+		expect(() => loadContent(files, { today: now })).not.toThrow();
+	});
+
+	it('a metrics date after both the local day and the UTC day is reported', () => {
+		const now = new Date(Date.UTC(2026, 10, 25, 2, 9));
+		const files = withMetrics((m) => (m.checked = '2026-11-27'));
+		try {
+			loadContent(files, { today: now });
+			expect.unreachable('loadContent should have thrown a ContentError');
+		} catch (error) {
+			expect(error).toBeInstanceOf(ContentError);
+			expect((error as ContentError).issues).toContainEqual(
+				expect.objectContaining({ file: FUJI, path: 'metrics.checked' })
+			);
+		}
+	});
+
 	it.each([
 		['checked', 'checked', (m: any) => (m.checked = '2999-01-01')],
 		['github.last_push', 'github.last_push', (m: any) => (m.github.last_push = '2999-01-01')],
