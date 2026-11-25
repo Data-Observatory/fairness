@@ -810,10 +810,12 @@ describe('loadContent: metrics', () => {
 		});
 
 	it('a valid metrics block loads', () => {
-		expect(() => loadContent(withMetrics(), { today: new Date(2025, 5, 1) })).not.toThrow();
-		const tool = loadContent(withMetrics(), { today: new Date(2025, 5, 1) }).tools.find(
-			(item) => item.id === 'f-uji'
-		);
+		// github numbers need a github.com source_code, which the fixture does not have.
+		const files = mutate(withMetrics(), FUJI, (tool) => {
+			tool.source_code = 'https://github.com/example-org/f-uji';
+		});
+		const content = loadContent(files, { today: new Date(2025, 5, 1) });
+		const tool = content.tools.find((item) => item.id === 'f-uji');
 		expect(tool?.metrics?.github?.stars).toBe(1);
 	});
 
