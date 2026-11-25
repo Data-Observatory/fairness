@@ -212,11 +212,38 @@ export const metricsSchema = z
 			.optional(),
 		downloads: z
 			.array(
-				z.strictObject({
-					source: z.enum(['zenodo', 'pypi']),
-					count,
-					period: z.enum(['total', 'last_30_days'])
-				})
+				z
+					.strictObject({
+						source: z.enum(['zenodo', 'pypi']),
+						/** Zenodo record id (digits), the record whose download count is shown. */
+						record: z
+							.string()
+							.regex(/^\d+$/, { message: 'must be a Zenodo record id (digits only)' })
+							.optional(),
+						/** PyPI package name whose downloads are shown. */
+						package: z
+							.string()
+							.regex(/^[A-Za-z0-9][A-Za-z0-9._-]*$/, { message: 'must be a PyPI package name' })
+							.optional(),
+						count,
+						period: z.enum(['total', 'last_30_days'])
+					})
+					.superRefine((item, ctx) => {
+						if (item.record !== undefined && item.source !== 'zenodo') {
+							ctx.addIssue({
+								code: 'custom',
+								path: ['record'],
+								message: 'record is only allowed when source is "zenodo"'
+							});
+						}
+						if (item.package !== undefined && item.source !== 'pypi') {
+							ctx.addIssue({
+								code: 'custom',
+								path: ['package'],
+								message: 'package is only allowed when source is "pypi"'
+							});
+						}
+					})
 			)
 			.min(1)
 			.optional()

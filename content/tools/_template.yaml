@@ -79,5 +79,6 @@ references:
 #       date: 2026-09-24
 #   downloads:
 #     - source: zenodo # zenodo | pypi
+#       record: '15045911' # zenodo: record id (digits), quoted; pypi: use `package: name` instead
 #       count: 17372
 #       period: total # total | last_30_days

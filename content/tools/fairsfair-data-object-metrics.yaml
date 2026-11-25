@@ -33,5 +33,6 @@ metrics:
       count: 92
   downloads:
     - source: zenodo
+      record: '15045911'
       count: 17372
       period: total

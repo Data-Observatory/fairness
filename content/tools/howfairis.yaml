@@ -70,5 +70,6 @@ metrics:
       date: 2025-02-19
   downloads:
     - source: pypi
+      package: howfairis
       count: 2114
       period: last_30_days
