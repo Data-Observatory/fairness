@@ -56,3 +56,17 @@ references:
     url: https://ceur-ws.org/Vol-2980/paper321.pdf
   - title: FAIR-IMPACT FAIR assessment tools page
     url: https://fair-impact.eu/fair-assessment-tools
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Zenodo, 2025
+      doi: 10.5281/zenodo.14767999
+      count: 7
+  github:
+    stars: 27
+    forks: 7
+    contributors: 8
+    last_push: 2026-11-20
+    last_release:
+      tag: v0.4.0
+      date: 2026-05-04

@@ -40,3 +40,14 @@ references:
     url: https://fairshake.cloud/static/file/FAIRshakeUserGuide/index.html
   - title: FAIRshake documentation
     url: https://fairshake.cloud/documentation/
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Cell Systems, 2019
+      doi: 10.1016/j.cels.2019.09.011
+      count: 100
+  github:
+    stars: 10
+    forks: 7
+    contributors: 7
+    last_push: 2025-08-28

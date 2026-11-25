@@ -58,3 +58,17 @@ references:
     url: https://pypi.org/project/howfairis/
   - title: fair-software.eu recommendations
     url: https://fair-software.eu/
+metrics:
+  checked: 2026-11-24
+  github:
+    stars: 76
+    forks: 30
+    contributors: 14
+    last_push: 2025-05-07
+    last_release:
+      tag: 0.15.0
+      date: 2025-02-19
+  downloads:
+    - source: pypi
+      count: 2114
+      period: last_30_days

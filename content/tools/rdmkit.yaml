@@ -31,3 +31,17 @@ last_verified: 2026-11-02
 references:
   - title: About RDMkit
     url: https://rdmkit.elixir-europe.org/about
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Patterns, 2025
+      doi: 10.1016/j.patter.2025.101345
+      count: 10
+  github:
+    stars: 119
+    forks: 167
+    contributors: 107
+    last_push: 2026-11-24
+    last_release:
+      tag: v3.0.0
+      date: 2025-07-08

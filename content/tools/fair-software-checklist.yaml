@@ -49,3 +49,13 @@ references:
     url: https://ardc.edu.au/resource/fair-software-checklist/
   - title: FAIR software checklist, version v0.2
     url: https://fairsoftwarechecklist.net/v0.2/
+metrics:
+  checked: 2026-11-24
+  github:
+    stars: 6
+    forks: 3
+    contributors: 3
+    last_push: 2023-11-09
+    last_release:
+      tag: 0.2.1
+      date: 2023-09-28

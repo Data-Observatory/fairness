@@ -24,3 +24,9 @@ references:
     url: https://doi.org/10.15497/RDA00050
   - title: FAIR Data Maturity Model Working Group outcome page (RDA)
     url: https://www.rd-alliance.org/group/fair-data-maturity-model-wg/outcomes/fair-data-maturity-model-specification-and-guidelines-0
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: RDA, 2020
+      doi: 10.15497/RDA00050
+      count: 150

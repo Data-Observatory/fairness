@@ -46,3 +46,10 @@ references:
     url: https://github.com/markwilkinson/FAIR-Champion
   - title: FAIR Champion API definition
     url: https://tools.ostrails.eu/champion/api
+metrics:
+  checked: 2026-11-24
+  github:
+    stars: 2
+    forks: 3
+    contributors: 1
+    last_push: 2026-09-11

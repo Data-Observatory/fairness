@@ -59,3 +59,13 @@ references:
     url: https://github.com/MaastrichtU-IDS/fair-enough
   - title: FAIR enough API documentation (Swagger UI)
     url: https://api.fair-enough.semanticscience.org/docs
+metrics:
+  checked: 2026-11-24
+  github:
+    stars: 8
+    forks: 5
+    contributors: 2
+    last_push: 2023-07-17
+    last_release:
+      tag: 0.0.1
+      date: 2022-01-27

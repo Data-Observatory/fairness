@@ -34,3 +34,13 @@ references:
     url: https://www.fairsfair.eu/fair-aware
   - title: FAIR-Aware source code (GitHub)
     url: https://github.com/FAIRsFAIR/fair-aware
+metrics:
+  checked: 2026-11-24
+  github:
+    stars: 3
+    forks: 0
+    contributors: 4
+    last_push: 2022-04-13
+    last_release:
+      tag: v1.0.1
+      date: 2021-07-09

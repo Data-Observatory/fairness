@@ -54,3 +54,17 @@ references:
     url: https://doi.org/10.1038/s41597-023-02652-8
   - title: FAIR EVA documentation in the source repository
     url: https://github.com/EOSC-synergy/FAIR_eva/blob/main/docs/index.md
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Scientific Data, 2023
+      doi: 10.1038/s41597-023-02652-8
+      count: 30
+  github:
+    stars: 7
+    forks: 12
+    contributors: 6
+    last_push: 2025-08-06
+    last_release:
+      tag: 3.0.4
+      date: 2025-02-03

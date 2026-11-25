@@ -30,3 +30,9 @@ references:
     url: https://fairsharing.gitbook.io/fairsharing
   - title: About FAIRsharing
     url: https://fairsharing.org/about
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Nature Biotechnology, 2019
+      doi: 10.1038/s41587-019-0080-8
+      count: 473

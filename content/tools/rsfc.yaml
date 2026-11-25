@@ -55,3 +55,17 @@ references:
     url: https://pypi.org/project/rsfc/
   - title: EVERSE research software quality indicators (GitHub)
     url: https://github.com/EVERSE-ResearchSoftware/indicators
+metrics:
+  checked: 2026-11-24
+  github:
+    stars: 4
+    forks: 6
+    contributors: 6
+    last_push: 2026-11-11
+    last_release:
+      tag: v0.2.2
+      date: 2026-11-11
+  downloads:
+    - source: pypi
+      count: 167
+      period: last_30_days

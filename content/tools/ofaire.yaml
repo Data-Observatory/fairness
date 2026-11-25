@@ -59,3 +59,14 @@ references:
     url: https://hal-lirmm.ccsd.cnrs.fr/lirmm-03630543v1
   - title: FAIR-IMPACT FAIR assessment tools page
     url: https://fair-impact.eu/fair-assessment-tools
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: LNCS, 2022
+      doi: 10.1007/978-3-031-11609-4_17
+      count: 28
+  github:
+    stars: 25
+    forks: 9
+    contributors: 6
+    last_push: 2026-06-04

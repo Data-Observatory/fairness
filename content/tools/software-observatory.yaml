@@ -52,3 +52,9 @@ references:
     url: https://arxiv.org/abs/2510.05705
   - title: FAIRsoft, a practical implementation of FAIR principles for research software (Bioinformatics, 2024)
     url: https://doi.org/10.1093/bioinformatics/btae464
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Bioinformatics, 2024
+      doi: 10.1093/bioinformatics/btae464
+      count: 25

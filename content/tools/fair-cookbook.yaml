@@ -32,3 +32,14 @@ references:
     url: https://faircookbook.elixir-europe.org/content/home.html
   - title: FAIRplus project
     url: https://fairplus-project.eu/
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Scientific Data, 2023
+      doi: 10.1038/s41597-023-02166-3
+      count: 81
+  github:
+    stars: 152
+    forks: 65
+    contributors: 40
+    last_push: 2026-09-21

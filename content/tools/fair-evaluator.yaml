@@ -58,3 +58,9 @@ references:
     url: https://w3id.org/FAIR_Evaluator
   - title: FAIR Champion README (GitHub)
     url: https://github.com/markwilkinson/FAIR-Champion
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Scientific Data, 2019
+      doi: 10.1038/s41597-019-0184-5
+      count: 236

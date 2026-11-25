@@ -24,3 +24,16 @@ references:
     url: https://doi.org/10.5281/zenodo.7784120
   - title: Object Type and Discipline-Specific Harmonisation of FAIR Assessment Metrics, a FAIR-IMPACT reflections paper (Zenodo)
     url: https://doi.org/10.5281/zenodo.15303089
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Zenodo, 2023
+      doi: 10.5281/zenodo.7784120
+      count: 0
+    - label: Zenodo, 2025
+      doi: 10.5281/zenodo.15303089
+      count: 1
+  downloads:
+    - source: zenodo
+      count: 332
+      period: total

@@ -45,3 +45,17 @@ references:
     url: https://github.com/pangaea-data-publisher/fuji
   - title: An automated solution for measuring the progress toward FAIR research data (Patterns, 2021)
     url: https://doi.org/10.1016/j.patter.2021.100370
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Patterns, 2021
+      doi: 10.1016/j.patter.2021.100370
+      count: 110
+  github:
+    stars: 82
+    forks: 53
+    contributors: 23
+    last_push: 2026-11-05
+    last_release:
+      tag: v4.0.1
+      date: 2026-09-24

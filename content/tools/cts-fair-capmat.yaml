@@ -42,3 +42,13 @@ references:
     url: https://doi.org/10.5281/zenodo.6699520
   - title: CoreTrustSeal+FAIRenabling Capability Maturity Model (FAIRsFAIR)
     url: https://fairsfair.eu/node/797
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Zenodo, 2022
+      doi: 10.5281/zenodo.6699520
+      count: 8
+  downloads:
+    - source: zenodo
+      count: 2718
+      period: total

@@ -32,3 +32,17 @@ last_verified: 2026-11-02
 references:
   - title: The FAIR Principles (chapter of The Turing Way)
     url: https://book.the-turing-way.org/reproducible-research/rdm/rdm-fair/
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Zenodo, 2019
+      doi: 10.5281/zenodo.3403160
+      count: 24
+  github:
+    stars: 2206
+    forks: 792
+    contributors: 431
+    last_push: 2026-11-14
+    last_release:
+      tag: v1.2.3
+      date: 2025-04-14

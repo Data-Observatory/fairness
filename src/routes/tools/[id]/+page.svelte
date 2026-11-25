@@ -29,17 +29,11 @@
 
 	// The date sits in a <time> element, so the message is split around a placeholder for it.
 	const DATE_TOKEN = '\u0001';
+	const metricsSources = $derived(
+		new Intl.ListFormat(getLocale(), { type: 'conjunction' }).format(tool.metrics?.sources ?? [])
+	);
 	const metricsNote = $derived(
-		tool.metrics === undefined
-			? undefined
-			: m
-					.detail_metrics_note({
-						sources: new Intl.ListFormat(getLocale(), { type: 'conjunction' }).format(
-							tool.metrics.sources
-						),
-						date: DATE_TOKEN
-					})
-					.split(DATE_TOKEN)
+		m.detail_metrics_note({ sources: metricsSources, date: DATE_TOKEN }).split(DATE_TOKEN)
 	);
 
 	const linkClass = 'text-blue-700 underline underline-offset-2 break-words hover:text-blue-800';
@@ -150,7 +144,7 @@
 		{/if}
 	</dl>
 
-	{#if tool.metrics && metricsNote}
+	{#if tool.metrics}
 		<p data-testid="metrics-note" class="mt-3 text-sm text-zinc-700">
 			{metricsNote[0]}<time datetime={tool.metrics.checked}>{tool.metrics.checked}</time
 			>{metricsNote[1]}

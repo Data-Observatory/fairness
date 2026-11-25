@@ -25,3 +25,13 @@ references:
     url: https://doi.org/10.5281/zenodo.3934401
   - title: FAIRsFAIR Data Object Assessment Metrics, version 0.4, 17 metrics (Zenodo)
     url: https://doi.org/10.5281/zenodo.4081213
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Zenodo, 2020
+      doi: 10.5281/zenodo.15045911
+      count: 92
+  downloads:
+    - source: zenodo
+      count: 17372
+      period: total

@@ -24,3 +24,9 @@ references:
     url: https://doi.org/10.15497/RDA00068
   - title: Introducing the FAIR Principles for research software (Scientific Data, 2022)
     url: https://doi.org/10.1038/s41597-022-01710-x
+metrics:
+  checked: 2026-11-24
+  citations:
+    - label: Scientific Data, 2022
+      doi: 10.1038/s41597-022-01710-x
+      count: 747
