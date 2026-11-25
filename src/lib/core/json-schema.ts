@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { toolSchema } from './schema.ts';
+import { METRICS_PARTS, toolSchema } from './schema.ts';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Json = Record<string, any>;
@@ -26,13 +26,21 @@ function addUrlPatterns(node: unknown): void {
  * The JSON schema for `content/tools/<id>.yaml`, used by editors. Built from the zod
  * `toolSchema` (zod's own `z.toJSONSchema`), then extended with what zod cannot express:
  * the tool-only fields required when `kind` is `tool` and not allowed when it is `guide`, an `https://` pattern on URL fields,
- * and an ISO date pattern on `last_verified`.
+ * an ISO date pattern on `last_verified` and on the dates of `metrics`, and the rule that
+ * `metrics` has at least one of its parts.
  */
 export function generateToolSchema(): Json {
 	const schema = z.toJSONSchema(toolSchema, { target: 'draft-7', io: 'input' }) as Json;
 
 	addUrlPatterns(schema.properties);
 	schema.properties.last_verified.pattern = ISO_DATE_PATTERN;
+
+	// The metrics dates and the "at least one part" rule are refinements, which zod drops.
+	const metrics = schema.properties.metrics;
+	metrics.properties.checked.pattern = ISO_DATE_PATTERN;
+	metrics.properties.github.properties.last_push.pattern = ISO_DATE_PATTERN;
+	metrics.properties.github.properties.last_release.properties.date.pattern = ISO_DATE_PATTERN;
+	metrics.anyOf = METRICS_PARTS.map((part) => ({ required: [part] }));
 
 	schema.allOf = [
 		{

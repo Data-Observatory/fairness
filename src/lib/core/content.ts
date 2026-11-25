@@ -346,6 +346,28 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 		if (isIsoDate(tool.last_verified) && tool.last_verified > today) {
 			add(file, 'last_verified', `last_verified ${tool.last_verified} is in the future`);
 		}
+		const { metrics } = tool;
+		if (metrics !== undefined) {
+			const notFuture = (path: string, value: string) => {
+				if (isIsoDate(value) && value > today) {
+					add(file, `metrics.${path}`, `${path} ${value} is in the future`);
+				}
+			};
+			notFuture('checked', metrics.checked);
+			if (metrics.github !== undefined) {
+				notFuture('github.last_push', metrics.github.last_push);
+				if (metrics.github.last_release !== undefined) {
+					notFuture('github.last_release.date', metrics.github.last_release.date);
+				}
+				if (!/^https:\/\/github\.com\/[^/]+\/[^/]+/.test(tool.source_code ?? '')) {
+					add(
+						file,
+						'metrics.github',
+						'GitHub numbers need a source_code URL that is a github.com repository'
+					);
+				}
+			}
+		}
 	}
 
 	// Changelog: dates are not in the future, entries are listed newest first (several entries may

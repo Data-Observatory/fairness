@@ -177,6 +177,55 @@ export type ToolKind = (typeof TOOL_KINDS)[number];
 
 const TOOL_ONLY_FIELDS = ['targets', 'mode', 'inputs', 'output'] as const;
 
+/** A bare DOI (no `https://doi.org/` prefix and no `doi:` scheme). */
+export const DOI_PATTERN = /^10\.\d{4,9}\/\S+$/;
+
+const count = z.number().int().nonnegative();
+
+/**
+ * Numbers recorded about an entry, shown as plain facts with their source and the date they were
+ * checked. They are never ranked, scored or sorted. `github` is only allowed on entries whose
+ * `source_code` is a github.com repository (cross-check in `content.ts`).
+ */
+export const METRICS_PARTS = ['citations', 'github', 'downloads'] as const;
+export const metricsSchema = z
+	.strictObject({
+		checked: isoDate,
+		citations: z
+			.array(
+				z.strictObject({
+					label: text,
+					doi: z.string().regex(DOI_PATTERN, { message: 'must be a bare DOI such as 10.1234/abc' }),
+					count
+				})
+			)
+			.min(1)
+			.optional(),
+		github: z
+			.strictObject({
+				stars: count,
+				forks: count,
+				contributors: count,
+				last_push: isoDate,
+				last_release: z.strictObject({ tag: text, date: isoDate }).optional()
+			})
+			.optional(),
+		downloads: z
+			.array(
+				z.strictObject({
+					source: z.enum(['zenodo', 'pypi']),
+					count,
+					period: z.enum(['total', 'last_30_days'])
+				})
+			)
+			.min(1)
+			.optional()
+	})
+	.refine((metrics) => METRICS_PARTS.some((part) => metrics[part] !== undefined), {
+		message: 'At least one of citations, github and downloads is required'
+	});
+export type Metrics = z.infer<typeof metricsSchema>;
+
 export const toolSchema = z
 	.strictObject({
 		id: kebabId,
@@ -199,7 +248,8 @@ export const toolSchema = z
 		status: text,
 		status_note: localized.optional(),
 		last_verified: isoDate,
-		references: z.array(z.strictObject({ title: text, url: httpsUrl })).optional()
+		references: z.array(z.strictObject({ title: text, url: httpsUrl })).optional(),
+		metrics: metricsSchema.optional()
 	})
 	.superRefine((tool, ctx) => {
 		if (tool.kind === 'tool') {

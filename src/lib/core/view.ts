@@ -3,6 +3,7 @@ import { FILTER_GROUPS, filterTools } from './filter.ts';
 import { implementedBy, implementsFrameworks } from './framework-links.ts';
 import { daysSince, isStale } from './freshness.ts';
 import { FILTER_GROUP_LABELS, FACT_LABELS, type Locale } from './labels.ts';
+import { metricFacts, metricsSources } from './metrics.ts';
 import { buildReportIssueUrl } from './report-link.ts';
 import { TAXONOMY_GROUPS, type Localized, type Tool, type ToolKind } from './schema.ts';
 
@@ -84,6 +85,8 @@ export type ToolView = ToolCard & {
 	implementedBy: { id: string; name: string }[];
 	/** Link to the prefilled "report a tool" issue form. Opening it sends nothing by itself. */
 	reportUrl: string;
+	/** The date the recorded numbers were checked and the names of their sources, when recorded. */
+	metrics?: { checked: string; sources: string[] };
 };
 
 const text = (value: Localized, locale: Locale): string => value[locale];
@@ -264,6 +267,10 @@ function factsOf(tool: Tool, locale: Locale, label: ReturnType<typeof labeler>):
 				: [{ text: tool.source_code, href: tool.source_code }]
 		],
 		['license', tool.license === undefined ? undefined : [{ text: tool.license }]],
+		...metricFacts(tool.metrics, locale).map((fact): [string, FactItem[]] => [
+			fact.key,
+			fact.items
+		]),
 		['status', [{ text: label('status', tool.status) }]]
 	];
 	return entries.flatMap(([key, items]) =>
@@ -286,6 +293,9 @@ export function buildToolView(content: Content, id: string, locale: Locale, toda
 		references: (tool.references ?? []).map((ref) => ({ ...ref, host: hostOf(ref.url) })),
 		implements: implementsFrameworks(content, id).map(({ id, name }) => ({ id, name })),
 		implementedBy: implementedBy(content, id).map(({ id, name }) => ({ id, name })),
-		reportUrl: buildReportIssueUrl(content.site.repository, tool)
+		reportUrl: buildReportIssueUrl(content.site.repository, tool),
+		...(tool.metrics === undefined
+			? {}
+			: { metrics: { checked: tool.metrics.checked, sources: metricsSources(tool.metrics) } })
 	};
 }

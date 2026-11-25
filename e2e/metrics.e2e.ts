@@ -135,16 +135,17 @@ for (const locale of LOCALES) {
 
 		test('shows the note under the table when a selected tool has metrics', async ({ page }) => {
 			const has = withCitations();
-			await openCompare(page, locale as Locale, [has.id]);
+			const other = tools.find((tool) => tool.kind === 'tool' && tool.id !== has.id)!;
+			await openCompare(page, locale as Locale, [has.id, other.id]);
 			const note = tid(page, 'compare-metrics-note');
 			await expect(note).toBeVisible();
 			await expect(note).toContainText(locale === 'en' ? 'not a ranking' : 'no una clasificación');
 		});
 
 		test('hides the note when no selected tool has a metric row', async ({ page }) => {
-			const none = tools.find((tool) => tool.kind === 'tool' && tool.metrics === undefined);
-			if (!none) throw new Error('content needs a tool without metrics');
-			await openCompare(page, locale as Locale, [none.id]);
+			const none = tools.filter((tool) => tool.kind === 'tool' && tool.metrics === undefined);
+			if (none.length < 2) throw new Error('content needs two tools without metrics');
+			await openCompare(page, locale as Locale, [none[0].id, none[1].id]);
 			await expect(table(page)).toBeVisible();
 			await expect(tid(page, 'compare-metrics-note')).toHaveCount(0);
 		});

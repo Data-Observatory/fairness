@@ -14,6 +14,7 @@
 		toggleCompareId
 	} from '$lib/core/compare-state';
 	import { urlWithQuery } from '$lib/core/home-state';
+	import { hasMetricRows } from '$lib/core/metrics';
 	import { wizardFallback } from '$lib/core/wizard';
 	import { localized } from '$lib/i18n';
 	import { currentQuery } from '$lib/query-state.svelte';
@@ -126,6 +127,11 @@
 					{m.compare_result_title()}
 				</h2>
 				<CompareTable view={shown} />
+				{#if hasMetricRows(shown.rows)}
+					<p data-testid="compare-metrics-note" class="mt-3 max-w-3xl text-sm text-zinc-700">
+						{m.compare_metrics_note()}
+					</p>
+				{/if}
 			{/if}
 		{/if}
 

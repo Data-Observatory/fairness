@@ -36,6 +36,9 @@ export const FACT_LABELS: Record<Locale, Record<string, string>> = {
 		source_code: 'Source code',
 		self_hostable: 'Self-hostable',
 		license: 'License',
+		citations: 'Citations',
+		github: 'GitHub activity',
+		downloads: 'Downloads',
 		status: 'Status'
 	},
 	es: {
@@ -49,6 +52,9 @@ export const FACT_LABELS: Record<Locale, Record<string, string>> = {
 		source_code: 'Código fuente',
 		self_hostable: 'Autoalojable',
 		license: 'Licencia',
+		citations: 'Citas',
+		github: 'Actividad en GitHub',
+		downloads: 'Descargas',
 		status: 'Estado'
 	}
 };
