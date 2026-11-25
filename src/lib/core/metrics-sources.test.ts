@@ -119,6 +119,13 @@ describe('openalex source', () => {
 		expect(await kindOf(sources.openalex('10.1016/j.patter.2021.100370'))).toBe('network');
 	});
 
+	it('names the cause of a failed fetch, such as the network error code', async () => {
+		const failure = Object.assign(new TypeError('fetch failed'), { cause: { code: 'ETIMEDOUT' } });
+		const { fetchFn } = fake({ [OPENALEX]: failure });
+		const sources = createSources(options(fetchFn, { retries: 0 }));
+		await expect(sources.openalex('10.1016/j.patter.2021.100370')).rejects.toThrow(/ETIMEDOUT/);
+	});
+
 	it('reports network for a request that times out', async () => {
 		const fetchFn = ((_url: string, init?: RequestInit) =>
 			new Promise((_resolve, reject) => {
