@@ -1,0 +1,99 @@
+name: Metrics refresh
+
+# Refreshes the citation, GitHub and download numbers recorded in content/tools/*.yaml (the
+# `metrics` blocks) from OpenAlex, the GitHub API, Zenodo and pypistats, and commits them to main.
+# Decision of the owner (2026-11-24): these numbers are objective data, not content under review,
+# so the job commits them itself. Only numbers and dates of the metrics blocks are changed; a value
+# that cannot be fetched, has an unexpected shape, or looks wrong (a citation count or a total that
+# fell below half, an archived or missing repository) is kept as recorded and listed in the issue
+# labeled metrics-check. Specs: section 5.4 ("Metrics").
+#
+# The checks (npm run validate, npx vitest run) run before the commit, so a bad write is not
+# committed. The commit is pushed with GITHUB_TOKEN, and a push made with GITHUB_TOKEN does not
+# trigger other workflows: neither CI nor the deploy workflow runs for it. The refreshed numbers
+# reach the live site at the next deploy.
+#
+# The commit is made by github-actions[bot] and carries no attribution trailer. The workflow only
+# pushes when it runs on main.
+
+on:
+  schedule:
+    # Mondays at 07:00 UTC, an hour after the link check
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+# One run at a time; a run in progress is never cancelled.
+concurrency:
+  group: metrics
+  cancel-in-progress: false
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          # The scripts need Node 22.6 or later for --experimental-strip-types.
+          node-version: 22.x
+          cache: npm
+
+      - run: npm ci
+
+      # Exit code is 0 whether or not there are findings; the script fails only when it breaks.
+      - name: Refresh the numbers
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npm run metrics -- --write
+
+      - name: Check the content and the unit tests
+        run: |
+          npm run validate
+          npx vitest run
+
+      - name: Commit and push the refreshed numbers
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- content)" ]; then
+            echo "No number changed."
+            exit 0
+          fi
+          date=$(date -u +%Y-%m-%d)
+          {
+            echo "chore(metrics): refresh citation, GitHub and download numbers ($date)"
+            echo
+            cat metrics-commit.md
+          } > "$RUNNER_TEMP/commit-message.txt"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add content
+          git commit --file "$RUNNER_TEMP/commit-message.txt"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Create or update the metrics-check issue
+        if: always() && hashFiles('metrics-report.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh label create metrics-check --description "Weekly metrics refresh report" --color 1d76db 2>/dev/null || true
+          existing=$(gh issue list --label metrics-check --state open --limit 1 --json number --jq '.[0].number // empty')
+          if grep -qx 'No findings\.' metrics-report.md; then
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body "The metrics refresh of $(date -u +%Y-%m-%d) has no findings. Closing this issue."
+              gh issue close "$existing"
+            fi
+          elif [ -n "$existing" ]; then
+            gh issue edit "$existing" --body-file metrics-report.md
+            gh issue comment "$existing" --body "Report updated by the metrics refresh of $(date -u +%Y-%m-%d)."
+          else
+            gh issue create --title "Metrics refresh report" --label metrics-check --body-file metrics-report.md
+          fi
