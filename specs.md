@@ -23,7 +23,7 @@ A small static website, published by Data Observatory, that lists external resou
 - No assessment logic, scoring, or aggregation of results from third-party tools.
 - No ranking of tools and no "recommended" label. "Best for" is a short, neutral description of a use case, not a ranking (see 7.3).
 - No prefilled deep links into third-party tools, A static "Which tool fits?" table replaces them. The guided finder of section 5.7 was added later (decided 2026-10-26).
-- No ranking or scoring in comparisons. A compare page for tools only (kind `tool`, not frameworks, directories or guides) was added later (owner decision D16, section 6): it shows recorded facts side by side and nothing else.
+- No ranking or scoring in comparisons. The optional `metrics` block (section 5.4) records citation, GitHub and download numbers as dated facts; they are shown, never used to rank, score, sort or filter. A compare page for tools only (kind `tool`, not frameworks, directories or guides) was added later (owner decision D16, section 6): it shows recorded facts side by side and nothing else.
 - No deployment by sub-agents and none before the final milestone. Infrastructure code must pass `cdk synth` with dummy values. Deployment is authorized only to the app account designated by the owner, and is run by the lead session after the `cdk diff` is reviewed (no account ids, ARNs or profile names in tracked files).
 - No CMS UI. Content changes are pull requests.
 
@@ -185,10 +185,25 @@ File name equals `id`. Fields:
 | `status_note`   | no        | localized, factual evidence for the status shown, allowed on any status (for example "Backend host did not respond on 2026-10-25") |
 | `last_verified` | yes       | ISO date the maintainer last opened the resource and confirmed the entries                                                         |
 | `references`    | no        | list of `{ title, url }` (papers, docs)                                                                                            |
+| `metrics`       | no        | recorded numbers, see below: `{ checked, citations?, github?, downloads? }`                                                        |
 
 `kind: framework` and `kind: directory` may omit `targets`, `mode`, `inputs`, `output`. `kind: guide` (learning material such as handbooks and training resources, section `guides`) has none of them: the schema rejects them on a guide, so a guide never matches a target, mode or input filter or a wizard answer on those questions. It matches the status filter and its other optional fields work as on any entry.
 
 Cross-links and report link on the detail page (no extra fields): an entry of `kind: tool` lists the entries of `kind: framework` that share a `frameworks` id with it ("Implements"), and an entry of `kind: framework` lists the tools that share one ("Implemented by"). The ids `custom` and `other` never link entries. Each list appears only when it is not empty, in the home order (sections, then content order), and links to `/tools/<id>`. The report link is a plain external link to `<repository>/issues/new?template=report-tool.yml` with `title`, `tool` (the entry id) and `url` (the entry URL) prefilled; opening it sends nothing by itself and the site has no backend. The issue form is `.github/ISSUE_TEMPLATE/report-tool.yml` (fields `tool`, `url`, `problem`, `details`; label `tool-report`). The logic is in `src/lib/core/framework-links.ts` and `src/lib/core/report-link.ts`.
+
+#### Metrics
+
+`metrics` records numbers about an entry as plain facts. It is optional, on any `kind`, and an entry with no number to record has no `metrics` block. Fields:
+
+- `checked` (required): ISO date on which the numbers were read. Not in the future.
+- `citations`: a list (at least one) of `{ label, doi, count }`. `label` is a short plain text such as "Patterns, 2021", `doi` a bare DOI (`10.1016/j.patter.2021.100370`, no `https://doi.org/` prefix), `count` a whole number of citations of that work from OpenAlex. Each citation links to `https://doi.org/<doi>`. Verify that the DOI resolves and that the work is the entry's own paper or record before writing it.
+- `github`: `{ stars, forks, contributors, last_push, last_release? }` from the GitHub API, where `last_push` is an ISO date and `last_release` is `{ tag, date }` of the latest release (left out when the repository has none). Only allowed when `source_code` is a `https://github.com/<owner>/<repo>` URL, which the cross-checks enforce.
+- `downloads`: a list (at least one) of `{ source, count, period }`, with `source` `zenodo` or `pypi` and `period` `total` or `last_30_days`.
+- At least one of `citations`, `github` and `downloads` is required. Dates are checked against today like `last_verified`.
+
+Rules: these are recorded facts, never ranked, scored, sorted or used as a filter. Lists keep the order of the YAML and entries keep the home order. A number is shown with its source and the date it was checked, so a visitor can see how old it is. Counts from different sources are not comparable with each other (a paper's citations, repository stars and downloads measure different things), and a count of zero is recorded as `0`. The numbers are refreshed by hand when an entry is re-verified.
+
+Display: the detail page lists three extra facts, in this order, after "License" and before "Status": "Citations" (`citations`), "GitHub activity" (`github`: stars, forks, contributors, last push, latest release) and "Downloads" (`downloads`), only for the parts recorded. Below the facts, a note (`data-testid="metrics-note"`) names the sources (OpenAlex, GitHub, Zenodo, PyPI), gives the checked date in a `time` element and says the numbers are recorded facts, not a ranking or a rating. The comparison adds the same three rows ("Not recorded" for a tool without the part) and, when at least one row is present, a note under the table (`data-testid="compare-metrics-note"`) that says the numbers are recorded facts and that a higher or lower number does not measure how well a tool assesses FAIRness. Numbers are formatted per locale with a thousands separator. The logic is in `src/lib/core/metrics.ts` (no Svelte imports); the labels are in `src/lib/core/labels.ts` and the two notes in `messages/{en,es}.json` (`detail_metrics_note`, `compare_metrics_note`).
 
 ### 5.5 `content/finder.yaml` ("Which tool fits?")
 
@@ -287,7 +302,7 @@ Not listed: SATIFYD (reported discontinued by the operator; unverified by us). M
 3. `id` equals file name; ids unique; `section`, taxonomy references, finder tool ids all resolve.
 4. Finder rows only list tools that accept that input. Changelog dates are not in the future and are in descending order, and changelog tool ids resolve (section 5.8).
 5. URLs are `https://`; DOIs are normalized to `https://doi.org/...`.
-6. `last_verified` is a valid past or present ISO date.
+6. `last_verified` and the dates of `metrics` (`checked`, `github.last_push`, `github.last_release.date`) are valid past or present ISO dates; `metrics.github` needs a `source_code` on github.com; every `metrics.citations[].doi` is a bare DOI.
 7. Style lint (`style-lint.ts`), run over every string in content and in `messages/*.json`: no character in `forbiddenCharacters`; no emoji (Unicode Extended_Pictographic) and no ASCII emoticons (`:)`, `:-)`, `;)`, `:D`, `:(`); no forbidden term from `style.forbiddenTerms` for that locale (whole word match); Spanish text has no voseo and no informal second person. Voseo: `\bvos\b` plus a whole-word list in `site.yaml` (`style.voseoWords`, seeded with tenés, podés, querés, sabés, sos, hacé, mirá, abrí, elegí, seleccioná, usá, fijate). Informal tuteo: `style.informalWords` (tú, tienes, puedes, puedas, quieres, necesitas; imperative forms such as abre or selecciona are not listed because they equal the third person and would flag neutral descriptions) also fails the build, because the register must be formal (usted).
 
 Style lint failures fail the build and CI. The lists are in `site.yaml`, so maintainers can adjust them in one place.

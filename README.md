@@ -85,6 +85,13 @@ facts recorded in `content/tools/*.yaml`; there is no extra content file. The se
 the query string (`?tools=a,b,c`). `features.compare` in `content/site.yaml` shows or hides the
 links from the home page and from the tool pages. See `specs.md`, section 6.
 
+## Metrics
+
+An entry may record citation, GitHub and download numbers in an optional `metrics` block of its
+YAML file (`specs.md`, section 5.4, "Metrics"). The detail page and the comparison show them as
+recorded facts with their source and the date they were checked. They are not ranked, scored or
+used to sort or filter anything. Refresh them by hand when an entry is re-verified.
+
 ## Contributing
 
 See `CONTRIBUTING.md` for how to add or update a tool.

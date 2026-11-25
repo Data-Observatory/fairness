@@ -58,3 +58,26 @@ last_verified: 2026-10-25
 references:
   - title: Title of a paper or documentation page
     url: https://example.org/paper
+# Optional. Recorded numbers, shown as dated facts and never ranked. Use only numbers you read from
+# the source on `checked` (OpenAlex for citations, the GitHub API for `github`, Zenodo or PyPI for
+# downloads). `github` is only allowed when `source_code` is a github.com repository. Open every
+# DOI before writing it: it must resolve and be the paper or record of this entry. Leave the whole
+# block out when there is nothing to record.
+# metrics:
+#   checked: 2026-10-25
+#   citations:
+#     - label: Patterns, 2021 # short plain text
+#       doi: 10.1016/j.patter.2021.100370 # bare DOI, no https://doi.org/ prefix
+#       count: 110
+#   github:
+#     stars: 82
+#     forks: 53
+#     contributors: 23
+#     last_push: 2026-10-20
+#     last_release: # optional, left out when the repository has no release
+#       tag: v4.0.1
+#       date: 2026-09-24
+#   downloads:
+#     - source: zenodo # zenodo | pypi
+#       count: 17372
+#       period: total # total | last_30_days
