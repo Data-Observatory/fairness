@@ -40,3 +40,16 @@ describe('messages: keys', () => {
 		expect(unused).toEqual([]);
 	});
 });
+
+describe('messages: metrics notes', () => {
+	it.each([
+		['detail_metrics_note', ['{sources}', '{date}']],
+		['compare_metrics_note', []]
+	])('%s exists in en and es, with its placeholders', (key, placeholders) => {
+		for (const messages of [en, es] as Record<string, string>[]) {
+			expect(typeof messages[key]).toBe('string');
+			expect(messages[key].length).toBeGreaterThan(0);
+			for (const placeholder of placeholders) expect(messages[key]).toContain(placeholder);
+		}
+	});
+});

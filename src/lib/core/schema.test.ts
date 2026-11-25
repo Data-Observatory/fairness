@@ -541,3 +541,168 @@ describe('changelogSchema', () => {
 		expect(found).toContain('2.tools.0');
 	});
 });
+
+describe('toolSchema: metrics', () => {
+	const fuji = () => clone(doc('content/tools/f-uji.yaml'));
+	const withMetrics = (metrics: unknown) => {
+		const tool = fuji();
+		tool.metrics = metrics;
+		return toolSchema.safeParse(tool);
+	};
+	const full = () => ({
+		checked: '2025-01-15',
+		citations: [{ label: 'Patterns, 2021', doi: '10.1016/j.patter.2021.100370', count: 110 }],
+		github: {
+			stars: 82,
+			forks: 53,
+			contributors: 23,
+			last_push: '2025-01-10',
+			last_release: { tag: 'v4.0.1', date: '2025-01-05' }
+		},
+		downloads: [
+			{ source: 'zenodo', count: 17372, period: 'total' },
+			{ source: 'pypi', count: 2114, period: 'last_30_days' }
+		]
+	});
+
+	it('is optional: an entry without metrics stays valid', () => {
+		expect(toolSchema.safeParse(fuji()).success).toBe(true);
+	});
+
+	it('accepts citations, github and downloads together', () => {
+		expect(withMetrics(full()).success).toBe(true);
+	});
+
+	it.each(['citations', 'github', 'downloads'] as const)('accepts %s on its own', (key) => {
+		const metrics = full();
+		const only = { checked: metrics.checked, [key]: metrics[key] };
+		expect(withMetrics(only).success).toBe(true);
+	});
+
+	it('accepts a github block without last_release', () => {
+		const metrics = full();
+		delete (metrics.github as any).last_release;
+		expect(withMetrics(metrics).success).toBe(true);
+	});
+
+	it('accepts zero counts', () => {
+		const metrics = full();
+		metrics.citations[0].count = 0;
+		metrics.github.stars = 0;
+		metrics.downloads[0].count = 0;
+		expect(withMetrics(metrics).success).toBe(true);
+	});
+
+	it('requires checked, as an ISO date', () => {
+		const missing = full() as any;
+		delete missing.checked;
+		expect(paths(withMetrics(missing))).toContain('metrics.checked');
+		for (const value of ['not-a-date', '2025-02-30', '15/01/2025']) {
+			expect(paths(withMetrics({ ...full(), checked: value }))).toContain('metrics.checked');
+		}
+	});
+
+	it('requires at least one of citations, github and downloads', () => {
+		const result = withMetrics({ checked: '2025-01-15' });
+		expect(result.success).toBe(false);
+		expect(paths(result)).toContain('metrics');
+	});
+
+	it('rejects empty citations and downloads lists', () => {
+		expect(paths(withMetrics({ ...full(), citations: [] }))).toContain('metrics.citations');
+		expect(paths(withMetrics({ ...full(), downloads: [] }))).toContain('metrics.downloads');
+	});
+
+	it.each([
+		[
+			'negative citation count',
+			(m: any) => (m.citations[0].count = -1),
+			'metrics.citations.0.count'
+		],
+		[
+			'fractional citation count',
+			(m: any) => (m.citations[0].count = 1.5),
+			'metrics.citations.0.count'
+		],
+		['negative stars', (m: any) => (m.github.stars = -1), 'metrics.github.stars'],
+		['negative forks', (m: any) => (m.github.forks = -1), 'metrics.github.forks'],
+		[
+			'negative contributors',
+			(m: any) => (m.github.contributors = -1),
+			'metrics.github.contributors'
+		],
+		[
+			'negative download count',
+			(m: any) => (m.downloads[0].count = -5),
+			'metrics.downloads.0.count'
+		],
+		[
+			'unknown download source',
+			(m: any) => (m.downloads[0].source = 'npm'),
+			'metrics.downloads.0.source'
+		],
+		[
+			'unknown download period',
+			(m: any) => (m.downloads[0].period = 'daily'),
+			'metrics.downloads.0.period'
+		],
+		[
+			'bad last_push date',
+			(m: any) => (m.github.last_push = '2025-1-1'),
+			'metrics.github.last_push'
+		],
+		[
+			'bad release date',
+			(m: any) => (m.github.last_release.date = 'x'),
+			'metrics.github.last_release.date'
+		],
+		[
+			'empty release tag',
+			(m: any) => (m.github.last_release.tag = ' '),
+			'metrics.github.last_release.tag'
+		],
+		['empty citation label', (m: any) => (m.citations[0].label = ''), 'metrics.citations.0.label']
+	])('rejects %s', (_name, edit, path) => {
+		const metrics = full();
+		edit(metrics);
+		const result = withMetrics(metrics);
+		expect(result.success).toBe(false);
+		expect(paths(result)).toContain(path);
+	});
+
+	it.each([
+		'https://doi.org/10.1016/j.patter.2021.100370',
+		'doi:10.1016/j.patter.2021.100370',
+		'10.1016',
+		'10.12/abc',
+		'11.1016/j.patter',
+		'10.1016/ has space',
+		''
+	])('rejects the DOI %j', (doi) => {
+		const metrics = full();
+		metrics.citations[0].doi = doi;
+		expect(paths(withMetrics(metrics))).toContain('metrics.citations.0.doi');
+	});
+
+	it.each(['10.1016/j.patter.2021.100370', '10.5281/zenodo.15045911', '10.15497/RDA00050'])(
+		'accepts the DOI %s',
+		(doi) => {
+			const metrics = full();
+			metrics.citations[0].doi = doi;
+			expect(withMetrics(metrics).success).toBe(true);
+		}
+	);
+
+	it('rejects unknown keys in metrics, github, citations and downloads', () => {
+		for (const edit of [
+			(m: any) => (m.rank = 1),
+			(m: any) => (m.github.watchers = 3),
+			(m: any) => (m.citations[0].source = 'x'),
+			(m: any) => (m.downloads[0].unit = 'x')
+		]) {
+			const metrics = full();
+			edit(metrics);
+			expect(withMetrics(metrics).success).toBe(false);
+		}
+	});
+});

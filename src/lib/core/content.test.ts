@@ -791,3 +791,74 @@ describe('loadContent: changelog', () => {
 		expect(issuesOf(files)).toContainEqual(expect.objectContaining({ file: CHANGELOG }));
 	});
 });
+
+describe('loadContent: metrics', () => {
+	const metrics = () => ({
+		checked: '2025-01-15',
+		github: {
+			stars: 1,
+			forks: 0,
+			contributors: 1,
+			last_push: '2025-01-10',
+			last_release: { tag: 'v1', date: '2025-01-05' }
+		}
+	});
+	const withMetrics = (edit: (m: any) => void = () => {}) =>
+		mutate(valid, FUJI, (tool) => {
+			tool.metrics = metrics();
+			edit(tool.metrics);
+		});
+
+	it('a valid metrics block loads', () => {
+		expect(() => loadContent(withMetrics(), { today: new Date(2025, 5, 1) })).not.toThrow();
+		const tool = loadContent(withMetrics(), { today: new Date(2025, 5, 1) }).tools.find(
+			(item) => item.id === 'f-uji'
+		);
+		expect(tool?.metrics?.github?.stars).toBe(1);
+	});
+
+	it.each([
+		['checked', 'checked', (m: any) => (m.checked = '2999-01-01')],
+		['github.last_push', 'github.last_push', (m: any) => (m.github.last_push = '2999-01-01')],
+		[
+			'github.last_release.date',
+			'github.last_release.date',
+			(m: any) => (m.github.last_release.date = '2999-01-01')
+		]
+	])('a future %s is reported', (_name, path, edit) => {
+		expect(issuesOf(withMetrics(edit))).toContainEqual(
+			expect.objectContaining({
+				file: FUJI,
+				path: `metrics.${path}`,
+				message: expect.stringMatching(/future/i)
+			})
+		);
+	});
+
+	it('github numbers are only allowed when source_code is a github.com repository', () => {
+		// The fixture source_code is https://example.org/f-uji/source, not a GitHub URL.
+		expect(issuesOf(withMetrics())).toContainEqual(
+			expect.objectContaining({
+				file: FUJI,
+				path: 'metrics.github',
+				message: expect.stringMatching(/github\.com/i)
+			})
+		);
+	});
+
+	it('github numbers are accepted when source_code is a github.com repository', () => {
+		const files = mutate(withMetrics(), FUJI, (tool) => {
+			tool.source_code = 'https://github.com/example-org/f-uji';
+		});
+		expect(() => loadContent(files, { today: new Date(2025, 5, 1) })).not.toThrow();
+	});
+
+	it('github numbers are rejected when the entry has no source_code', () => {
+		const files = mutate(withMetrics(), FUJI, (tool) => {
+			delete tool.source_code;
+		});
+		expect(issuesOf(files)).toContainEqual(
+			expect.objectContaining({ file: FUJI, path: 'metrics.github' })
+		);
+	});
+});

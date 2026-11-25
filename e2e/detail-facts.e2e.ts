@@ -19,6 +19,9 @@ const LABELS = {
 		source_code: 'Source code',
 		self_hostable: 'Self-hostable',
 		license: 'License',
+		citations: 'Citations',
+		github: 'GitHub activity',
+		downloads: 'Downloads',
 		status: 'Status'
 	},
 	es: {
@@ -32,6 +35,9 @@ const LABELS = {
 		source_code: 'Código fuente',
 		self_hostable: 'Autoalojable',
 		license: 'Licencia',
+		citations: 'Citas',
+		github: 'Actividad en GitHub',
+		downloads: 'Descargas',
 		status: 'Estado'
 	}
 };
@@ -39,9 +45,15 @@ const LABELS = {
 const present = (value: unknown) =>
 	value !== undefined && value !== null && !(Array.isArray(value) && value.length === 0);
 
+// Citations, GitHub numbers and downloads are facts of the `metrics` block of the YAML file.
+const METRIC_KEYS: readonly string[] = ['citations', 'github', 'downloads'];
+
 function expectedKeys(tool: Tool): (keyof typeof LABELS.en)[] {
 	const keys = Object.keys(LABELS.en) as (keyof typeof LABELS.en)[];
-	return keys.filter((key) => present((tool as unknown as Record<string, unknown>)[key]));
+	return keys.filter((key) => {
+		const holder = METRIC_KEYS.includes(key) ? tool.metrics : tool;
+		return present((holder as unknown as Record<string, unknown> | undefined)?.[key]);
+	});
 }
 
 for (const locale of LOCALES) {

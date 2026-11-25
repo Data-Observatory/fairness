@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getContent, loadContent, type Content } from './content';
 import { buildChangelogView, lastUpdated } from './changelog';
 import { daysSince } from './freshness';
+import { buildToolView } from './view';
 import { lintContent, lintMessages } from './style-lint';
 import type { Tool } from './schema';
 import en from '../../../messages/en.json';
@@ -465,5 +466,76 @@ describe('real content: changelog', () => {
 			expect(all, locale).toMatch(locale === 'en' ? /implement/i : /implementan/i);
 			expect(all, locale).toMatch(locale === 'en' ? /Last updated/ : /Última actualización/);
 		}
+	});
+});
+
+describe('real content: metrics', () => {
+	const withMetrics = () => content().tools.filter((item) => item.metrics !== undefined);
+	const DOI = /^10\.\d{4,9}\/\S+$/;
+
+	it('records metrics for some entries and keeps them off the others', () => {
+		expect(withMetrics().length).toBeGreaterThan(0);
+		expect(withMetrics().length).toBeLessThan(content().tools.length);
+	});
+
+	it('every checked date is an ISO date that is not in the future', () => {
+		const today = new Date().toISOString().slice(0, 10);
+		for (const item of withMetrics()) {
+			expect(item.metrics!.checked, item.id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+			expect(item.metrics!.checked <= today, item.id).toBe(true);
+		}
+	});
+
+	it('every DOI is a bare DOI and no DOI is repeated within an entry', () => {
+		for (const item of withMetrics()) {
+			const dois = (item.metrics!.citations ?? []).map((citation) => citation.doi);
+			for (const doi of dois) expect(doi, item.id).toMatch(DOI);
+			expect(new Set(dois).size, item.id).toBe(dois.length);
+		}
+	});
+
+	it('GitHub numbers exist only on entries whose source code is a github.com repository', () => {
+		for (const item of withMetrics()) {
+			if (item.metrics!.github === undefined) continue;
+			expect(item.source_code, item.id).toMatch(/^https:\/\/github\.com\/[^/]+\/[^/]+/);
+		}
+	});
+
+	it('every entry with a github.com source_code and metrics keeps the release data consistent', () => {
+		for (const item of withMetrics()) {
+			const github = item.metrics!.github;
+			if (github?.last_release !== undefined) {
+				expect(github.last_release.date <= item.metrics!.checked, item.id).toBe(true);
+			}
+		}
+	});
+
+	it('the f-uji entry records its Patterns paper, linked to its DOI, in both locales', () => {
+		const fuji = tool('f-uji');
+		expect(fuji.metrics?.citations?.map((citation) => citation.doi)).toContain(
+			'10.1016/j.patter.2021.100370'
+		);
+		for (const locale of ['en', 'es'] as const) {
+			const view = buildToolView(content(), 'f-uji', locale, new Date());
+			const row = view.facts.find((fact) => fact.key === 'citations');
+			expect(row?.items.map((entry) => entry.href)).toContain(
+				'https://doi.org/10.1016/j.patter.2021.100370'
+			);
+		}
+	});
+
+	it('entries without a paper, repository or download page record no metrics', () => {
+		for (const id of ['fairassist', 'fair-impact-catalogue', 'ardc-fair-data-self-assessment']) {
+			expect(tool(id).metrics, id).toBeUndefined();
+		}
+	});
+});
+
+describe('real content: the metrics message texts are neutral', () => {
+	it('detail and compare notes say the numbers are not a ranking, in both locales', () => {
+		expect(en.detail_metrics_note).toMatch(/not a ranking/i);
+		expect(en.compare_metrics_note).toMatch(/not a ranking/i);
+		expect(es.detail_metrics_note).toMatch(/no una clasificaci/i);
+		expect(es.compare_metrics_note).toMatch(/no una clasificaci/i);
 	});
 });

@@ -62,3 +62,44 @@ describe('generated tool JSON schema', () => {
 		expect(regex.test('2026-10-25T00:00')).toBe(false);
 	});
 });
+
+describe('generated tool JSON schema: metrics', () => {
+	const metrics = () => schema().properties.metrics as Json;
+
+	it('describes the optional metrics block with its three parts', () => {
+		expect(schema().required).not.toContain('metrics');
+		expect(Object.keys(metrics().properties).sort()).toEqual([
+			'checked',
+			'citations',
+			'downloads',
+			'github'
+		]);
+		expect(metrics().required).toContain('checked');
+		expect(metrics().additionalProperties).toBe(false);
+	});
+
+	it('carries ISO date patterns on every metrics date', () => {
+		const pattern = '^\\d{4}-\\d{2}-\\d{2}$';
+		expect(metrics().properties.checked.pattern).toBe(pattern);
+		expect(metrics().properties.github.properties.last_push.pattern).toBe(pattern);
+		expect(metrics().properties.github.properties.last_release.properties.date.pattern).toBe(
+			pattern
+		);
+	});
+
+	it('carries the bare DOI pattern', () => {
+		const pattern = metrics().properties.citations.items.properties.doi.pattern as string;
+		const regex = new RegExp(pattern);
+		expect(regex.test('10.1016/j.patter.2021.100370')).toBe(true);
+		expect(regex.test('https://doi.org/10.1016/j.patter.2021.100370')).toBe(false);
+		expect(regex.test('10.12/x')).toBe(false);
+	});
+
+	it('requires at least one of citations, github and downloads', () => {
+		expect(metrics().anyOf).toEqual([
+			{ required: ['citations'] },
+			{ required: ['github'] },
+			{ required: ['downloads'] }
+		]);
+	});
+});

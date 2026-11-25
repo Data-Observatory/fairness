@@ -28,6 +28,20 @@ export type Tool = {
 	license?: string;
 	status: string;
 	last_verified: string | Date;
+	metrics?: Metrics;
+};
+
+export type Metrics = {
+	checked: string;
+	citations?: { label: string; doi: string; count: number }[];
+	github?: {
+		stars: number;
+		forks: number;
+		contributors: number;
+		last_push: string;
+		last_release?: { tag: string; date: string };
+	};
+	downloads?: { source: 'zenodo' | 'pypi'; count: number; period: 'total' | 'last_30_days' }[];
 };
 
 export const LOCALES = ['en', 'es'] as const;
