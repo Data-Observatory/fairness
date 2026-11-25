@@ -56,7 +56,7 @@ references:
   - title: EVERSE research software quality indicators (GitHub)
     url: https://github.com/EVERSE-ResearchSoftware/indicators
 metrics:
-  checked: 2026-11-24
+  checked: 2026-11-25
   github:
     stars: 4
     forks: 6
@@ -68,5 +68,5 @@ metrics:
   downloads:
     - source: pypi
       package: rsfc
-      count: 167
+      count: 171
       period: last_30_days

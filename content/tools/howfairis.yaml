@@ -59,7 +59,7 @@ references:
   - title: fair-software.eu recommendations
     url: https://fair-software.eu/
 metrics:
-  checked: 2026-11-24
+  checked: 2026-11-25
   github:
     stars: 76
     forks: 30
@@ -71,5 +71,5 @@ metrics:
   downloads:
     - source: pypi
       package: howfairis
-      count: 2114
+      count: 2216
       period: last_30_days
