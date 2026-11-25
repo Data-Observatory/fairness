@@ -41,7 +41,7 @@ export type Content = {
 export type LoadOptions = {
 	/**
 	 * Reference date for the "not in the future" check on `last_verified` and changelog dates. Defaults to now.
-	 * Only its LOCAL calendar date counts.
+	 * Only its LOCAL calendar date counts for those. Metrics dates (UTC-sourced) also accept its UTC date.
 	 */
 	today?: Date;
 };
@@ -327,7 +327,12 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 	}
 
 	// References resolve, dates are not in the future.
-	const today = localIsoDate(options.today ?? new Date());
+	const now = options.today ?? new Date();
+	const today = localIsoDate(now);
+	// Metrics dates come from the refresh job and from GitHub, which use the UTC day. A date is in
+	// the future only when it is after both the local day and the UTC day.
+	const utcToday = now.toISOString().slice(0, 10);
+	const metricsToday = utcToday > today ? utcToday : today;
 	const sectionIds = new Set(sections?.map((section) => section.id));
 	for (const { file, tool } of tools) {
 		if (sections && !sectionIds.has(tool.section)) {
@@ -349,7 +354,7 @@ export function loadContent(files: Record<string, string>, options: LoadOptions 
 		const { metrics } = tool;
 		if (metrics !== undefined) {
 			const notFuture = (path: string, value: string) => {
-				if (isIsoDate(value) && value > today) {
+				if (isIsoDate(value) && value > metricsToday) {
 					add(file, `metrics.${path}`, `${path} ${value} is in the future`);
 				}
 			};
