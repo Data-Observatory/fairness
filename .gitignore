@@ -36,6 +36,8 @@ project.inlang/README.md
 
 # Link check report (npm run links)
 link-report.md
+metrics-report.md
+metrics-commit.md
 
 # Playwright reports
 playwright-report/

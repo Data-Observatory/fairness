@@ -21,6 +21,7 @@
 		"check:base-path": "node scripts/check-base-path.mjs",
 		"validate": "node --experimental-strip-types scripts/validate.mjs",
 		"links": "node --experimental-strip-types scripts/check-links.mjs",
+		"metrics": "node --experimental-strip-types scripts/metrics.mjs",
 		"prebuild": "npm run validate"
 	},
 	"devDependencies": {
