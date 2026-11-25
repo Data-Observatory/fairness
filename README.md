@@ -33,12 +33,13 @@ npm run build        # runs `npm run validate` first (prebuild), then static out
 npm run validate     # content schema, cross-checks, style lint over content and messages
 npm run schema       # regenerate content/tool.schema.json
 npm run links        # link and freshness report (see below)
+npm run metrics      # citation, GitHub and download numbers: dry run (see Metrics)
 npm run check:base-path  # build with BASE_PATH=/fair and check internal links
                          # (it regenerates src/lib/paraglide: run `npm run build` afterwards)
 npm run preview
 ```
 
-Node 22.6 or later is required: the `validate`, `schema` and `links` scripts use
+Node 22.6 or later is required: the `validate`, `schema`, `links` and `metrics` scripts use
 `--experimental-strip-types`.
 
 `npm run build` runs `npm run validate` first (the `prebuild` script) and fails when the
@@ -90,7 +91,22 @@ links from the home page and from the tool pages. See `specs.md`, section 6.
 An entry may record citation, GitHub and download numbers in an optional `metrics` block of its
 YAML file (`specs.md`, section 5.4, "Metrics"). The detail page and the comparison show them as
 recorded facts with their source and the date they were checked. They are not ranked, scored or
-used to sort or filter anything. Refresh them by hand when an entry is re-verified.
+used to sort or filter anything.
+
+`npm run metrics` prints, for every recorded value, the number on record and the current number
+from OpenAlex, GitHub, Zenodo and PyPI, and writes nothing. `npm run metrics -- --write` applies
+the changes (`--all` lists unchanged values too, `--only <tool-id>` limits it to one entry). A
+value that cannot be fetched or looks wrong (a citation count or a total below half of the
+recorded one, an archived or missing repository) is kept and reported. A GitHub token in
+`GITHUB_TOKEN` or `GH_TOKEN` is used when set, to avoid the unauthenticated rate limit.
+
+A weekly workflow (`.github/workflows/metrics.yml`, Mondays 07:00 UTC, also runnable by hand)
+runs `npm run metrics -- --write`, then `npm run validate` and the unit tests, and commits the
+changed content files to `main` as `github-actions[bot]`. These numbers are objective data, not
+content under review, so the job commits them itself (owner decision of 2026-11-24). Failures go
+into an issue labelled `metrics-check`, which a run with no findings closes. A push made with
+`GITHUB_TOKEN` does not trigger CI or the deploy workflow: refreshed numbers reach the live site
+at the next deploy.
 
 ## Contributing
 

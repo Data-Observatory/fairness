@@ -75,6 +75,10 @@ Verification before the review fixes: 861 unit tests, 88 infra tests, 1400 end-t
 
 Deployment: the live site runs the opt-in consent version deployed on 2026-11-02. The opt-out version (tag on by default, notice, off switch) is published by the next deploy, run by the lead.
 
+## Metrics refresh (2026-11-24)
+
+Shipped: `npm run metrics` (dry run by default, `--write` to apply) and the weekly workflow `.github/workflows/metrics.yml` (Mondays 07:00 UTC) that refreshes the `metrics` numbers from OpenAlex, GitHub, Zenodo and PyPI and commits them to `main` as `github-actions[bot]`, after `validate` and the unit tests. Owner decision of 2026-11-24: metrics are objective data, not content under review, so the job commits them itself. Guards keep a recorded value when a source fails or looks wrong; failures go into the `metrics-check` issue. `downloads` items now carry the Zenodo `record` or the PyPI `package` they are fetched from. A push with `GITHUB_TOKEN` does not trigger CI or deploy, so refreshed numbers go live at the next deploy. See `specs.md` section 5.4.
+
 ## Owner decisions still open
 
 See `specs.md` section 18 (repository URL, Spanish review, deploy workflow) and section 19 (deviations and deferred items).
