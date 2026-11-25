@@ -107,7 +107,7 @@ describe('openalex source', () => {
 	});
 
 	it('reports http after the retries are used up, without retrying a 404', async () => {
-		const { fetchFn, calls } = fake({ [OPENALEX]: new Response('', { status: 500 }) });
+		const { fetchFn, calls } = fake({ [OPENALEX]: () => new Response('', { status: 500 }) });
 		const sources = createSources(options(fetchFn, { retries: 2 }));
 		expect(await kindOf(sources.openalex('10.1016/j.patter.2021.100370'))).toBe('http');
 		expect(calls).toHaveLength(3);
