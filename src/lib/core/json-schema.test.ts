@@ -102,4 +102,17 @@ describe('generated tool JSON schema: metrics', () => {
 			{ required: ['downloads'] }
 		]);
 	});
+
+	it('lists the optional record and package of a downloads item', () => {
+		const item = metrics().properties.downloads.items;
+		expect(Object.keys(item.properties).sort()).toEqual([
+			'count',
+			'package',
+			'period',
+			'record',
+			'source'
+		]);
+		expect(item.required).not.toContain('record');
+		expect(item.required).not.toContain('package');
+	});
 });

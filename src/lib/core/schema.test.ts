@@ -706,3 +706,38 @@ describe('toolSchema: metrics', () => {
 		}
 	});
 });
+
+describe('toolSchema: metrics downloads identify what to refetch', () => {
+	const withDownloads = (downloads: unknown) => {
+		const tool = clone(doc('content/tools/f-uji.yaml'));
+		tool.metrics = { checked: '2025-01-15', downloads };
+		return toolSchema.safeParse(tool);
+	};
+
+	it('accepts a Zenodo record id on a zenodo item and a package name on a pypi item', () => {
+		expect(
+			withDownloads([
+				{ source: 'zenodo', record: '15045911', count: 17372, period: 'total' },
+				{ source: 'pypi', package: 'how-fairis_2', count: 2114, period: 'last_30_days' }
+			]).success
+		).toBe(true);
+	});
+
+	it('keeps `record` and `package` optional', () => {
+		expect(withDownloads([{ source: 'zenodo', count: 5, period: 'total' }]).success).toBe(true);
+	});
+
+	it.each([
+		['a non-numeric record', { source: 'zenodo', record: 'abc', count: 1, period: 'total' }],
+		['an empty record', { source: 'zenodo', record: '', count: 1, period: 'total' }],
+		[
+			'a package with a space',
+			{ source: 'pypi', package: 'how fairis', count: 1, period: 'last_30_days' }
+		],
+		['an empty package', { source: 'pypi', package: '', count: 1, period: 'last_30_days' }],
+		['a record on a pypi item', { source: 'pypi', record: '1', count: 1, period: 'last_30_days' }],
+		['a package on a zenodo item', { source: 'zenodo', package: 'x', count: 1, period: 'total' }]
+	])('rejects %s', (_name, item) => {
+		expect(withDownloads([item]).success).toBe(false);
+	});
+});

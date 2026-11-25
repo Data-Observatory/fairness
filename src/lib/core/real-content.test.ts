@@ -539,3 +539,21 @@ describe('real content: the metrics message texts are neutral', () => {
 		expect(es.compare_metrics_note).toMatch(/no una clasificaci/i);
 	});
 });
+
+describe('real content: metrics downloads can be refetched', () => {
+	const downloads = () =>
+		content().tools.flatMap((item) =>
+			(item.metrics?.downloads ?? []).map((download) => ({ id: item.id, download }))
+		);
+
+	it('records some downloads', () => {
+		expect(downloads().length).toBeGreaterThan(0);
+	});
+
+	it('every zenodo item carries its record id and every pypi item its package name', () => {
+		for (const { id, download } of downloads()) {
+			if (download.source === 'zenodo') expect(download.record, id).toMatch(/^\d+$/);
+			else expect(download.package, id).toMatch(/^[A-Za-z0-9][A-Za-z0-9._-]*$/);
+		}
+	});
+});
