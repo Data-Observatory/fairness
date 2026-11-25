@@ -74,14 +74,16 @@ describe('metrics workflow', () => {
 		expect(text).toContain('metrics-check');
 		expect(text).toContain('metrics-report.md');
 		expect(text).toMatch(/gh issue (create|edit|comment)/);
-		expect(text).toMatch(/No findings\./);
+		// The shell test escapes the dot for grep: grep -qx 'No findings\.'
+		expect(text).toMatch(/No findings\\?\./);
 	});
 
 	it('says that a push with GITHUB_TOKEN triggers no CI and that the live site waits for a deploy', () => {
 		const header = text
 			.split('\n')
 			.filter((line) => line.startsWith('#'))
-			.join('\n');
+			.map((line) => line.replace(/^#\s?/, ''))
+			.join(' ');
 		expect(header).toMatch(/GITHUB_TOKEN/);
 		expect(header).toMatch(/does not trigger/i);
 		expect(header).toMatch(/next deploy/i);
